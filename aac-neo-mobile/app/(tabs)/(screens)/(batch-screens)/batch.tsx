@@ -412,7 +412,7 @@ export default function BatchScreen() {
         } else if (screen === 'SearchBatch') {
             // Handle other navigation options
         } else if (screen === 'InProgressBatches') {
-            // Handle other navigation options
+            router.push('/(tabs)/(screens)/(batch-screens)/in-progress-batches');
         } else if (screen === 'CompletedBatches') {
             // Handle other navigation options
         }

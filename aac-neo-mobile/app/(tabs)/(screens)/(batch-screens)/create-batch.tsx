@@ -8,14 +8,16 @@ import {
     Animated,
     Platform,
     Alert,
-    Keyboard
+    Keyboard,
+    KeyboardAvoidingView,
+    ScrollView
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+// import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -116,7 +118,13 @@ export default function CreateBatchScreen() {
             [
                 {
                     text: 'OK',
-                    onPress: () => router.back()
+                    onPress: () => router.push({
+                        pathname: '/(tabs)/(screens)/(batch-screens)/batching-form',
+                        params: {
+                            batchNumber: data.batchNumber,
+                            mouldNumber: data.mouldNumber
+                        }
+                    })
                 }
             ]
         );
@@ -190,7 +198,7 @@ export default function CreateBatchScreen() {
             )}
 
             {/* Main content with KeyboardAwareScrollView */}
-            <KeyboardAwareScrollView
+            {/* <KeyboardAvoidingView
                 enableOnAndroid={true}
                 extraScrollHeight={Platform.OS === 'ios' ? 100 : 20}
                 keyboardShouldPersistTaps="handled"
@@ -202,92 +210,105 @@ export default function CreateBatchScreen() {
                     }
                 ]}
                 enableAutomaticScroll={true}
-            >
-                <Animated.View
-                    style={[
-                        styles.formCard,
+            > */}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}>
+                <ScrollView
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={[
+                        styles.scrollContainer,
                         {
-                            opacity: fadeAnim,
-                            transform: [{ scale: scaleAnim }],
+                            paddingTop: keyboardVisible ? 10 : 20,
+                            paddingBottom: keyboardVisible ? 20 : 80
                         }
-                    ]}
-                >
-                    {/* Batch Number Field */}
-                    <Controller
-                        control={control}
-                        name="batchNumber"
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <FormInput
-                                label="Batch Number"
-                                required
-                                icon="hashtag"
-                                placeholder="Enter batch number"
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                value={value}
-                                autoCapitalize="characters"
-                                error={errors.batchNumber?.message}
-                            />
-                        )}
-                    />
-
-                    {/* Mould Number Field */}
-                    <Controller
-                        control={control}
-                        name="mouldNumber"
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <FormInput
-                                label="Mould Number"
-                                required
-                                icon="cube"
-                                placeholder="Enter mould number"
-                                onBlur={onBlur}
-                                onChangeText={onChange}
-                                value={value}
-                                autoCapitalize="characters"
-                                error={errors.mouldNumber?.message}
-                            />
-                        )}
-                    />
-                </Animated.View>
-
-                {/* Action Buttons */}
-                <Animated.View
-                    style={[
-                        styles.buttonContainer,
-                        {
-                            opacity: fadeAnim,
-                            transform: [{
-                                translateY: fadeAnim.interpolate({
-                                    inputRange: [0, 1],
-                                    outputRange: [20, 0]
-                                })
-                            }]
-                        }
-                    ]}
-                >
-                    <TouchableOpacity
-                        style={styles.cancelButton}
-                        onPress={goBack}
+                    ]}>
+                    <Animated.View
+                        style={[
+                            styles.formCard,
+                            {
+                                opacity: fadeAnim,
+                                transform: [{ scale: scaleAnim }],
+                            }
+                        ]}
                     >
-                        <Text style={styles.cancelButtonText}>Cancel</Text>
-                    </TouchableOpacity>
+                        {/* Batch Number Field */}
+                        <Controller
+                            control={control}
+                            name="batchNumber"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <FormInput
+                                    label="Batch Number"
+                                    required
+                                    icon="hashtag"
+                                    placeholder="Enter batch number"
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    autoCapitalize="characters"
+                                    error={errors.batchNumber?.message}
+                                />
+                            )}
+                        />
 
-                    <TouchableOpacity
-                        style={styles.createButton}
-                        onPress={handleSubmit(onSubmit)}
+                        {/* Mould Number Field */}
+                        <Controller
+                            control={control}
+                            name="mouldNumber"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <FormInput
+                                    label="Mould Number"
+                                    required
+                                    icon="cube"
+                                    placeholder="Enter mould number"
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    autoCapitalize="characters"
+                                    error={errors.mouldNumber?.message}
+                                />
+                            )}
+                        />
+                    </Animated.View>
+
+                    {/* Action Buttons */}
+                    <Animated.View
+                        style={[
+                            styles.buttonContainer,
+                            {
+                                opacity: fadeAnim,
+                                transform: [{
+                                    translateY: fadeAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [20, 0]
+                                    })
+                                }]
+                            }
+                        ]}
                     >
-                        <LinearGradient
-                            colors={['#00D2E6', '#0088cc']}
-                            style={styles.createButtonGradient}
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
+                        <TouchableOpacity
+                            style={styles.cancelButton}
+                            onPress={goBack}>
+                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.createButton}
+                            onPress={handleSubmit(onSubmit)}
                         >
-                            <Text style={styles.createButtonText}>Create Batch</Text>
-                        </LinearGradient>
-                    </TouchableOpacity>
-                </Animated.View>
-            </KeyboardAwareScrollView>
+                            <LinearGradient
+                                colors={['#00D2E6', '#0088cc']}
+                                style={styles.createButtonGradient}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 1 }}
+                            >
+                                <Text style={styles.createButtonText}>Create Batch</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </Animated.View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+            {/* </KeyboardAwareScrollView> */}
 
             {/* Footer - conditionally rendered based on keyboard visibility */}
             {!keyboardVisible && (
@@ -421,7 +442,7 @@ const styles = StyleSheet.create({
     },
     cancelButton: {
         flex: 1,
-        backgroundColor: 'rgba(240, 240, 240, 0.9)',
+        backgroundColor: '#F0F0F0',
         borderRadius: 12,
         paddingVertical: 14,
         marginRight: 8,

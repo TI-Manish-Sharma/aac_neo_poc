@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/aac-neo-logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.technizeredge.aacneomobile"
     },
     "web": {
       "bundler": "metro",
@@ -32,10 +33,33 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "@react-native-community/datetimepicker",
+        {
+          "android": {
+            "timePicker": {
+              "headerBackground": {
+                "light": "#00D2E6"
+              },
+              "numbersSelectorColor": {
+                "light": "#00D2E6"
+              }
+            }
+          }
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5f3bc81c-2cd7-4a3f-82e3-f253d6496f2f"
+      }
     }
   }
 }
