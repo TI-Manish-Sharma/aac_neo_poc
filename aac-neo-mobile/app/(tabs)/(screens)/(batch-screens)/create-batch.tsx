@@ -312,35 +312,20 @@ export default function CreateBatchScreen() {
 
             {/* Footer - conditionally rendered based on keyboard visibility */}
             {!keyboardVisible && (
-                <Animated.View
-                    style={[
-                        styles.enhancedFooterContainer,
-                        {
-                            opacity: fadeAnim,
-                            transform: [{
-                                translateY: fadeAnim.interpolate({
-                                    inputRange: [0, 1],
-                                    outputRange: [10, 0]
-                                })
-                            }]
-                        }
-                    ]}
+                <LinearGradient
+                    colors={colorScheme === 'dark' ?
+                        ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
+                        ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    style={styles.enhancedFooterGradient}
                 >
-                    <LinearGradient
-                        colors={colorScheme === 'dark' ?
-                            ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
-                            ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 0, y: 1 }}
-                        style={styles.enhancedFooterGradient}
-                    >
-                        <View style={styles.footerContent}>
-                            <Text style={styles.footerText}>
-                                Create a new batch to start tracking your progress
-                            </Text>
-                        </View>
-                    </LinearGradient>
-                </Animated.View>
+                    <View style={styles.footerContent}>
+                        <Text style={styles.footerText}>
+                            Create a new batch to start tracking your progress
+                        </Text>
+                    </View>
+                </LinearGradient>
             )}
         </ThemedView>
     );

@@ -410,13 +410,13 @@ export default function BatchScreen() {
         if (screen === 'CreateBatch') {
             router.push('/(tabs)/(screens)/(batch-screens)/create-batch');
         } else if (screen === 'SearchBatch') {
-            // Handle other navigation options
+            router.push('/(tabs)/(screens)/(batch-screens)/search-batch');
         } else if (screen === 'InProgressBatches') {
             router.push('/(tabs)/(screens)/(batch-screens)/in-progress-batches');
         } else if (screen === 'CompletedBatches') {
             // Handle other navigation options
         }
-        
+
         console.log(`Navigating to ${screen}`);
         // Implement navigation to nested screens here
     };
@@ -578,35 +578,19 @@ export default function BatchScreen() {
                 </View>
             </View>
 
-            <Animated.View
-                style={[
-                    styles.enhancedFooterContainer,
-                    {
-                        opacity: fadeAnim,
-                        transform: [{
-                            translateY: fadeAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [10, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <LinearGradient
-                    colors={colorScheme === 'dark' ?
-                        ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
-                        ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={styles.enhancedFooterGradient}
-                >
-                    <View style={styles.footerContent}>
-                        <Text style={styles.footerText}>
-                            Manage batches efficiently
-                        </Text>
-                    </View>
-                </LinearGradient>
-            </Animated.View>
+            <LinearGradient
+                colors={colorScheme === 'dark' ?
+                    ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
+                    ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={styles.enhancedFooterGradient}>
+                <View style={styles.footerContent}>
+                    <Text style={styles.footerText}>
+                        Manage batches efficiently
+                    </Text>
+                </View>
+            </LinearGradient>
         </ThemedView>
     );
 }
@@ -760,7 +744,7 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         marginLeft: 0,        // Explicitly set zero margins
         marginRight: 0,
-      },
+    },
     enhancedFooterGradient: {
         paddingVertical: 15,
         paddingHorizontal: 20,

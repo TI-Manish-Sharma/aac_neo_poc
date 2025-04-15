@@ -106,6 +106,10 @@ const BatchCard: React.FC<{
         setExpanded(!expanded);
     };
 
+    const isEditVisible = ['batching', 'ferryCart', 'tilting', 'cutting'].some(stage =>
+        batch.stages[stage as keyof typeof batch.stages] === 'in-progress'
+    );
+
     return (
         <View style={styles.batchCard}>
             <TouchableOpacity
@@ -127,16 +131,18 @@ const BatchCard: React.FC<{
                     )}
                 </View>
                 <View style={styles.headerRight}>
-                    <TouchableOpacity
-                        onPress={() => onEdit(batch)}
-                        style={styles.editButton}
-                    >
-                        <FontAwesome
-                            name="pencil"
-                            size={16}
-                            color={Colors[colorScheme ?? 'light'].tint}
-                        />
-                    </TouchableOpacity>
+                    {isEditVisible && (
+                        <TouchableOpacity
+                            onPress={() => onEdit(batch)}
+                            style={styles.editButton}
+                        >
+                            <FontAwesome
+                                name="pencil"
+                                size={16}
+                                color={Colors[colorScheme ?? 'light'].tint}
+                            />
+                        </TouchableOpacity>
+                    )}
                     <FontAwesome
                         name={expanded ? "chevron-up" : "chevron-down"}
                         size={16}
@@ -355,22 +361,13 @@ export default function InProgressBatches() {
         // Only navigate if the status is 'in-progress' or when editing
         if (stageStatus === 'in-progress') {
             // Map stages to screens using URL patterns matching your app structure
-            // const screenMapping: Record<string, string> = {
-            //     batching: '/(tabs)/(screens)/(batch-screens)/batching-form',
-            //     // ferryCart: '/(tabs)/(screens)/(batch-screens)/ferry-cart-form',
-            //     // tilting: '/(tabs)/(screens)/(batch-screens)/tilting-form',
-            //     // cutting: '/(tabs)/(screens)/(batch-screens)/cutting-form',
-            //     // autoclave: '/(tabs)/(screens)/autoclave',
-            //     // segregation: '/(tabs)/(screens)/segregation'
-            // };
-
-            const screenMapping: Record<string, "/(tabs)/(screens)/(batch-screens)/batching-form"> = {
+            const screenMapping: Record<string, string> = {
                 batching: '/(tabs)/(screens)/(batch-screens)/batching-form',
-                // ferryCart: '/(tabs)/(screens)/(batch-screens)/ferry-cart-form',
-                // tilting: '/(tabs)/(screens)/(batch-screens)/tilting-form',
-                // cutting: '/(tabs)/(screens)/(batch-screens)/cutting-form',
-                // autoclave: '/(tabs)/(screens)/autoclave',
-                // segregation: '/(tabs)/(screens)/segregation'
+                ferryCart: '/(tabs)/(screens)/(batch-screens)/ferry-cart-form',
+                tilting: '/(tabs)/(screens)/(batch-screens)/tilting-form',
+                cutting: '/(tabs)/(screens)/(batch-screens)/cutting-form',
+                autoclave: '/(tabs)/(screens)/autoclave',
+                segregation: '/(tabs)/(screens)/segregation'
             };
 
             const screenPath = screenMapping[stageName];
@@ -390,8 +387,6 @@ export default function InProgressBatches() {
             });
         }
     };
-
-
 
     const handleEditBatch = (batch: Batch) => {
         // Find the current in-progress stage
@@ -516,20 +511,22 @@ export default function InProgressBatches() {
                     opacity: fadeAnim,
                     transform: [{ scale: scaleAnim }]
                 }}> */}
-                
-                <FlatList
-                    data={batches}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <BatchCard
-                            batch={item}
-                            onEdit={handleEditBatch}
-                            onStagePress={handleStagePress}
-                        />
-                    )}
-                    contentContainerStyle={[styles.listContent, { paddingBottom: FOOTER_HEIGHT + 20 }]} 
-                    showsVerticalScrollIndicator={false}
-                />
+
+            <FlatList
+                data={batches.filter(batch =>
+                    Object.values(batch.stages).includes('in-progress')
+                )}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <BatchCard
+                        batch={item}
+                        onEdit={handleEditBatch}
+                        onStagePress={handleStagePress}
+                    />
+                )}
+                contentContainerStyle={[styles.listContent, { paddingBottom: FOOTER_HEIGHT + 20 }]}
+                showsVerticalScrollIndicator={false}
+            />
             {/* </Animated.View> */}
 
             {/* Legend */}
@@ -547,29 +544,29 @@ export default function InProgressBatches() {
                     }
                 ]}
             > */}
-                <LinearGradient
-                    colors={colorScheme === 'dark' ?
-                        ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
-                        ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={styles.enhancedFooterGradient}
-                >
-                    <View style={styles.legend}>
-                        <View style={styles.legendItem}>
-                            <View style={[styles.statusIndicator, { backgroundColor: '#2E8B57' }]} />
-                            <ThemedText style={styles.legendText}>Completed</ThemedText>
-                        </View>
-                        <View style={styles.legendItem}>
-                            <View style={[styles.statusIndicator, { backgroundColor: '#FFD700' }]} />
-                            <ThemedText style={styles.legendText}>In Progress</ThemedText>
-                        </View>
-                        <View style={styles.legendItem}>
-                            <View style={[styles.statusIndicator, { backgroundColor: '#D3D3D3' }]} />
-                            <ThemedText style={styles.legendText}>Pending</ThemedText>
-                        </View>
+            <LinearGradient
+                colors={colorScheme === 'dark' ?
+                    ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
+                    ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={styles.enhancedFooterGradient}
+            >
+                <View style={styles.legend}>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.statusIndicator, { backgroundColor: '#2E8B57' }]} />
+                        <ThemedText style={styles.legendText}>Completed</ThemedText>
                     </View>
-                </LinearGradient>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.statusIndicator, { backgroundColor: '#FFD700' }]} />
+                        <ThemedText style={styles.legendText}>In Progress</ThemedText>
+                    </View>
+                    <View style={styles.legendItem}>
+                        <View style={[styles.statusIndicator, { backgroundColor: '#D3D3D3' }]} />
+                        <ThemedText style={styles.legendText}>Pending</ThemedText>
+                    </View>
+                </View>
+            </LinearGradient>
             {/* </Animated.View> */}
         </ThemedView>
     );
@@ -659,11 +656,13 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 12,
         padding: 16,
+        borderWidth: 1,
+        borderColor: '#E0F7FA',
         elevation: 2,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
     },
     cardHeader: {
         flexDirection: 'row',
