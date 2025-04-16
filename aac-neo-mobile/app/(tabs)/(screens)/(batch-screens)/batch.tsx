@@ -414,7 +414,7 @@ export default function BatchScreen() {
         } else if (screen === 'InProgressBatches') {
             router.push('/(tabs)/(screens)/(batch-screens)/in-progress-batches');
         } else if (screen === 'CompletedBatches') {
-            // Handle other navigation options
+            router.push('/(tabs)/(screens)/(batch-screens)/completed-batches');
         }
 
         console.log(`Navigating to ${screen}`);

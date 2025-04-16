@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+// Helper function to create positive number validator
+const createPositiveNumberValidator = (fieldName: string) => {
+    return z.string()
+        .min(1, `${fieldName} is required`)
+        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value')
+        .refine((value) => parseFloat(value) > 0, {
+            message: `${fieldName} must be greater than zero`
+        });
+};
+
 // Original schema for batch creation
 export const batchFormSchema = z.object({
     batchNumber: z.string()
@@ -17,56 +27,41 @@ export const batchFormSchema = z.object({
 // Schema for batch ingredients form
 export const batchIngredientSchema = z.object({
     // Materials
-    freshSlurry: z.string()
-        .min(1, 'Fresh slurry amount is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
-
-    wasteSlurry: z.string()
-        .min(1, 'Waste slurry amount is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
-
-    cement: z.string()
-        .min(1, 'Cement amount is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
-
-    lime: z.string()
-        .min(1, 'Lime amount is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
-
-    gypsum: z.string()
-        .min(1, 'Gypsum amount is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
+    freshSlurry: createPositiveNumberValidator('Fresh slurry amount'),
+    wasteSlurry: createPositiveNumberValidator('Waste slurry amount'),
+    cement: createPositiveNumberValidator('Cement amount'),
+    lime: createPositiveNumberValidator('Lime amount'),
+    gypsum: createPositiveNumberValidator('Gypsum amount'),
 
     // Additives
-    aluminumPowder: z.string()
-        .min(1, 'Aluminum powder amount is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
-
-    dcPowder: z.string()
-        .min(1, 'DC powder amount is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
-
-    water: z.string()
-        .min(1, 'Water amount is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
-
-    soluOil: z.string()
-        .min(1, 'Solu. oil amount is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
+    aluminumPowder: createPositiveNumberValidator('Aluminum powder amount'),
+    dcPowder: createPositiveNumberValidator('DC powder amount'),
+    water: createPositiveNumberValidator('Water amount'),
+    soluOil: createPositiveNumberValidator('Solu. oil amount'),
 
     // Process Parameters
-    dischargeTemp: z.string()
-        .min(1, 'Discharge temperature is required')
-        .regex(/^\d*\.?\d+$/, 'Please enter a valid numeric value'),
+    dischargeTemp: createPositiveNumberValidator('Discharge temperature'),
 
     mixingTime: z.object({
         hours: z.string()
             .min(1, 'Hours is required')
-            .regex(/^([0-9]|1[0-9]|2[0-3])$/, 'Please enter a valid hour (0-23)'),
+            .regex(/^([0-9]|1[0-9]|2[0-3])$/, 'Please enter a valid hour (0-23)')
+            .refine((value) => parseInt(value, 10) >= 0, {
+                message: 'Hours cannot be negative'
+            }),
         minutes: z.string()
             .min(1, 'Minutes is required')
             .regex(/^([0-9]|[1-5][0-9])$/, 'Please enter a valid minute (0-59)')
-    }),
+            .refine((value) => parseInt(value, 10) >= 0, {
+                message: 'Minutes cannot be negative'
+            })
+    }).refine(
+        (data) => !(parseInt(data.hours, 10) === 0 && parseInt(data.minutes, 10) === 0),
+        {
+            message: 'Total mixing time must be greater than zero',
+            path: ['hours'] // Error shows on the hours field
+        }
+    ),
 
     dischargeTime: z.string()
         .min(1, 'Discharge time is required')

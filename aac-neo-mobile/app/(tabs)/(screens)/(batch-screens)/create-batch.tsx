@@ -17,7 +17,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-// import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -27,11 +26,14 @@ import { Colors } from '@/constants/Colors';
 import { batchFormSchema } from '@/schema/batch.schema';
 import type { BatchFormData } from '@/types/batch.types';
 import { useTabVisibility } from '@/context/TabVisibilityContext';
+import { useBatch } from '@/context/BatchContext';
+import { createNewBatch } from '@/utils/batch-helpers';
 
 const { width, height } = Dimensions.get('window');
 
 export default function CreateBatchScreen() {
     const { setTabBarVisible } = useTabVisibility();
+    const { addBatch } = useBatch();
     const colorScheme = useColorScheme();
     const [keyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -99,35 +101,40 @@ export default function CreateBatchScreen() {
     const onSubmit = (data: BatchFormData) => {
         Keyboard.dismiss();
 
-        // Generate a unique ID for the batch
-        const batchId = `B${Date.now().toString().slice(-6)}`;
+        try {
+            // Create a new batch record using our helper function
+            const newBatch = createNewBatch(data.batchNumber, data.mouldNumber);
+            
+            // Add to context
+            addBatch(newBatch);
+            
+            console.log('Created new batch:', newBatch);
 
-        // Form is valid, proceed with batch creation
-        console.log({
-            id: batchId,
-            batchNumber: data.batchNumber,
-            mouldNumber: data.mouldNumber,
-            createdAt: new Date().toISOString(),
-            status: 'in-progress'
-        });
-
-        // Navigate back with success message
-        Alert.alert(
-            'Success',
-            `Batch ${data.batchNumber} created successfully!`,
-            [
-                {
-                    text: 'OK',
-                    onPress: () => router.push({
-                        pathname: '/(tabs)/(screens)/(batch-screens)/batching-form',
-                        params: {
-                            batchNumber: data.batchNumber,
-                            mouldNumber: data.mouldNumber
-                        }
-                    })
-                }
-            ]
-        );
+            // Navigate to batching form with success message
+            Alert.alert(
+                'Success',
+                `Batch ${data.batchNumber} created successfully!`,
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => router.push({
+                            pathname: '/(tabs)/(screens)/(batch-screens)/batching-form',
+                            params: {
+                                batchNumber: data.batchNumber,
+                                mouldNumber: data.mouldNumber
+                            }
+                        })
+                    }
+                ]
+            );
+        } catch (error) {
+            console.error('Error creating batch:', error);
+            Alert.alert(
+                'Error',
+                'There was a problem creating the batch. Please try again.',
+                [{ text: 'OK' }]
+            );
+        }
     };
 
     const goBack = () => {
@@ -197,20 +204,7 @@ export default function CreateBatchScreen() {
                 </Animated.View>
             )}
 
-            {/* Main content with KeyboardAwareScrollView */}
-            {/* <KeyboardAvoidingView
-                enableOnAndroid={true}
-                extraScrollHeight={Platform.OS === 'ios' ? 100 : 20}
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={[
-                    styles.scrollContainer,
-                    {
-                        paddingTop: keyboardVisible ? 10 : 20,
-                        paddingBottom: keyboardVisible ? 20 : 80 // Adjust bottom padding based on keyboard
-                    }
-                ]}
-                enableAutomaticScroll={true}
-            > */}
+            {/* Main content with KeyboardAvoidingView */}
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}>
@@ -308,24 +302,38 @@ export default function CreateBatchScreen() {
                     </Animated.View>
                 </ScrollView>
             </KeyboardAvoidingView>
-            {/* </KeyboardAwareScrollView> */}
 
             {/* Footer - conditionally rendered based on keyboard visibility */}
             {!keyboardVisible && (
-                <LinearGradient
-                    colors={colorScheme === 'dark' ?
-                        ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
-                        ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={styles.enhancedFooterGradient}
+                <Animated.View
+                    style={[
+                        styles.enhancedFooterContainer,
+                        {
+                            opacity: fadeAnim,
+                            transform: [{
+                                translateY: fadeAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [10, 0]
+                                })
+                            }]
+                        }
+                    ]}
                 >
-                    <View style={styles.footerContent}>
-                        <Text style={styles.footerText}>
-                            Create a new batch to start tracking your progress
-                        </Text>
-                    </View>
-                </LinearGradient>
+                    <LinearGradient
+                        colors={colorScheme === 'dark' ?
+                            ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
+                            ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 0, y: 1 }}
+                        style={styles.enhancedFooterGradient}
+                    >
+                        <View style={styles.footerContent}>
+                            <Text style={styles.footerText}>
+                                Create a new batch to start tracking your progress
+                            </Text>
+                        </View>
+                    </LinearGradient>
+                </Animated.View>
             )}
         </ThemedView>
     );

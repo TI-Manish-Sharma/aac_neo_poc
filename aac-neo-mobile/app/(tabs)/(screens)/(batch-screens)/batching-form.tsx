@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     StyleSheet,
     View,
@@ -10,14 +10,14 @@ import {
     Alert,
     Keyboard,
     KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    ActivityIndicator
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-// import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -29,21 +29,27 @@ import type { BatchIngredientFormData } from '@/types/batch.types';
 import { useTabVisibility } from '@/context/TabVisibilityContext';
 import { MaskedTimeInput } from '@/components/MaskedTimeInput';
 import { TimePicker } from '@/components/TimePicker';
+import { useBatch } from '@/context/BatchContext';
+import { updateBatchIngredients } from '@/utils/batch-helpers';
 
 const { width, height } = Dimensions.get('window');
 
 export default function BatchingFormScreen() {
     const params = useLocalSearchParams();
     const { setTabBarVisible } = useTabVisibility();
+    const { getBatchById, isLoading, setBatches, updateBatchStage } = useBatch();
     const colorScheme = useColorScheme();
     const [keyboardVisible, setKeyboardVisible] = useState(false);
+    const [loadingBatch, setLoadingBatch] = useState(true);
 
+    const initialBatchStageUpdated = useRef(false);
+    
     // Get batch and mould number from URL params
-    const batchNumber = params.batchNumber as string || 'NP';
-    const mouldNumber = params.mouldNumber as string || 'NP';
+    const batchNumber = params.batchNumber as string || '';
+    const mouldNumber = params.mouldNumber as string || '';
 
     // Set up React Hook Form with Zod validation
-    const { control, handleSubmit, formState: { errors } } = useForm<BatchIngredientFormData>({
+    const { control, handleSubmit, formState: { errors }, reset } = useForm<BatchIngredientFormData>({
         resolver: zodResolver(batchIngredientSchema),
         defaultValues: {
             freshSlurry: '',
@@ -56,7 +62,7 @@ export default function BatchingFormScreen() {
             water: '',
             soluOil: '',
             dischargeTemp: '',
-            mixingTime: { hours: '', minutes: '' },  // New structure
+            mixingTime: { hours: '', minutes: '' },
             dischargeTime: ''
         }
     });
@@ -66,6 +72,52 @@ export default function BatchingFormScreen() {
     const scaleAnim = useState(new Animated.Value(0.95))[0];
     const headerAnim = useState(new Animated.Value(0))[0];
     const bannerAnim = useState(new Animated.Value(0))[0];
+
+    // Load batch data if available
+    useEffect(() => {
+        if (!isLoading && batchNumber && !initialBatchStageUpdated.current) {
+            const batchRecord = getBatchById(batchNumber);
+
+            if (batchRecord) {
+                // If there's existing ingredient data, populate the form
+                const batchingData = batchRecord.processSteps.batching;
+
+                if (batchingData) {
+                    // Convert the decimal mixing time to hours and minutes
+                    const totalMinutes = batchingData.process.mixingTime * 60;
+                    const hours = Math.floor(totalMinutes / 60).toString();
+                    const minutes = Math.floor(totalMinutes % 60).toString();
+
+                    // Reset form with existing data
+                    reset({
+                        freshSlurry: batchingData.materials.freshSlurry.toString(),
+                        wasteSlurry: batchingData.materials.wasteSlurry.toString(),
+                        cement: batchingData.materials.cement.toString(),
+                        lime: batchingData.materials.lime.toString(),
+                        gypsum: batchingData.materials.gypsum.toString(),
+                        aluminumPowder: batchingData.materials.aluminumPowder.toString(),
+                        dcPowder: batchingData.materials.dcPowder.toString(),
+                        water: batchingData.materials.water.toString(),
+                        soluOil: batchingData.materials.solutionOil.toString(),
+                        dischargeTemp: batchingData.process.dischargeTemp.toString(),
+                        mixingTime: { hours, minutes },
+                        dischargeTime: batchingData.process.dischargeTime
+                    });
+                }
+
+                // Only update batch stage once during initial load
+                if (!initialBatchStageUpdated.current) {
+                    updateBatchStage(batchNumber, 'batching', 'in-progress');
+                    initialBatchStageUpdated.current = true;
+                }
+            }
+
+            setLoadingBatch(false);
+        } else if (!isLoading) {
+            setLoadingBatch(false);
+        }
+    }, [isLoading, batchNumber, getBatchById, reset, updateBatchStage]);
+
 
     // Detect keyboard visibility
     useEffect(() => {
@@ -121,35 +173,65 @@ export default function BatchingFormScreen() {
     const onSubmit = (data: BatchIngredientFormData) => {
         Keyboard.dismiss();
 
-        const formData = {
-            batchNumber,
-            mouldNumber,
-            ingredients: {
-                ...data,
-                // Format the mixing time as a string
-                mixingTimeFormatted: `${data.mixingTime.hours}:${data.mixingTime.minutes}`
-            },
-            timestamp: new Date().toISOString()
-        };
+        try {
+            // Find the current batch
+            const currentBatch = getBatchById(batchNumber);
 
-        console.log('Submitting batch ingredient data:', formData);
+            if (!currentBatch) {
+                throw new Error('Batch not found');
+            }
 
-        // Navigate back with success message
-        Alert.alert(
-            'Success',
-            `Batch ${batchNumber} ingredients recorded successfully!`,
-            [
-                {
-                    text: 'OK',
-                    onPress: () => router.navigate('/(tabs)/(screens)/(batch-screens)/batch')
-                }
-            ]
-        );
+            // Update the batch with new ingredient data
+            const updatedBatch = updateBatchIngredients(currentBatch, data);
+
+            // Update the batches in context
+            setBatches(prevBatches =>
+                prevBatches.map(batch =>
+                    batch.batchId === batchNumber ? updatedBatch : batch
+                )
+            );
+
+            // Mark the batching stage as completed
+            updateBatchStage(batchNumber, 'batching', 'completed');
+
+            // Mark the next stage (ferry cart) as in-progress
+            updateBatchStage(batchNumber, 'ferryCart', 'in-progress');
+
+            console.log('Updated batch ingredients:', updatedBatch);
+
+            // Navigate back with success message
+            Alert.alert(
+                'Success',
+                `Batch ${batchNumber} ingredients recorded successfully!`,
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => router.navigate('/(tabs)/(screens)/(batch-screens)/batch')
+                    }
+                ]
+            );
+        } catch (error) {
+            console.error('Error updating batch ingredients:', error);
+            Alert.alert(
+                'Error',
+                'There was a problem saving the batch ingredients. Please try again.',
+                [{ text: 'OK' }]
+            );
+        }
     };
 
     const goBack = () => {
         router.back();
     };
+
+    if (isLoading || loadingBatch) {
+        return (
+            <ThemedView style={[styles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color="#00D2E6" />
+                <ThemedText style={{ marginTop: 20 }}>Loading batch data...</ThemedText>
+            </ThemedView>
+        );
+    }
 
     return (
         <ThemedView style={styles.container}>
@@ -243,19 +325,7 @@ export default function BatchingFormScreen() {
                 </Animated.View>
             )}
 
-            {/* Main content with KeyboardAwareScrollView */}
-            {/* <KeyboardAwareScrollView
-                enableOnAndroid={true}
-                extraScrollHeight={Platform.OS === 'ios' ? 100 : 20}
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={[
-                    styles.scrollContainer,
-                    {
-                        paddingTop: keyboardVisible ? 10 : 20,
-                        paddingBottom: keyboardVisible ? 20 : 80 // Adjust bottom padding based on keyboard
-                    }
-                ]}
-                enableAutomaticScroll={true}> */}
+            {/* Main content with KeyboardAvoidingView */}
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}>
@@ -494,16 +564,10 @@ export default function BatchingFormScreen() {
                                             minutes: value?.minutes || ''
                                         }}
                                         onChange={(timeValues) => {
-                                            // Update the mixingTime object
                                             onChange(timeValues);
-
-                                            // // If you still need to update individual fields for compatibility
-                                            // if (setFieldValue) {
-                                            //     setFieldValue('mixingTimeHours', timeValues.hours);
-                                            //     setFieldValue('mixingTimeMinutes', timeValues.minutes);
-                                            // }
                                         }}
-                                        error={errors.mixingTime?.message}
+                                        // Change this line to check for nested errors
+                                        error={errors.mixingTime?.hours?.message || errors.mixingTime?.minutes?.message || errors.mixingTime?.message}
                                     />
                                 )}
                             />
@@ -564,24 +628,38 @@ export default function BatchingFormScreen() {
                     </Animated.View>
                 </ScrollView>
             </KeyboardAvoidingView>
-            {/* </KeyboardAwareScrollView> */}
 
             {/* Footer - conditionally rendered based on keyboard visibility */}
             {!keyboardVisible && (
-                <LinearGradient
-                    colors={colorScheme === 'dark' ?
-                        ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
-                        ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={styles.enhancedFooterGradient}
+                <Animated.View
+                    style={[
+                        styles.enhancedFooterContainer,
+                        {
+                            opacity: fadeAnim,
+                            transform: [{
+                                translateY: fadeAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: [10, 0]
+                                })
+                            }]
+                        }
+                    ]}
                 >
-                    <View style={styles.footerContent}>
-                        <Text style={styles.footerText}>
-                            Record ingredients for precise batch tracking
-                        </Text>
-                    </View>
-                </LinearGradient>
+                    <LinearGradient
+                        colors={colorScheme === 'dark' ?
+                            ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
+                            ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 0, y: 1 }}
+                        style={styles.enhancedFooterGradient}
+                    >
+                        <View style={styles.footerContent}>
+                            <Text style={styles.footerText}>
+                                Record ingredients for precise batch tracking
+                            </Text>
+                        </View>
+                    </LinearGradient>
+                </Animated.View>
             )}
         </ThemedView>
     );
@@ -591,6 +669,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 0,
+    },
+    loadingContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     headerContainer: {
         width: '100%',
@@ -723,53 +805,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: 'rgba(0, 210, 230, 0.2)',
         paddingBottom: 5,
-    },
-    timeInputGroup: {
-        marginBottom: 20,
-    },
-    timeLabel: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
-    timeInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    timeInputWrapper: {
-        flex: 1,
-    },
-    timeFieldContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-        borderRadius: 12,
-        backgroundColor: '#F8F9FA',
-        height: 50,
-    },
-    timeInputIcon: {
-        paddingHorizontal: 12,
-    },
-    timeField: {
-        flex: 1,
-        textAlign: 'center',
-    },
-    timeSeparator: {
-        paddingHorizontal: 10,
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#555555',
-    },
-    inputError: {
-        borderColor: '#ff4d4f',
-        borderWidth: 1,
-    },
-    timeError: {
-        color: '#ff4d4f',
-        fontSize: 12,
-        marginTop: 4,
-        marginLeft: 4,
     },
     buttonContainer: {
         flexDirection: 'row',

@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     Dimensions,
     Animated,
-    ScrollView
+    ActivityIndicator
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,32 +17,12 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { useBatch, UiBatch, BatchStages, BatchStageStatus } from '@/context/BatchContext';
 
 const { width, height } = Dimensions.get('window');
 
-// Define batch status type
-type BatchStatus = 'completed' | 'in-progress' | 'pending';
-
-// Define batch type
-interface Batch {
-    id: string;
-    batchNumber: string;
-    mouldNumber: string;
-    createdAt: string;
-    stages: {
-        batching: BatchStatus;
-        ferryCart: BatchStatus;
-        tilting: BatchStatus;
-        cutting: BatchStatus;
-        autoclave: BatchStatus;
-        segregation: BatchStatus;
-    };
-}
-
-const FOOTER_HEIGHT = 80;
-
 // Status indicator component
-const StatusIndicator: React.FC<{ status: BatchStatus; label: string; onPress?: () => void }> = ({ status, label, onPress }) => {
+const StatusIndicator: React.FC<{ status: BatchStageStatus; label: string; onPress?: () => void }> = ({ status, label, onPress }) => {
     const getStatusColor = () => {
         switch (status) {
             case 'completed':
@@ -74,9 +54,9 @@ const StatusIndicator: React.FC<{ status: BatchStatus; label: string; onPress?: 
 };
 
 const BatchCard: React.FC<{
-    batch: Batch;
-    onEdit: (batch: Batch) => void;
-    onStagePress: (batch: Batch, stageName: string) => void
+    batch: UiBatch;
+    onEdit: (batch: UiBatch) => void;
+    onStagePress: (batch: UiBatch, stageName: string) => void
 }> = ({ batch, onEdit, onStagePress }) => {
     const colorScheme = useColorScheme();
     const [expanded, setExpanded] = useState(false);
@@ -106,10 +86,6 @@ const BatchCard: React.FC<{
         setExpanded(!expanded);
     };
 
-    const isEditVisible = ['batching', 'ferryCart', 'tilting', 'cutting'].some(stage =>
-        batch.stages[stage as keyof typeof batch.stages] === 'in-progress'
-    );
-
     return (
         <View style={styles.batchCard}>
             <TouchableOpacity
@@ -131,18 +107,16 @@ const BatchCard: React.FC<{
                     )}
                 </View>
                 <View style={styles.headerRight}>
-                    {isEditVisible && (
-                        <TouchableOpacity
-                            onPress={() => onEdit(batch)}
-                            style={styles.editButton}
-                        >
-                            <FontAwesome
-                                name="pencil"
-                                size={16}
-                                color={Colors[colorScheme ?? 'light'].tint}
-                            />
-                        </TouchableOpacity>
-                    )}
+                    <TouchableOpacity
+                        onPress={() => onEdit(batch)}
+                        style={styles.editButton}
+                    >
+                        <FontAwesome
+                            name="pencil"
+                            size={16}
+                            color={Colors[colorScheme ?? 'light'].tint}
+                        />
+                    </TouchableOpacity>
                     <FontAwesome
                         name={expanded ? "chevron-up" : "chevron-down"}
                         size={16}
@@ -202,12 +176,22 @@ const BatchCard: React.FC<{
 
 export default function InProgressBatches() {
     const colorScheme = useColorScheme();
-    const [batches, setBatches] = useState<Batch[]>([]);
+    const [uiBatches, setUiBatches] = useState<UiBatch[]>([]);
+    const { isLoading, getBatchesByStatus, convertToUiBatch, updateBatchStage } = useBatch();
 
     // Animation values
     const fadeAnim = useState(new Animated.Value(0))[0];
     const scaleAnim = useState(new Animated.Value(0.9))[0];
     const headerAnim = useState(new Animated.Value(0))[0];
+
+    // Load data from context when component mounts
+    useEffect(() => {
+        if (!isLoading) {
+            const inProgressBatches = getBatchesByStatus('In Progress');
+            const convertedBatches = inProgressBatches.map(batch => convertToUiBatch(batch));
+            setUiBatches(convertedBatches);
+        }
+    }, [isLoading, getBatchesByStatus, convertToUiBatch]);
 
     // Initial animations
     useEffect(() => {
@@ -230,169 +214,40 @@ export default function InProgressBatches() {
         ]).start();
     }, []);
 
-    // Mock data - in a real app, this would come from an API or database
-    useEffect(() => {
-        // Updated mock data with batches at different stages
-        const mockBatches: Batch[] = [
-            {
-                id: '1',
-                batchNumber: 'B001',
-                mouldNumber: 'M001',
-                createdAt: new Date().toISOString(),
-                stages: {
-                    batching: 'in-progress',
-                    ferryCart: 'pending',
-                    tilting: 'pending',
-                    cutting: 'pending',
-                    autoclave: 'pending',
-                    segregation: 'pending'
-                }
-            },
-            {
-                id: '2',
-                batchNumber: 'B002',
-                mouldNumber: 'M002',
-                createdAt: new Date().toISOString(),
-                stages: {
-                    batching: 'completed',
-                    ferryCart: 'in-progress',
-                    tilting: 'pending',
-                    cutting: 'pending',
-                    autoclave: 'pending',
-                    segregation: 'pending'
-                }
-            },
-            {
-                id: '3',
-                batchNumber: 'B003',
-                mouldNumber: 'M003',
-                createdAt: new Date().toISOString(),
-                stages: {
-                    batching: 'completed',
-                    ferryCart: 'completed',
-                    tilting: 'in-progress',
-                    cutting: 'pending',
-                    autoclave: 'pending',
-                    segregation: 'pending'
-                }
-            },
-            {
-                id: '4',
-                batchNumber: 'B004',
-                mouldNumber: 'M004',
-                createdAt: new Date().toISOString(),
-                stages: {
-                    batching: 'completed',
-                    ferryCart: 'completed',
-                    tilting: 'completed',
-                    cutting: 'in-progress',
-                    autoclave: 'pending',
-                    segregation: 'pending'
-                }
-            },
-            {
-                id: '5',
-                batchNumber: 'B005',
-                mouldNumber: 'M005',
-                createdAt: new Date().toISOString(),
-                stages: {
-                    batching: 'completed',
-                    ferryCart: 'completed',
-                    tilting: 'completed',
-                    cutting: 'completed',
-                    autoclave: 'in-progress',
-                    segregation: 'pending'
-                }
-            },
-            {
-                id: '6',
-                batchNumber: 'B006',
-                mouldNumber: 'M006',
-                createdAt: new Date().toISOString(),
-                stages: {
-                    batching: 'completed',
-                    ferryCart: 'completed',
-                    tilting: 'completed',
-                    cutting: 'completed',
-                    autoclave: 'completed',
-                    segregation: 'in-progress'
-                }
-            },
-            // New batch 7 - Multiple stages in progress (which is technically not supposed to happen
-            // but could represent a batch with parallel processes)
-            {
-                id: '7',
-                batchNumber: 'B007',
-                mouldNumber: 'M007',
-                createdAt: new Date().toISOString(),
-                stages: {
-                    batching: 'completed',
-                    ferryCart: 'in-progress',
-                    tilting: 'completed',
-                    cutting: 'completed',
-                    autoclave: 'pending',
-                    segregation: 'pending'
-                }
-            },
-            // New batch 8 - All stages completed (ready to move to the completed batches section)
-            {
-                id: '8',
-                batchNumber: 'B008',
-                mouldNumber: 'M008',
-                createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // One week ago
-                stages: {
-                    batching: 'completed',
-                    ferryCart: 'completed',
-                    tilting: 'completed',
-                    cutting: 'completed',
-                    autoclave: 'completed',
-                    segregation: 'completed'
-                }
-            }
-        ];
-
-        setBatches(mockBatches);
-    }, []);
-
-    const navigateToStageForm = (batch: Batch, stageName: string) => {
+    const navigateToStageForm = (batch: UiBatch, stageName: string) => {
         // Get the status of the current stage
-        const stageStatus = batch.stages[stageName as keyof typeof batch.stages];
+        const stageStatus = batch.stages[stageName as keyof BatchStages];
 
-        // Only navigate if the status is 'in-progress' or when editing
+        // Only navigate if the status is 'in-progress'
         if (stageStatus === 'in-progress') {
-            // Map stages to screens using URL patterns matching your app structure
-            const screenMapping: Record<string, string> = {
+            const screenMapping: Record<string, "/(tabs)/(screens)/(batch-screens)/batching-form"> = {
                 batching: '/(tabs)/(screens)/(batch-screens)/batching-form',
-                ferryCart: '/(tabs)/(screens)/(batch-screens)/ferry-cart-form',
-                tilting: '/(tabs)/(screens)/(batch-screens)/tilting-form',
-                cutting: '/(tabs)/(screens)/(batch-screens)/cutting-form',
-                autoclave: '/(tabs)/(screens)/autoclave',
-                segregation: '/(tabs)/(screens)/segregation'
+                // Add other mappings as they become available
             };
 
             const screenPath = screenMapping[stageName];
+            if (screenPath) {
+                router.push({
+                    pathname: screenPath,
+                    params: {
+                        batchNumber: batch.batchNumber,
+                        mouldNumber: batch.mouldNumber
+                    }
+                });
 
-            // Using expo-router navigation
-            router.push({
-                pathname: screenPath,
-                params: {
+                console.log("Navigating to:", screenPath, "with params:", {
                     batchNumber: batch.batchNumber,
                     mouldNumber: batch.mouldNumber
-                }
-            });
-
-            console.log("Navigating to:", screenPath, "with params:", {
-                batchNumber: batch.batchNumber,
-                mouldNumber: batch.mouldNumber
-            });
+                });
+            }
         }
     };
 
-    const handleEditBatch = (batch: Batch) => {
+    const handleEditBatch = (batch: UiBatch) => {
         // Find the current in-progress stage
         const stageNames = ['batching', 'ferryCart', 'tilting', 'cutting', 'autoclave', 'segregation'];
         const currentStage = stageNames.find(stage =>
-            batch.stages[stage as keyof typeof batch.stages] === 'in-progress'
+            batch.stages[stage as keyof BatchStages] === 'in-progress'
         );
 
         if (currentStage) {
@@ -400,38 +255,42 @@ export default function InProgressBatches() {
         } else {
             // If no stage is in progress, determine which one should be next
             const pendingStage = stageNames.find(stage =>
-                batch.stages[stage as keyof typeof batch.stages] === 'pending'
+                batch.stages[stage as keyof BatchStages] === 'pending'
             );
 
             if (pendingStage) {
                 // Alert is kept similar to maintain functionality
                 alert(`The next stage is ${pendingStage}. Would you like to start it?`);
 
-                // Update the batch status to in-progress for this stage
-                const updatedBatches = batches.map(b => {
-                    if (b.id === batch.id) {
-                        const updatedStages = { ...b.stages };
-                        updatedStages[pendingStage as keyof typeof updatedStages] = 'in-progress';
-                        return { ...b, stages: updatedStages };
-                    }
-                    return b;
-                });
+                // Update batch stages in context
+                updateBatchStage(batch.batchNumber, pendingStage as keyof BatchStages, 'in-progress');
 
-                setBatches(updatedBatches);
+                // Update local UI state
+                setUiBatches(prev =>
+                    prev.map(b => {
+                        if (b.batchNumber === batch.batchNumber) {
+                            const updatedStages = { ...b.stages };
+                            updatedStages[pendingStage as keyof BatchStages] = 'in-progress';
+                            return { ...b, stages: updatedStages, status: 'in-progress' };
+                        }
+                        return b;
+                    })
+                );
 
                 // Navigate to the form for this stage
-                navigateToStageForm(
-                    { ...batch, stages: { ...batch.stages, [pendingStage]: 'in-progress' } },
-                    pendingStage
-                );
+                const updatedBatch = {
+                    ...batch,
+                    stages: { ...batch.stages, [pendingStage]: 'in-progress' as BatchStageStatus }
+                };
+                navigateToStageForm(updatedBatch, pendingStage);
             } else {
                 alert('All stages for this batch have been completed.');
             }
         }
     };
 
-    const handleStagePress = (batch: Batch, stageName: string) => {
-        const stageStatus = batch.stages[stageName as keyof typeof batch.stages];
+    const handleStagePress = (batch: UiBatch, stageName: string) => {
+        const stageStatus = batch.stages[stageName as keyof BatchStages];
 
         if (stageStatus === 'in-progress') {
             navigateToStageForm(batch, stageName);
@@ -442,6 +301,14 @@ export default function InProgressBatches() {
         router.back();
     };
 
+    if (isLoading) {
+        return (
+            <ThemedView style={[styles.container, styles.loadingContainer]}>
+                <ActivityIndicator size="large" color="#00D2E6" />
+                <ThemedText style={{ marginTop: 20 }}>Loading batches...</ThemedText>
+            </ThemedView>
+        );
+    }
 
     return (
         <ThemedView style={styles.container}>
@@ -505,17 +372,8 @@ export default function InProgressBatches() {
             </Animated.View>
 
             {/* Batch Cards */}
-            {/* <Animated.View
-                style={{
-                    flex: 1,
-                    opacity: fadeAnim,
-                    transform: [{ scale: scaleAnim }]
-                }}> */}
-
             <FlatList
-                data={batches.filter(batch =>
-                    Object.values(batch.stages).includes('in-progress')
-                )}
+                data={uiBatches}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <BatchCard
@@ -524,26 +382,19 @@ export default function InProgressBatches() {
                         onStagePress={handleStagePress}
                     />
                 )}
-                contentContainerStyle={[styles.listContent, { paddingBottom: FOOTER_HEIGHT + 20 }]}
+                contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
+                ListEmptyComponent={
+                    <View style={styles.emptyContainer}>
+                        <FontAwesome name="info-circle" size={40} color="#00D2E6" />
+                        <ThemedText style={styles.emptyText}>
+                            No batches are currently in progress
+                        </ThemedText>
+                    </View>
+                }
             />
-            {/* </Animated.View> */}
 
             {/* Legend */}
-            {/* <Animated.View
-                style={[
-                    styles.enhancedFooterContainer,
-                    {
-                        opacity: fadeAnim,
-                        transform: [{
-                            translateY: fadeAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [10, 0]
-                            })
-                        }]
-                    }
-                ]}
-            > */}
             <LinearGradient
                 colors={colorScheme === 'dark' ?
                     ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
@@ -567,15 +418,20 @@ export default function InProgressBatches() {
                     </View>
                 </View>
             </LinearGradient>
-            {/* </Animated.View> */}
         </ThemedView>
     );
 }
+
+const FOOTER_HEIGHT = 80;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 0,
+    },
+    loadingContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     headerContainer: {
         width: '100%',
@@ -649,20 +505,18 @@ const styles = StyleSheet.create({
     },
     listContent: {
         paddingHorizontal: 16,
-        // paddingBottom: 140,
+        paddingBottom: FOOTER_HEIGHT + 20,
     },
     batchCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
         marginBottom: 12,
         padding: 16,
-        borderWidth: 1,
-        borderColor: '#E0F7FA',
         elevation: 2,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
     },
     cardHeader: {
         flexDirection: 'row',
@@ -738,27 +592,15 @@ const styles = StyleSheet.create({
     batchDetail: {
         fontSize: 12,
     },
-    enhancedFooterContainer: {
-        width: '100%',
+    enhancedFooterGradient: {
         position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: 'transparent',
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 15,
-        overflow: 'hidden',
-        elevation: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        marginLeft: 0,
-        marginRight: 0,
-    },
-    enhancedFooterGradient: {
         paddingVertical: 15,
         paddingHorizontal: 20,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
     },
     legend: {
         flexDirection: 'row',
@@ -772,5 +614,15 @@ const styles = StyleSheet.create({
     legendText: {
         marginLeft: 8,
         fontSize: 14,
+    },
+    emptyContainer: {
+        padding: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    emptyText: {
+        marginTop: 10,
+        fontSize: 16,
+        textAlign: 'center',
     }
 });

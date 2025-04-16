@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { TabVisibilityProvider } from '@/context/TabVisibilityContext';
+import { BatchProvider } from '@/context/BatchContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -29,23 +30,25 @@ export default function RootLayout() {
   }
 
   return (
-    <TabVisibilityProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen
-            name="(tabs)"
-            options={{
-              headerShown: false,
-              animation: 'fade',
-              contentStyle: {
-                backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
-              },
-            }}
-          />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </TabVisibilityProvider>
+    <BatchProvider>
+      <TabVisibilityProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name="(tabs)"
+              options={{
+                headerShown: false,
+                animation: 'fade',
+                contentStyle: {
+                  backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
+                },
+              }}
+            />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </TabVisibilityProvider>
+    </BatchProvider>
   );
 }
