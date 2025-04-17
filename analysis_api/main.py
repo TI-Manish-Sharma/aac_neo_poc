@@ -429,6 +429,248 @@ async def get_mould_performance(
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error analyzing mould performance: {str(e)}")
+    
+@app.get("/api/segregation-analysis")
+async def get_segregation_analysis(
+    start_date: Optional[str] = Query(None, description="Start date in YYYY-MM-DD format"),
+    end_date: Optional[str] = Query(None, description="End date in YYYY-MM-DD format"),
+    mould_id: Optional[str] = Query(None, description="Filter by mould ID")
+):
+    try:
+        # Connect to MongoDB
+        client, collection = get_mongo_connection()
+        
+        # Build query filter
+        query_filter = {}
+        if start_date:
+            try:
+                start = datetime.strptime(start_date, "%Y-%m-%d")
+                query_filter["date"] = {"$gte": start.strftime("%Y-%m-%d")}
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Invalid start_date format. Use YYYY-MM-DD")
+        
+        if end_date:
+            try:
+                end = datetime.strptime(end_date, "%Y-%m-%d")
+                if "date" in query_filter:
+                    query_filter["date"]["$lte"] = end.strftime("%Y-%m-%d")
+                else:
+                    query_filter["date"] = {"$lte": end.strftime("%Y-%m-%d")}
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Invalid end_date format. Use YYYY-MM-DD")
+        
+        if mould_id:
+            query_filter["mouldId"] = mould_id
+        
+        # Query MongoDB
+        cursor = collection.find(query_filter)
+        batches = list(cursor)
+        
+        # Close MongoDB connection
+        client.close()
+        
+        # If no batches found, return empty response
+        if not batches:
+            return JSONResponse(
+                status_code=404,
+                content={"message": "No batches found matching the criteria"}
+            )
+        
+        # Initialize data structures for analysis
+        defect_types = ["rainCracksCuts", "cornerCracksCuts", "cornerDamage", "chippedBlocks"]
+        positions = ["1", "2", "3", "4", "5", "6"]
+        
+        # Total defects by type
+        defects_by_type = {defect_type: 0 for defect_type in defect_types}
+        
+        # Defects by position
+        defects_by_position = {
+            position: {defect_type: 0 for defect_type in defect_types} 
+            for position in positions
+        }
+        
+        # Defects by mould
+        defects_by_mould = {}
+        
+        # Total defects for each batch
+        batch_defects = []
+        
+        # Process each batch
+        for batch in batches:
+            batch_id = batch.get("batchId")
+            mould_id = batch.get("mouldId")
+            date = batch.get("date")
+            
+            # Initialize mould entry if not exists
+            if mould_id not in defects_by_mould:
+                defects_by_mould[mould_id] = {
+                    "totalBatches": 0,
+                    "totalDefects": 0,
+                    "defectsByType": {defect_type: 0 for defect_type in defect_types}
+                }
+            
+            # Increment batch count for this mould
+            defects_by_mould[mould_id]["totalBatches"] += 1
+            
+            # Skip if no segregation data
+            if (not batch.get("processSteps") or 
+                not batch["processSteps"].get("segregation") or 
+                not batch["processSteps"]["segregation"].get("defects")):
+                continue
+            
+            # Extract segregation data
+            segregation = batch["processSteps"]["segregation"]
+            total_blocks = segregation.get("totalBlocks", 0)
+            total_defects = segregation.get("totalDefects", 0)
+            
+            # Add to batch defects list
+            batch_defects.append({
+                "batchId": batch_id,
+                "mouldId": mould_id,
+                "date": date,
+                "totalBlocks": total_blocks,
+                "totalDefects": total_defects,
+                "defectRate": (total_defects / total_blocks) * 100 if total_blocks > 0 else 0
+            })
+            
+            # Update mould total defects
+            defects_by_mould[mould_id]["totalDefects"] += total_defects
+            
+            # Process defects by position and type
+            defects = segregation["defects"]
+            for position, position_defects in defects.items():
+                for defect_type, count in position_defects.items():
+                    # Handle non-numeric or missing values
+                    if count in [None, "", "-"]:
+                        continue
+                    
+                    try:
+                        defect_count = int(count)
+                        
+                        # Update totals
+                        if defect_type in defect_types:
+                            defects_by_type[defect_type] += defect_count
+                            
+                            # Update by position
+                            if position in positions:
+                                defects_by_position[position][defect_type] += defect_count
+                            
+                            # Update by mould
+                            defects_by_mould[mould_id]["defectsByType"][defect_type] += defect_count
+                    except (ValueError, TypeError):
+                        # Skip invalid values
+                        continue
+        
+        # Calculate totals for each position
+        position_totals = {
+            position: sum(defects_by_position[position].values())
+            for position in positions
+        }
+        
+        # Calculate defect rate for each mould
+        for mould_id, mould_data in defects_by_mould.items():
+            total_batches = mould_data["totalBatches"]
+            total_defects = mould_data["totalDefects"]
+            
+            if total_batches > 0:
+                mould_data["averageDefectsPerBatch"] = total_defects / total_batches
+            else:
+                mould_data["averageDefectsPerBatch"] = 0
+        
+        # Convert defects by position to array format for visualization
+        position_data = []
+        for position in positions:
+            position_entry = {"position": position}
+            position_entry.update(defects_by_position[position])
+            position_entry["total"] = position_totals[position]
+            position_data.append(position_entry)
+        
+        # Convert defects by type to array format for visualization
+        type_data = [
+            {"type": type_name, "count": count}
+            for type_name, count in defects_by_type.items()
+        ]
+        
+        # Sort moulds by average defects
+        mould_data = [
+            {
+                "mouldId": mould_id,
+                "totalBatches": data["totalBatches"],
+                "totalDefects": data["totalDefects"],
+                "averageDefectsPerBatch": round(data["averageDefectsPerBatch"], 2),
+                "defectsByType": data["defectsByType"]
+            }
+            for mould_id, data in defects_by_mould.items()
+        ]
+        
+        # Sort by average defects in descending order
+        mould_data.sort(key=lambda x: x["averageDefectsPerBatch"], reverse=True)
+        
+        # Sort batch data by defect rate
+        batch_defects.sort(key=lambda x: x["defectRate"], reverse=True)
+        
+        # Calculate summary statistics
+        total_batches = len(batches)
+        batches_with_defects = len([b for b in batch_defects if b["totalDefects"] > 0])
+        total_defects = sum(defects_by_type.values())
+        
+        # Human-readable defect type names
+        defect_type_labels = {
+            "rainCracksCuts": "Rain Cracks/Cuts",
+            "cornerCracksCuts": "Corner Cracks/Cuts",
+            "cornerDamage": "Corner Damage",
+            "chippedBlocks": "Chipped Blocks"
+        }
+        
+        # Return the analysis results
+        return {
+            "summary": {
+                "totalBatches": total_batches,
+                "batchesWithDefects": batches_with_defects,
+                "totalDefects": total_defects,
+                "defectRate": (batches_with_defects / total_batches) * 100 if total_batches > 0 else 0
+            },
+            "defectsByType": [
+                {
+                    "type": defect_type_labels.get(type_item["type"], type_item["type"]),
+                    "count": type_item["count"],
+                    "percentage": (type_item["count"] / total_defects) * 100 if total_defects > 0 else 0
+                }
+                for type_item in type_data
+            ],
+            "defectsByPosition": [
+                {
+                    "position": pos_item["position"],
+                    "rainCracksCuts": pos_item["rainCracksCuts"],
+                    "cornerCracksCuts": pos_item["cornerCracksCuts"],
+                    "cornerDamage": pos_item["cornerDamage"],
+                    "chippedBlocks": pos_item["chippedBlocks"],
+                    "total": pos_item["total"],
+                    "percentage": (pos_item["total"] / total_defects) * 100 if total_defects > 0 else 0
+                }
+                for pos_item in position_data
+            ],
+            "mouldPerformance": [
+                {
+                    "mouldId": mould["mouldId"],
+                    "totalBatches": mould["totalBatches"],
+                    "totalDefects": mould["totalDefects"],
+                    "averageDefectsPerBatch": mould["averageDefectsPerBatch"],
+                    "defectTypes": [
+                        {
+                            "type": defect_type_labels.get(defect_type, defect_type),
+                            "count": count
+                        }
+                        for defect_type, count in mould["defectsByType"].items()
+                    ]
+                }
+                for mould in mould_data[:10]  # Top 10 worst performing moulds
+            ],
+            "worstBatches": batch_defects[:10]  # Top 10 batches with highest defect rates
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error analyzing segregation data: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

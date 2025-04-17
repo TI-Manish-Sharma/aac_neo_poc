@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import AACPlantVisualization from '../_components/AACPlantVisualization';
 import RejectionTrends from '../_components/RejectionTrends';
 import MouldPerformance from '../_components/MouldPerformance';
+import SegregationAnalysis from '../_components/SegregationAnalysis';
 
 interface DashboardProps {
     baseApiUrl?: string;
@@ -21,7 +22,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <div className="row mb-4">
                 <div className="col-12">
                     <h1 className="display-5 fw-bold text-primary mb-0">AAC Plant Quality Dashboard</h1>
-                    <p className="text-muted">Monitor rejection rates, trends, and mould performance</p>
+                    <p className="text-muted">Monitor rejection rates, trends, mould performance, and segregation analysis</p>
                 </div>
             </div>
 
@@ -49,6 +50,14 @@ const Dashboard: React.FC<DashboardProps> = ({
                         onClick={() => setActiveTab('moulds')}
                     >
                         Mould Performance
+                    </button>
+                </li>
+                <li className="nav-item">
+                    <button
+                        className={`nav-link ${activeTab === 'segregation' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('segregation')}
+                    >
+                        Segregation Analysis
                     </button>
                 </li>
             </ul>
@@ -84,6 +93,17 @@ const Dashboard: React.FC<DashboardProps> = ({
                             apiUrl={`${baseApiUrl}/api/mould-performance`}
                             refreshInterval={refreshInterval}
                             title="Mould Performance Analysis"
+                        />
+                    )}
+                </div>
+
+                {/* Segregation Analysis Tab */}
+                <div className={`tab-pane fade ${activeTab === 'segregation' ? 'show active' : ''}`}>
+                    {activeTab === 'segregation' && (
+                        <SegregationAnalysis
+                            apiUrl={`${baseApiUrl}/api/segregation-analysis`}
+                            refreshInterval={refreshInterval}
+                            title="Segregation Analysis Dashboard"
                         />
                     )}
                 </div>
