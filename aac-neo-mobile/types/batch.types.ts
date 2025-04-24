@@ -1,3 +1,6 @@
+import { cuttingFormSchema, ferryCartSchema, tiltingCraneSchema } from "@/schema/batch.schema";
+import { z } from 'zod';
+
 export interface BatchFormData {
     batchNumber: string;
     mouldNumber: string;
@@ -57,3 +60,12 @@ export interface BatchIngredientRecord extends Omit<BatchIngredientFormData, 'mi
     mixingTime: string; // Combined HH:MM format
     createdAt: string;
 }
+
+// Type definition for the ferry cart form data
+export type FerryCartFormData = z.infer<typeof ferryCartSchema>;
+
+// Type definition for the tilting crane form data
+export type TiltingCraneFormData = z.infer<typeof tiltingCraneSchema>;
+
+// Infer type from schema
+export type CuttingFormData = z.infer<typeof cuttingFormSchema>;

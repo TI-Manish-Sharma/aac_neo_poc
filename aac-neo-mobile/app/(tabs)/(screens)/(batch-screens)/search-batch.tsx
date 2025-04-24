@@ -18,15 +18,17 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
-import { useBatch } from '@/context/BatchContext';
-import { BatchRecord } from '@/types/batch.types';
+import { useBatch, BatchRecord, UiBatch } from '@/context/BatchContext';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { ScreenFooter } from '@/components/ui/ScreenFooter';
+import { useAnimations } from '@/hooks/useAnimations';
 
 const { width, height } = Dimensions.get('window');
 
 // Component for each batch search result
 const BatchCard: React.FC<{
-    batch: BatchRecord;
-    onSelect: (batch: BatchRecord) => void;
+    batch: UiBatch;
+    onSelect: (batch: UiBatch) => void;
 }> = ({ batch, onSelect }) => {
     const colorScheme = useColorScheme();
 
@@ -99,36 +101,12 @@ const BatchCard: React.FC<{
 
 export default function SearchBatchScreen() {
     const colorScheme = useColorScheme();
-    const { batches, isLoading } = useBatch();
+    const { batches, isLoading, convertToUiBatch } = useBatch();
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<BatchRecord[]>([]);
+    const [searchResults, setSearchResults] = useState<UiBatch[]>([]);
     const [hasSearched, setHasSearched] = useState(false);
 
-    // Animation values
-    const fadeAnim = useState(new Animated.Value(0))[0];
-    const headerAnim = useState(new Animated.Value(0))[0];
-    const searchBarAnim = useState(new Animated.Value(0))[0];
-
-    // Initial animations
-    useEffect(() => {
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 800,
-                useNativeDriver: true,
-            }),
-            Animated.timing(headerAnim, {
-                toValue: 1,
-                duration: 600,
-                useNativeDriver: true,
-            }),
-            Animated.timing(searchBarAnim, {
-                toValue: 1,
-                duration: 700,
-                useNativeDriver: true,
-            })
-        ]).start();
-    }, []);
+    const { fadeAnim, headerAnim, bannerAnim } = useAnimations();
 
     // Handle search
     const handleSearch = () => {
@@ -142,12 +120,15 @@ export default function SearchBatchScreen() {
         const query = searchQuery.toLowerCase();
 
         // Search by batch number or mould number
-        const results = batches.filter(batch =>
-            batch.batchNumber.toLowerCase().includes(query) ||
-            batch.mouldNumber.toLowerCase().includes(query)
+        const filteredBatches = batches.filter(batch =>
+            batch.batchId.toLowerCase().includes(query) ||
+            batch.mouldId.toLowerCase().includes(query)
         );
 
-        setSearchResults(results);
+        // Convert BatchRecord objects to UiBatch objects for the UI
+        const uiBatches = filteredBatches.map(convertToUiBatch);
+
+        setSearchResults(uiBatches);
         setHasSearched(true);
     };
 
@@ -159,7 +140,7 @@ export default function SearchBatchScreen() {
     };
 
     // Handle batch selection
-    const handleSelectBatch = (batch: BatchRecord) => {
+    const handleSelectBatch = (batch: UiBatch) => {
         if (batch.status === 'completed') {
             // Navigate to completed batch details (if you have a screen for this)
             alert(`Viewing completed batch ${batch.batchNumber}`);
@@ -169,79 +150,27 @@ export default function SearchBatchScreen() {
         }
     };
 
-    const goBack = () => {
-        router.back();
-    };
-
     return (
         <ThemedView style={styles.container}>
             {/* Header */}
-            <Animated.View
-                style={[
-                    styles.headerContainer,
-                    {
-                        opacity: headerAnim,
-                        transform: [{
-                            translateY: headerAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [-20, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <LinearGradient
-                    colors={colorScheme === 'dark' ?
-                        ['#004052', '#002535'] :
-                        ['#e6f7ff', '#ccf2ff']}
-                    style={styles.headerGradient}
-                >
-                    {/* Back button */}
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={goBack}
-                    >
-                        <FontAwesome
-                            name="chevron-left"
-                            size={18}
-                            color={Colors[colorScheme ?? 'light'].tint}
-                        />
-                        <Text style={styles.backButtonText}>Back</Text>
-                    </TouchableOpacity>
-
-                    {/* Right-aligned header content */}
-                    <View style={styles.headerContent}>
-                        <View style={styles.headerTextContainer}>
-                            <ThemedText type="subtitle" style={styles.headerSubtitle}>
-                                Batch Management
-                            </ThemedText>
-                            <ThemedText type="title" style={styles.headerTitle}>
-                                Search Batches
-                            </ThemedText>
-                        </View>
-                        <FontAwesome
-                            name="search"
-                            size={28}
-                            color={Colors[colorScheme ?? 'light'].tint}
-                            style={styles.headerIcon}
-                        />
-                    </View>
-
-                    {/* Right-aligned divider */}
-                    <View style={styles.headerDividerContainer}>
-                        <View style={styles.headerDivider} />
-                    </View>
-                </LinearGradient>
-            </Animated.View>
+            <ScreenHeader
+                title="Search Batches"
+                subtitle="Batch Management"
+                icon='search'
+                headerAnim={headerAnim}
+                onBack={() => {
+                    // Optional custom back logic here
+                    router.back();
+                }} />
 
             {/* Search Bar */}
             <Animated.View
                 style={[
                     styles.searchBarContainer,
                     {
-                        opacity: searchBarAnim,
+                        opacity: bannerAnim,
                         transform: [{
-                            translateY: searchBarAnim.interpolate({
+                            translateY: bannerAnim.interpolate({
                                 inputRange: [0, 1],
                                 outputRange: [10, 0]
                             })
@@ -292,7 +221,7 @@ export default function SearchBatchScreen() {
             {isLoading ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#00D2E6" />
-                    <ThemedText style={{ marginTop: 10 }}>Loading...</ThemedText>
+                    <ThemedText style={{ marginTop: 10 }}>Loading batches...</ThemedText>
                 </View>
             ) : (
                 <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
@@ -326,26 +255,19 @@ export default function SearchBatchScreen() {
                             <ThemedText style={styles.initialStateText}>
                                 Search for batches by batch number or mould number
                             </ThemedText>
+                            <ThemedText style={styles.batchCountText}>
+                                {batches.length} batches available
+                            </ThemedText>
                         </View>
                     )}
                 </Animated.View>
             )}
 
             {/* Footer */}
-            <LinearGradient
-                colors={colorScheme === 'dark' ?
-                    ['rgba(0,40,50,1)', 'rgba(0,40,50,1)'] :
-                    ['rgba(230,247,255,1)', 'rgba(204,242,255,1)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={styles.footerGradient}
-            >
-                <View style={styles.footerContent}>
-                    <Text style={styles.footerText}>
-                        Find and view batch details easily
-                    </Text>
-                </View>
-            </LinearGradient>
+            <ScreenFooter
+                text="Find and view batch details easily"
+                fadeAnim={fadeAnim}
+            />
         </ThemedView>
     );
 }
@@ -354,75 +276,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 0,
-    },
-    headerContainer: {
-        width: '100%',
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-        overflow: 'hidden',
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-    },
-    headerGradient: {
-        paddingVertical: 20,
-        paddingHorizontal: 16,
-        position: 'relative',
-    },
-    backButton: {
-        position: 'absolute',
-        top: 20,
-        left: 16,
-        zIndex: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.25)',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 16,
-    },
-    backButtonText: {
-        color: '#00D2E6',
-        marginLeft: 5,
-        fontWeight: '600',
-        fontSize: 14,
-    },
-    headerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingLeft: 80,
-        paddingRight: 10,
-    },
-    headerTextContainer: {
-        alignItems: 'flex-end',
-        marginRight: 15,
-    },
-    headerIcon: {
-        // Icon styling
-    },
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'right',
-    },
-    headerSubtitle: {
-        fontSize: 14,
-        opacity: 0.8,
-        textAlign: 'right',
-    },
-    headerDividerContainer: {
-        alignItems: 'flex-end',
-        paddingRight: 10,
-    },
-    headerDivider: {
-        height: 2,
-        width: '40%',
-        backgroundColor: '#00D2E6',
-        marginTop: 10,
-        borderRadius: 2,
     },
     searchBarContainer: {
         paddingHorizontal: 16,
@@ -507,6 +360,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#666666',
     },
+    batchCountText: {
+        fontSize: 14,
+        marginTop: 10,
+        color: '#00A3B4',
+    },
     emptyStateContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -579,26 +437,5 @@ const styles = StyleSheet.create({
     createdDate: {
         fontSize: 14,
         color: '#666666',
-    },
-    footerGradient: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        paddingVertical: 15,
-        paddingHorizontal: 20,
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 15,
-    },
-    footerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    footerText: {
-        color: '#00A3B4',
-        fontSize: 14,
-        fontWeight: '500',
-        textAlign: 'center',
     }
 });

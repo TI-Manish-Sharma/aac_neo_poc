@@ -16,7 +16,7 @@ export default function TabLayout() {
   // Fake user data (replace with real auth context later)
   const user = {
     name: "Mukund Joshi",
-    profileImage: "https://i.pravatar.cc/150?img=8"
+    profileImage: require("@/assets/images/mj.png"),
   };
 
   // Custom header component to display user info
@@ -28,7 +28,7 @@ export default function TabLayout() {
         </Text>
         {user?.profileImage && (
           <Image
-            source={{ uri: user.profileImage }}
+            source={user.profileImage || require('@/assets/images/default-profile.png')}
             style={styles.profileImage}
           />
         )}

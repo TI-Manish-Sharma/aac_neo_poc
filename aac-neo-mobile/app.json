@@ -4,7 +4,7 @@
     "slug": "technizeredge-aac-neo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/aac-neo-icon.png",
+    "icon": "./assets/images/icon3.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "newArchEnabled": false,
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/aac-neo-adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon3.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.technizeredge.aacneo"
@@ -28,8 +28,8 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/aac-neo-logo.png",
-          "imageWidth": 200,
+          "image": "./assets/images/icon.png",
+          "width": 300,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }

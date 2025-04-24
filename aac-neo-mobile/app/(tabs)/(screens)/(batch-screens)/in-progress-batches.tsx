@@ -18,6 +18,8 @@ import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useBatch, UiBatch, BatchStages, BatchStageStatus } from '@/context/BatchContext';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { useAnimations } from '@/hooks/useAnimations';
 
 const { width, height } = Dimensions.get('window');
 
@@ -101,22 +103,25 @@ const BatchCard: React.FC<{
                         <View style={styles.currentStageContainer}>
                             <View style={styles.currentStageDot} />
                             <ThemedText style={styles.currentStageText}>
-                                {currentStage.label} in progress
+                                {/* {currentStage.label} in progress */}
+                                {`Ready for ${currentStage.label}`}
                             </ThemedText>
                         </View>
                     )}
                 </View>
                 <View style={styles.headerRight}>
-                    <TouchableOpacity
-                        onPress={() => onEdit(batch)}
-                        style={styles.editButton}
-                    >
-                        <FontAwesome
-                            name="pencil"
-                            size={16}
-                            color={Colors[colorScheme ?? 'light'].tint}
-                        />
-                    </TouchableOpacity>
+                    {currentStage?.stageName !== 'autoclave' && (
+                        <TouchableOpacity
+                            onPress={() => onEdit(batch)}
+                            style={styles.editButton}
+                        >
+                            <FontAwesome
+                                name="pencil"
+                                size={16}
+                                color={Colors[colorScheme ?? 'light'].tint}
+                            />
+                        </TouchableOpacity>
+                    )}
                     <FontAwesome
                         name={expanded ? "chevron-up" : "chevron-down"}
                         size={16}
@@ -180,9 +185,7 @@ export default function InProgressBatches() {
     const { isLoading, getBatchesByStatus, convertToUiBatch, updateBatchStage } = useBatch();
 
     // Animation values
-    const fadeAnim = useState(new Animated.Value(0))[0];
-    const scaleAnim = useState(new Animated.Value(0.9))[0];
-    const headerAnim = useState(new Animated.Value(0))[0];
+    const { headerAnim } = useAnimations();
 
     // Load data from context when component mounts
     useEffect(() => {
@@ -193,35 +196,18 @@ export default function InProgressBatches() {
         }
     }, [isLoading, getBatchesByStatus, convertToUiBatch]);
 
-    // Initial animations
-    useEffect(() => {
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 800,
-                useNativeDriver: true,
-            }),
-            Animated.timing(scaleAnim, {
-                toValue: 1,
-                duration: 500,
-                useNativeDriver: true,
-            }),
-            Animated.timing(headerAnim, {
-                toValue: 1,
-                duration: 600,
-                useNativeDriver: true,
-            })
-        ]).start();
-    }, []);
-
     const navigateToStageForm = (batch: UiBatch, stageName: string) => {
         // Get the status of the current stage
         const stageStatus = batch.stages[stageName as keyof BatchStages];
 
         // Only navigate if the status is 'in-progress'
         if (stageStatus === 'in-progress') {
-            const screenMapping: Record<string, "/(tabs)/(screens)/(batch-screens)/batching-form"> = {
+            const screenMapping: Record<string, string> = {
                 batching: '/(tabs)/(screens)/(batch-screens)/batching-form',
+                ferryCart: '/(tabs)/(screens)/(batch-screens)/ferry-cart-form',
+                tilting: '/(tabs)/(screens)/(batch-screens)/tilting-crane-form',
+                cutting: '/(tabs)/(screens)/(batch-screens)/cutting-form',
+
                 // Add other mappings as they become available
             };
 
@@ -297,10 +283,6 @@ export default function InProgressBatches() {
         }
     };
 
-    const goBack = () => {
-        router.back();
-    };
-
     if (isLoading) {
         return (
             <ThemedView style={[styles.container, styles.loadingContainer]}>
@@ -313,63 +295,14 @@ export default function InProgressBatches() {
     return (
         <ThemedView style={styles.container}>
             {/* Enhanced Header Section with left back button and right-aligned content */}
-            <Animated.View
-                style={[
-                    styles.headerContainer,
-                    {
-                        opacity: headerAnim,
-                        transform: [{
-                            translateY: headerAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [-20, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <LinearGradient
-                    colors={colorScheme === 'dark' ?
-                        ['#004052', '#002535'] :
-                        ['#e6f7ff', '#ccf2ff']}
-                    style={styles.headerGradient}
-                >
-                    {/* Back button on left side */}
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={goBack}
-                    >
-                        <FontAwesome
-                            name="chevron-left"
-                            size={18}
-                            color={Colors[colorScheme ?? 'light'].tint}
-                        />
-                        <Text style={styles.backButtonText}>Back</Text>
-                    </TouchableOpacity>
-
-                    {/* Right-aligned header content */}
-                    <View style={styles.headerContent}>
-                        <View style={styles.headerTextContainer}>
-                            <ThemedText type="subtitle" style={styles.headerSubtitle}>
-                                Batch Management
-                            </ThemedText>
-                            <ThemedText type="title" style={styles.headerTitle}>
-                                In Progress Batches
-                            </ThemedText>
-                        </View>
-                        <FontAwesome
-                            name="hourglass-half"
-                            size={28}
-                            color={Colors[colorScheme ?? 'light'].tint}
-                            style={styles.headerIcon}
-                        />
-                    </View>
-
-                    {/* Right-aligned divider */}
-                    <View style={styles.headerDividerContainer}>
-                        <View style={styles.headerDivider} />
-                    </View>
-                </LinearGradient>
-            </Animated.View>
+            <ScreenHeader title='In Progress Batches'
+                subtitle='Batch Management'
+                icon='hourglass-half'
+                headerAnim={headerAnim}
+                onBack={() => {
+                    // Optional custom back logic here
+                    router.back();
+                }} />
 
             {/* Batch Cards */}
             <FlatList
@@ -394,11 +327,11 @@ export default function InProgressBatches() {
                 }
             />
 
-            {/* Legend */}
+            {/* Footer - Legend */}
             <LinearGradient
                 colors={colorScheme === 'dark' ?
-                    ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
-                    ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
+                    ['rgba(0,40,50,1)', 'rgba(0,40,50,1)'] :
+                    ['rgba(230,247,255,1)', 'rgba(204,242,255,1)']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
                 style={styles.enhancedFooterGradient}
@@ -433,76 +366,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    headerContainer: {
-        width: '100%',
-        marginBottom: 20,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-        overflow: 'hidden',
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-    },
-    headerGradient: {
-        paddingVertical: 20,
-        paddingHorizontal: 16,
-        position: 'relative',
-    },
-    backButton: {
-        position: 'absolute',
-        top: 20,
-        left: 16,
-        zIndex: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.25)',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 16,
-    },
-    backButtonText: {
-        color: '#00D2E6',
-        marginLeft: 5,
-        fontWeight: '600',
-        fontSize: 14,
-    },
-    headerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        paddingLeft: 80,
-        paddingRight: 10,
-    },
-    headerTextContainer: {
-        alignItems: 'flex-end',
-        marginRight: 15,
-    },
-    headerIcon: {
-        // Icon is now on the right
-    },
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'right',
-    },
-    headerSubtitle: {
-        fontSize: 14,
-        opacity: 0.8,
-        textAlign: 'right',
-    },
-    headerDividerContainer: {
-        alignItems: 'flex-end',
-        paddingRight: 10,
-    },
-    headerDivider: {
-        height: 2,
-        width: '40%',
-        backgroundColor: '#00D2E6',
-        marginTop: 10,
-        borderRadius: 2,
-    },
     listContent: {
         paddingHorizontal: 16,
         paddingBottom: FOOTER_HEIGHT + 20,
@@ -512,11 +375,13 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 12,
         padding: 16,
+        borderWidth: 1,
+        borderColor: '#E0F7FA',
         elevation: 2,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
     },
     cardHeader: {
         flexDirection: 'row',

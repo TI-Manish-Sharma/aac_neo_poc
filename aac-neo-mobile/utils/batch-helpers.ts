@@ -1,5 +1,5 @@
 import { BatchRecord, BatchProcessSteps, BatchMaterials, BatchProcess } from '@/context/BatchContext';
-import type { BatchIngredientFormData } from '@/types/batch.types';
+import type { BatchIngredientFormData, FerryCartFormData, TiltingCraneFormData } from '@/types/batch.types';
 
 /**
  * Creates a new batch record from basic batch information
@@ -124,16 +124,16 @@ function createDefaultProcessSteps(): BatchProcessSteps {
 // Helper function to create default materials
 function createDefaultMaterials(): BatchMaterials {
     return {
-        freshSlurry: 0,
-        wasteSlurry: 0,
-        cement: 0,
-        lime: 0,
-        gypsum: 0,
-        aluminumPowder: 0,
-        dcPowder: 0,
-        water: 0,
-        solutionOil: 0
-    };
+        freshSlurry: null,
+        wasteSlurry: null,
+        cement: null,
+        lime: null,
+        gypsum: null,
+        aluminumPowder: null,
+        dcPowder: null,
+        water: null,
+        solutionOil: null
+    } as unknown as BatchMaterials;
 }
 
 // Helper function to create default process
@@ -170,3 +170,110 @@ function formatDate(date: Date): string {
 
     return `${year}-${month}-${day}`;
 }
+
+/**
+ * Updates a batch's ferry cart data from the ferry cart form
+ * @param batch The batch to update
+ * @param ferryCartData The form data from the ferry cart screen
+ * @returns The updated batch record
+ */
+export function updateBatchFerryCartData(
+    batch: BatchRecord,
+    ferryCartData: FerryCartFormData
+): BatchRecord {
+    // Create a deep copy to avoid mutating the original
+    const updatedBatch = JSON.parse(JSON.stringify(batch)) as BatchRecord;
+
+    // Update the ferry cart measurements
+    updatedBatch.processSteps.ferryCarts.measurements = {
+        flow: parseFloat(ferryCartData.flow) || 0,
+        temp: parseFloat(ferryCartData.temp) || 0,
+        height: parseFloat(ferryCartData.height) || 0,
+        time: ferryCartData.time
+    };
+
+    // Set the current shift
+    updatedBatch.processSteps.ferryCarts.shift = getCurrentShift();
+
+    // Update the timestamp
+    updatedBatch.metadata.updatedAt = new Date().toISOString();
+
+    return updatedBatch;
+}
+
+
+/**
+ * Updates a batch's tilting crane data from the tilting crane form
+ * @param batch The batch to update
+ * @param tiltingCraneData The form data from the tilting crane screen
+ * @returns The updated batch record
+ */
+export function updateBatchTiltingCraneData(
+    batch: BatchRecord,
+    tiltingCraneData: TiltingCraneFormData
+): BatchRecord {
+    // Create a deep copy to avoid mutating the original
+    const updatedBatch = JSON.parse(JSON.stringify(batch)) as BatchRecord;
+
+    // Update the tilting crane measurements
+    updatedBatch.processSteps.tiltingCrane.measurements = {
+        risingQuality: tiltingCraneData.risingQuality,
+        temp: parseFloat(tiltingCraneData.temp) || 0,
+        time: tiltingCraneData.time,
+        hardness: parseFloat(tiltingCraneData.hardness) || 0
+    };
+
+    // Set the current shift
+    updatedBatch.processSteps.tiltingCrane.shift = getCurrentShift();
+
+    // Update the timestamp
+    updatedBatch.metadata.updatedAt = new Date().toISOString();
+
+    return updatedBatch;
+}
+
+import type { AutoclaveFormData } from '@/types/autoclave.types';
+
+/**
+ * Updates a batch with autoclave data
+ * This updates the batch record with information about the autoclave process
+ * 
+ * Note: In this application, autoclave data is primarily stored in the AutoclaveRecord
+ * entity, not directly in the batch. This function is used to add a reference and
+ * metadata to the batch for tracking which autoclave processed it.
+ * 
+ * @param batch The batch to update
+ * @param autoclaveData The form data from the autoclave screen
+ * @returns The updated batch record
+ */
+export function updateBatchAutoclaveData(
+    batch: BatchRecord,
+    autoclaveData: AutoclaveFormData
+): BatchRecord {
+    // Create a deep copy to avoid mutating the original
+    const updatedBatch = JSON.parse(JSON.stringify(batch)) as BatchRecord;
+
+    // Create autoclave reference in the batch if it doesn't exist
+    if (!updatedBatch.processSteps.autoclave) {
+        updatedBatch.processSteps.autoclave = {
+            autoclaveNumber: '',
+            shift: '',
+            processedAt: '',
+            doorOpenTime: ''
+        };
+    }
+
+    // Update basic autoclave reference information in the batch
+    updatedBatch.processSteps.autoclave = {
+        autoclaveNumber: autoclaveData.autoclaveNumber,
+        shift: autoclaveData.shift,
+        processedAt: new Date().toISOString(),
+        doorOpenTime: autoclaveData.doorOpenTime // Using doorOpenTime as completion reference
+    };
+
+    // Update the timestamp
+    updatedBatch.metadata.updatedAt = new Date().toISOString();
+
+    return updatedBatch;
+}
+

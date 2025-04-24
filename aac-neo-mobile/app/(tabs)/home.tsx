@@ -1165,7 +1165,7 @@ export default function Home() {
     if (screen === 'BatchScreen') {
       router.navigate('/(tabs)/(screens)/(batch-screens)/batch');
     } else if (screen === 'AutoclaveScreen') {
-      router.navigate('/(tabs)/(screens)/autoclave');
+      router.navigate('/(tabs)/(screens)/(autoclave-screens)/autoclave');
     } else if (screen === 'SegregationScreen') {
       router.navigate('/(tabs)/(screens)/segregation');
     } else if (screen === 'MaintenanceScreen') {

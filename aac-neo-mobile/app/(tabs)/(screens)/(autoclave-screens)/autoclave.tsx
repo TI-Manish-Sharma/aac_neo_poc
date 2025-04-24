@@ -1,14 +1,16 @@
-import { FontAwesome } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useNavigation } from 'expo-router';
-import React, { useState } from 'react';
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { ThemedView } from '@/components/ThemedView';
-import { ScreenFooter } from '@/components/ui/ScreenFooter';
-import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { useAnimations } from '@/hooks/useAnimations';
+import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { ScreenFooter } from '@/components/ui/ScreenFooter';
+import { useAnimations } from '@/hooks/useAnimations';
 
 const { width, height } = Dimensions.get('window');
 
@@ -19,15 +21,16 @@ const getResponsiveSizes = () => {
   return { iconSize, fontSize };
 };
 
-export default function SegregationScreen() {
-  const navigation = useNavigation();
-  const colorScheme = useColorScheme();
+export default function AutoclaveScreen() {
   const [pressedButton, setPressedButton] = useState<string | null>(null);
   const { iconSize, fontSize } = getResponsiveSizes();
 
   const { fadeAnim, scaleAnim, headerAnim } = useAnimations();
 
   const handleNavigation = (screen: string) => {
+    if (screen === 'CreateAutoclave') {
+      router.push('/(tabs)/(screens)/(autoclave-screens)/autoclave-form');
+    }
     console.log(`Navigating to ${screen}`);
     // Implement navigation to nested screens here
   };
@@ -83,8 +86,8 @@ export default function SegregationScreen() {
   return (
     <ThemedView style={styles.container}>
       {/* Enhanced Header Section with left back button and right-aligned content */}
-      <ScreenHeader title='Segregation Control' subtitle='Management System'
-        icon='shape-outline'
+      <ScreenHeader title='Autoclave Control' subtitle='Management System'
+        icon='car-brake-low-pressure'
         iconFamily='MaterialCommunityIcons'
         headerAnim={headerAnim}
         onBack={() => {
@@ -95,21 +98,41 @@ export default function SegregationScreen() {
       <View style={styles.menuContainer}>
         <View style={styles.menuGrid}>
           {renderSquareButton(
-            'EnterSegregationData',
+            'CreateAutoclave',
             <FontAwesome
-              name="edit"
+              name="plus-square"
               size={iconSize}
-              color={pressedButton === 'EnterSegregationData' ? '#FFFFFF' : '#00D2E6'}
+              color={pressedButton === 'CreateAutoclave' ? '#FFFFFF' : '#00D2E6'}
             />,
-            'Segregation Data'
+            'Create Autoclave'
+          )}
+
+          {renderSquareButton(
+            'InProgressAutoclave',
+            <FontAwesome
+              name="hourglass-half"
+              size={iconSize}
+              color={pressedButton === 'InProgressAutoclave' ? '#FFFFFF' : '#00D2E6'}
+            />,
+            'In Progress'
+          )}
+
+          {renderSquareButton(
+            'CompletedAutoclave',
+            <FontAwesome
+              name="check-square-o"
+              size={iconSize}
+              color={pressedButton === 'CompletedAutoclave' ? '#FFFFFF' : '#00D2E6'}
+            />,
+            'Completed'
           )}
         </View>
       </View>
 
       <ScreenFooter
-        text="Track segregation information efficiently"
-        fadeAnim={fadeAnim} />
-
+        text="Manage autoclave processes efficiently"
+        fadeAnim={fadeAnim}
+      />
     </ThemedView>
   );
 }
@@ -175,5 +198,5 @@ const styles = StyleSheet.create({
   },
   activeButtonText: {
     color: '#FFFFFF',
-  },
+  }
 });

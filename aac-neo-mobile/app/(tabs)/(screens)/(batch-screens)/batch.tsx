@@ -359,12 +359,12 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, useNavigation } from 'expo-router';
+import { router } from 'expo-router';
 
 import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { Colors } from '@/constants/Colors';
+import { ScreenFooter } from '@/components/ui/ScreenFooter';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { useAnimations } from '@/hooks/useAnimations';
 
 const { width, height } = Dimensions.get('window');
 
@@ -372,39 +372,14 @@ const { width, height } = Dimensions.get('window');
 const getResponsiveSizes = () => {
     const iconSize = Math.min(Math.max(width * 0.06, 24), 32);
     const fontSize = Math.min(Math.max(width * 0.035, 12), 16);
-    return { iconSize: 32, fontSize };
+    return { iconSize, fontSize };
 };
 
 export default function BatchScreen() {
-    const colorScheme = useColorScheme();
     const [pressedButton, setPressedButton] = useState<string | null>(null);
     const { iconSize, fontSize } = getResponsiveSizes();
 
-    // Animation values
-    const fadeAnim = useState(new Animated.Value(0))[0];
-    const scaleAnim = useState(new Animated.Value(0.9))[0];
-    const headerAnim = useState(new Animated.Value(0))[0];
-
-    useEffect(() => {
-        // Entrance animations
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 800,
-                useNativeDriver: true,
-            }),
-            Animated.timing(scaleAnim, {
-                toValue: 1,
-                duration: 500,
-                useNativeDriver: true,
-            }),
-            Animated.timing(headerAnim, {
-                toValue: 1,
-                duration: 600,
-                useNativeDriver: true,
-            }),
-        ]).start();
-    }, []);
+    const { fadeAnim, scaleAnim, headerAnim } = useAnimations();
 
     const handleNavigation = (screen: string) => {
         if (screen === 'CreateBatch') {
@@ -419,10 +394,6 @@ export default function BatchScreen() {
 
         console.log(`Navigating to ${screen}`);
         // Implement navigation to nested screens here
-    };
-
-    const goBack = () => {
-        router.back();
     };
 
     const renderSquareButton = (screen: string, icon: React.ReactNode, title: string) => {
@@ -476,63 +447,10 @@ export default function BatchScreen() {
     return (
         <ThemedView style={styles.container}>
             {/* Enhanced Header Section with left back button and right-aligned content */}
-            <Animated.View
-                style={[
-                    styles.headerContainer,
-                    {
-                        opacity: headerAnim,
-                        transform: [{
-                            translateY: headerAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [-20, 0]
-                            })
-                        }]
-                    }
-                ]}
-            >
-                <LinearGradient
-                    colors={colorScheme === 'dark' ?
-                        ['#004052', '#002535'] :
-                        ['#e6f7ff', '#ccf2ff']}
-                    style={styles.headerGradient}
-                >
-                    {/* Back button on left side */}
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={goBack}
-                    >
-                        <FontAwesome
-                            name="chevron-left"
-                            size={18}
-                            color={Colors[colorScheme ?? 'light'].tint}
-                        />
-                        <Text style={styles.backButtonText}>Back</Text>
-                    </TouchableOpacity>
-
-                    {/* Right-aligned header content */}
-                    <View style={styles.headerContent}>
-                        <View style={styles.headerTextContainer}>
-                            <ThemedText type="subtitle" style={styles.headerSubtitle}>
-                                Management System
-                            </ThemedText>
-                            <ThemedText type="title" style={styles.headerTitle}>
-                                Batch Control
-                            </ThemedText>
-                        </View>
-                        <FontAwesome
-                            name="cubes"
-                            size={28}
-                            color={Colors[colorScheme ?? 'light'].tint}
-                            style={styles.headerIcon}
-                        />
-                    </View>
-
-                    {/* Right-aligned divider */}
-                    <View style={styles.headerDividerContainer}>
-                        <View style={styles.headerDivider} />
-                    </View>
-                </LinearGradient>
-            </Animated.View>
+            <ScreenHeader title='Batch Control' subtitle='Management System' icon='cubes' headerAnim={headerAnim}
+                onBack={() => {
+                    router.back();
+                }} />
 
             <View style={styles.menuContainer}>
                 <View style={styles.menuGrid}>
@@ -578,19 +496,10 @@ export default function BatchScreen() {
                 </View>
             </View>
 
-            <LinearGradient
-                colors={colorScheme === 'dark' ?
-                    ['rgba(0,40,50,0.8)', 'rgba(0,40,50,0.5)'] :
-                    ['rgba(230,247,255,0.8)', 'rgba(204,242,255,0.5)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={styles.enhancedFooterGradient}>
-                <View style={styles.footerContent}>
-                    <Text style={styles.footerText}>
-                        Manage batches efficiently
-                    </Text>
-                </View>
-            </LinearGradient>
+            <ScreenFooter
+                text="Manage batches efficiently"
+                fadeAnim={fadeAnim}
+            />
         </ThemedView>
     );
 }
@@ -599,76 +508,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 0,
-    },
-    headerContainer: {
-        width: '100%',
-        marginBottom: 20,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-        overflow: 'hidden',
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-    },
-    headerGradient: {
-        paddingVertical: 20,
-        paddingHorizontal: 16,
-        position: 'relative',
-    },
-    backButton: {
-        position: 'absolute',
-        top: 20,
-        left: 16,
-        zIndex: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.25)',
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-        borderRadius: 16,
-    },
-    backButtonText: {
-        color: '#00D2E6',
-        marginLeft: 5,
-        fontWeight: '600',
-        fontSize: 14,
-    },
-    headerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end', // Right align content
-        paddingLeft: 80, // Allow space for back button
-        paddingRight: 10, // Some padding on the right
-    },
-    headerTextContainer: {
-        alignItems: 'flex-end', // Right align the text
-        marginRight: 15, // Space between text and icon
-    },
-    headerIcon: {
-        // Icon is now on the right
-    },
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'right',
-    },
-    headerSubtitle: {
-        fontSize: 14,
-        opacity: 0.8,
-        textAlign: 'right',
-    },
-    headerDividerContainer: {
-        alignItems: 'flex-end', // Right align divider
-        paddingRight: 10,
-    },
-    headerDivider: {
-        height: 2,
-        width: '40%',
-        backgroundColor: '#00D2E6',
-        marginTop: 10,
-        borderRadius: 2,
     },
     menuContainer: {
         flex: 1,
@@ -726,38 +565,5 @@ const styles = StyleSheet.create({
     },
     activeButtonText: {
         color: '#FFFFFF',
-    },
-    // Add these to your styles object
-    enhancedFooterContainer: {
-        width: '100%',
-        position: 'absolute',  // Position absolutely
-        bottom: 0,            // Stick to bottom
-        left: 0,              // Align with left edge
-        right: 0,             // Align with right edge
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 15,
-        overflow: 'hidden',
-        elevation: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        marginLeft: 0,        // Explicitly set zero margins
-        marginRight: 0,
-    },
-    enhancedFooterGradient: {
-        paddingVertical: 15,
-        paddingHorizontal: 20,
-    },
-    footerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    footerText: {
-        color: '#00A3B4',
-        fontSize: 14,
-        fontWeight: '500',
-        textAlign: 'center',
     },
 });

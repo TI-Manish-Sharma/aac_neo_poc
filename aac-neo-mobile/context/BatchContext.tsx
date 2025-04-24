@@ -80,6 +80,12 @@ export interface BatchProcessSteps {
         measurements: TiltingCraneMeasurements;
     };
     cutting: CuttingData;
+    autoclave?: {
+        autoclaveNumber: string;
+        shift: string;
+        processedAt: string;
+        doorOpenTime: string;
+    };
     segregation: SegregationData;
 }
 
@@ -159,6 +165,10 @@ type BatchContextType = {
     getBatchesByStatus: (status: 'In Progress' | 'Completed' | 'Pending') => BatchRecord[];
     // Function to convert BatchRecord to UI-compatible batch format
     convertToUiBatch: (batchRecord: BatchRecord) => UiBatch;
+    // Function to get batches by stage and status
+    getBatchesByStage: (stageName: keyof BatchStages, stageStatus: BatchStageStatus) => BatchRecord[];
+    // Function to get all batches in UI-compatible format
+    getAllBatches: () => UiBatch[];
 };
 
 // UI-compatible batch format (used in existing screens)
@@ -209,6 +219,8 @@ const BatchContext = createContext<BatchContextType>({
             segregation: 'pending',
         }
     }),
+    getBatchesByStage: () => [],
+    getAllBatches: () => [],
 });
 
 export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -479,6 +491,78 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                             updatedAt: "2025-04-09T08:30:12.895Z",
                             createdBy: "migration_script"
                         }
+                    },
+                    {
+                        _id: "batch_1523_20250410",
+                        batchId: "1523",
+                        mouldId: "6",
+                        status: "In Progress",
+                        date: "2025-04-10",
+                        processSteps: {
+                            batching: {
+                                shift: "Day",
+                                materials: {
+                                    freshSlurry: 2380,
+                                    wasteSlurry: 310,
+                                    cement: 342,
+                                    lime: 208,
+                                    gypsum: 26,
+                                    aluminumPowder: 1228,
+                                    dcPowder: 15.5,
+                                    water: 112,
+                                    solutionOil: 3.1
+                                },
+                                process: {
+                                    mixingTime: 2.85,
+                                    dischargeTime: "10:45",
+                                    dischargeTemp: 47.5
+                                }
+                            },
+                            ferryCarts: {
+                                shift: "Day",
+                                measurements: {
+                                    flow: 17.5,
+                                    temp: 46.5,
+                                    height: 292,
+                                    time: "10:52"
+                                }
+                            },
+                            tiltingCrane: {
+                                shift: "Day",
+                                measurements: {
+                                    risingQuality: "Ok",
+                                    temp: 70.8,
+                                    time: "11:25",
+                                    hardness: 138
+                                }
+                            },
+                            cutting: {
+                                cuttingTime: "01:50", // Not yet started
+                                blockSize: "600x200x100",
+                                tiltingCraneRejection: null,
+                                chippingRejection: null,
+                                sideCutterRejection: null,
+                                joinedRejection: null,
+                                trimmingRejection: null,
+                                wireBrokenHC: null,
+                                wireBrokenVC: null,
+                                rejectedDueToHC: null,
+                                rejectedDueToVC: null,
+                                dimensionCheck: null
+                            },
+                            segregation: {
+                                shift: "",
+                                totalBlocks: 0,
+                                size: "",
+                                defects: {},
+                                totalDefects: 0
+                            }
+                        },
+                        metadata: {
+                            createdAt: "2025-04-10T05:15:22.123Z",
+                            updatedAt: "2025-04-10T05:38:42.456Z",
+                            createdBy: "app_user"
+                        }
                     }
                 ];
 
@@ -486,9 +570,9 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 const mockAutoclaves: AutoclaveRecord[] = [
                     {
                         _id: "67f6114583f313bf2e6d9f06",
-                        autoclaveId: 1,
+                        autoclaveId: 101,
                         shift: "Day",
-                        batchesProcessed: "1520, 1521, 1522, 1523, 1524, 1525, 1526, 1527, 1528, 1529, 1530, 1531, 1532, 1533, 1534, 1535, 1536, 1537",
+                        batchesProcessed: "1510, 1511, 1512",
                         previousDoorOpenTime: "02:38",
                         previousDoorOpenPressure: null,
                         doorCloseTime: "03:23",
@@ -515,7 +599,7 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                     },
                     {
                         _id: "67f6114583f313bf2e6d9f07",
-                        autoclaveId: 2,
+                        autoclaveId: 102,
                         shift: "Night",
                         batchesProcessed: "1538, 1539, 1540, 1541, 1542",
                         previousDoorOpenTime: "14:30",
@@ -556,6 +640,15 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         loadInitialData();
     }, []);
 
+    const getBatchesByStage = (stageName: keyof BatchStages, stageStatus: BatchStageStatus): BatchRecord[] => {
+        return batches.filter(batch => {
+            // Get the stages for this batch
+            const stages = getBatchStages(batch);
+            // Check if this stage matches the requested status
+            return stages[stageName] === stageStatus;
+        });
+    };
+
     // Helper function to determine batch stage status from process steps
     const getBatchStages = (batch: BatchRecord): BatchStages => {
         // Default to all pending
@@ -589,7 +682,7 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             stages.tilting = 'completed';
         }
 
-        if (batch.processSteps.cutting.cuttingTime) {
+        if (batch.processSteps.cutting.cuttingTime !== "") {
             stages.batching = 'completed';
             stages.ferryCart = 'completed';
             stages.tilting = 'completed';
@@ -597,10 +690,10 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         }
 
         // Check if in autoclave (by checking if it's in an autoclave record)
-        const inAutoclave = autoclaves.some(autoclave => 
+        const inAutoclave = autoclaves.some(autoclave =>
             autoclave.batchesProcessed.split(',').map(id => id.trim()).includes(batch.batchId)
         );
-        
+
         if (inAutoclave) {
             stages.batching = 'completed';
             stages.ferryCart = 'completed';
@@ -665,7 +758,7 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     // Function to get the autoclave record for a batch
     const getAutoclavesByBatchId = (batchId: string): AutoclaveRecord | undefined => {
-        return autoclaves.find((autoclave) => 
+        return autoclaves.find((autoclave) =>
             autoclave.batchesProcessed.split(',').map(id => id.trim()).includes(batchId)
         );
     };
@@ -678,7 +771,7 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     // Function to convert BatchRecord to UI-compatible batch format
     const convertToUiBatch = (batchRecord: BatchRecord): UiBatch => {
         const stages = getBatchStages(batchRecord);
-        
+
         return {
             id: batchRecord._id,
             batchNumber: batchRecord.batchId,
@@ -702,22 +795,27 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const updateBatchStage = (batchId: string, stageName: keyof BatchStages, stageStatus: BatchStageStatus) => {
         // Find the batch to update
         const batchToUpdate = batches.find(batch => batch.batchId === batchId);
-        
+
         if (!batchToUpdate) return;
-        
+
         // This is more complex as we need to update the appropriate process step data
         // based on the stage name and status. For a real implementation, you'd update
         // specific fields of the processSteps object.
-        
+
         // For now, let's just update the status
         if (stageStatus === 'completed' && stageName === 'segregation') {
             updateBatchStatus(batchId, 'Completed');
         } else if (stageStatus === 'in-progress') {
             updateBatchStatus(batchId, 'In Progress');
         }
-        
+
         // In a real implementation, you would update the specific process step data here
     };
+
+    // Return all Batches
+    const getAllBatches = () => {
+        return batches.map(batch => convertToUiBatch(batch));
+    }
 
     return (
         <BatchContext.Provider
@@ -736,7 +834,9 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 isLoading,
                 getBatchStages,
                 getBatchesByStatus,
-                convertToUiBatch
+                convertToUiBatch,
+                getBatchesByStage,
+                getAllBatches,
             }}
         >
             {children}
