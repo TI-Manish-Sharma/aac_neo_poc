@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback, useRef } from 'react';
 
 // Types that match the MongoDB schema
 export interface BatchMaterials {
@@ -238,331 +238,474 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 await new Promise((resolve) => setTimeout(resolve, 500));
 
                 // Mock batches data with detailed stage information based on your MongoDB schema
+                // const mockBatches: BatchRecord[] = [
+                //     {
+                //         _id: "batch_1520_20250409",
+                //         batchId: "1520",
+                //         mouldId: "3",
+                //         status: "Completed",
+                //         date: "2025-04-09",
+                //         processSteps: {
+                //             batching: {
+                //                 shift: "Day",
+                //                 materials: {
+                //                     freshSlurry: 2395,
+                //                     wasteSlurry: 300,
+                //                     cement: 340,
+                //                     lime: 205,
+                //                     gypsum: 25,
+                //                     aluminumPowder: 1230,
+                //                     dcPowder: 15,
+                //                     water: 110,
+                //                     solutionOil: 3
+                //                 },
+                //                 process: {
+                //                     mixingTime: 2.8,
+                //                     dischargeTime: "22:42",
+                //                     dischargeTemp: 47
+                //                 }
+                //             },
+                //             ferryCarts: {
+                //                 shift: "Day",
+                //                 measurements: {
+                //                     flow: 17,
+                //                     temp: 46,
+                //                     height: 290,
+                //                     time: "22:46"
+                //                 }
+                //             },
+                //             tiltingCrane: {
+                //                 shift: "Day",
+                //                 measurements: {
+                //                     risingQuality: "Ok",
+                //                     temp: 70.1,
+                //                     time: "01:13",
+                //                     hardness: 140
+                //                 }
+                //             },
+                //             cutting: {
+                //                 cuttingTime: "01:17",
+                //                 blockSize: "600x200x100",
+                //                 tiltingCraneRejection: null,
+                //                 chippingRejection: null,
+                //                 sideCutterRejection: null,
+                //                 joinedRejection: null,
+                //                 trimmingRejection: null,
+                //                 wireBrokenHC: null,
+                //                 wireBrokenVC: null,
+                //                 rejectedDueToHC: null,
+                //                 rejectedDueToVC: null,
+                //                 dimensionCheck: null
+                //             },
+                //             segregation: {
+                //                 shift: "Day",
+                //                 totalBlocks: 252,
+                //                 size: "600X200X150MM",
+                //                 defects: {
+                //                     "1": {
+                //                         rainCracksCuts: 1,
+                //                         cornerCracksCuts: 0,
+                //                         cornerDamage: 0,
+                //                         chippedBlocks: 0
+                //                     },
+                //                     "2": {
+                //                         rainCracksCuts: 3,
+                //                         cornerCracksCuts: 0,
+                //                         cornerDamage: 0,
+                //                         chippedBlocks: 0
+                //                     },
+                //                     "3": {
+                //                         rainCracksCuts: 3,
+                //                         cornerCracksCuts: 0,
+                //                         cornerDamage: 0,
+                //                         chippedBlocks: 0
+                //                     },
+                //                     "4": {
+                //                         rainCracksCuts: 5,
+                //                         cornerCracksCuts: 0,
+                //                         cornerDamage: 3,
+                //                         chippedBlocks: 0
+                //                     },
+                //                     "5": {
+                //                         rainCracksCuts: 3,
+                //                         cornerCracksCuts: 0,
+                //                         cornerDamage: 0,
+                //                         chippedBlocks: 3
+                //                     },
+                //                     "6": {
+                //                         rainCracksCuts: 3,
+                //                         cornerCracksCuts: 0,
+                //                         cornerDamage: 2,
+                //                         chippedBlocks: 0
+                //                     }
+                //                 },
+                //                 totalDefects: 26
+                //             }
+                //         },
+                //         metadata: {
+                //             createdAt: "2025-04-09T06:18:45.461Z",
+                //             updatedAt: "2025-04-09T06:18:45.461Z",
+                //             createdBy: "migration_script"
+                //         }
+                //     },
+                //     {
+                //         _id: "batch_1521_20250409",
+                //         batchId: "1521",
+                //         mouldId: "4",
+                //         status: "In Progress",
+                //         date: "2025-04-09",
+                //         processSteps: {
+                //             batching: {
+                //                 shift: "Day",
+                //                 materials: {
+                //                     freshSlurry: 2400,
+                //                     wasteSlurry: 305,
+                //                     cement: 345,
+                //                     lime: 210,
+                //                     gypsum: 28,
+                //                     aluminumPowder: 1235,
+                //                     dcPowder: 16,
+                //                     water: 115,
+                //                     solutionOil: 3.2
+                //                 },
+                //                 process: {
+                //                     mixingTime: 2.9,
+                //                     dischargeTime: "23:15",
+                //                     dischargeTemp: 48
+                //                 }
+                //             },
+                //             ferryCarts: {
+                //                 shift: "Day",
+                //                 measurements: {
+                //                     flow: 18,
+                //                     temp: 47,
+                //                     height: 295,
+                //                     time: "23:20"
+                //                 }
+                //             },
+                //             tiltingCrane: {
+                //                 shift: "Day",
+                //                 measurements: {
+                //                     risingQuality: "Ok",
+                //                     temp: 71.2,
+                //                     time: "01:45",
+                //                     hardness: 142
+                //                 }
+                //             },
+                //             cutting: {
+                //                 cuttingTime: "01:50",
+                //                 blockSize: "600x200x100",
+                //                 tiltingCraneRejection: null,
+                //                 chippingRejection: null,
+                //                 sideCutterRejection: null,
+                //                 joinedRejection: null,
+                //                 trimmingRejection: null,
+                //                 wireBrokenHC: null,
+                //                 wireBrokenVC: null,
+                //                 rejectedDueToHC: null,
+                //                 rejectedDueToVC: null,
+                //                 dimensionCheck: null
+                //             },
+                //             segregation: {
+                //                 shift: "Day",
+                //                 totalBlocks: 0, // Not completed yet
+                //                 size: "600X200X150MM",
+                //                 defects: {},
+                //                 totalDefects: 0
+                //             }
+                //         },
+                //         metadata: {
+                //             createdAt: "2025-04-09T07:20:33.128Z",
+                //             updatedAt: "2025-04-09T07:20:33.128Z",
+                //             createdBy: "migration_script"
+                //         }
+                //     },
+                //     {
+                //         _id: "batch_1522_20250409",
+                //         batchId: "1522",
+                //         mouldId: "5",
+                //         status: "In Progress",
+                //         date: "2025-04-09",
+                //         processSteps: {
+                //             batching: {
+                //                 shift: "Night",
+                //                 materials: {
+                //                     freshSlurry: 2350,
+                //                     wasteSlurry: 290,
+                //                     cement: 335,
+                //                     lime: 200,
+                //                     gypsum: 22,
+                //                     aluminumPowder: 1225,
+                //                     dcPowder: 14,
+                //                     water: 105,
+                //                     solutionOil: 2.8
+                //                 },
+                //                 process: {
+                //                     mixingTime: 2.7,
+                //                     dischargeTime: "01:30",
+                //                     dischargeTemp: 46
+                //                 }
+                //             },
+                //             ferryCarts: {
+                //                 shift: "Night",
+                //                 measurements: {
+                //                     flow: 16,
+                //                     temp: 45,
+                //                     height: 285,
+                //                     time: "01:35",
+                //                 }
+                //             },
+                //             tiltingCrane: {
+                //                 shift: "Night",
+                //                 measurements: {
+                //                     risingQuality: "",
+                //                     temp: 0,
+                //                     time: "",
+                //                     hardness: 0
+                //                 }
+                //             },
+                //             cutting: {
+                //                 cuttingTime: "01:50",
+                //                 blockSize: "600x200x100",
+                //                 tiltingCraneRejection: null,
+                //                 chippingRejection: null,
+                //                 sideCutterRejection: null,
+                //                 joinedRejection: null,
+                //                 trimmingRejection: null,
+                //                 wireBrokenHC: null,
+                //                 wireBrokenVC: null,
+                //                 rejectedDueToHC: null,
+                //                 rejectedDueToVC: null,
+                //                 dimensionCheck: null
+                //             },
+                //             segregation: {
+                //                 shift: "",
+                //                 totalBlocks: 0,
+                //                 size: "",
+                //                 defects: {},
+                //                 totalDefects: 0
+                //             }
+                //         },
+                //         metadata: {
+                //             createdAt: "2025-04-09T08:30:12.895Z",
+                //             updatedAt: "2025-04-09T08:30:12.895Z",
+                //             createdBy: "migration_script"
+                //         }
+                //     },
+                //     {
+                //         _id: "batch_1523_20250410",
+                //         batchId: "1523",
+                //         mouldId: "6",
+                //         status: "In Progress",
+                //         date: "2025-04-10",
+                //         processSteps: {
+                //             batching: {
+                //                 shift: "Day",
+                //                 materials: {
+                //                     freshSlurry: 2380,
+                //                     wasteSlurry: 310,
+                //                     cement: 342,
+                //                     lime: 208,
+                //                     gypsum: 26,
+                //                     aluminumPowder: 1228,
+                //                     dcPowder: 15.5,
+                //                     water: 112,
+                //                     solutionOil: 3.1
+                //                 },
+                //                 process: {
+                //                     mixingTime: 2.85,
+                //                     dischargeTime: "10:45",
+                //                     dischargeTemp: 47.5
+                //                 }
+                //             },
+                //             ferryCarts: {
+                //                 shift: "Day",
+                //                 measurements: {
+                //                     flow: 17.5,
+                //                     temp: 46.5,
+                //                     height: 292,
+                //                     time: "10:52"
+                //                 }
+                //             },
+                //             tiltingCrane: {
+                //                 shift: "Day",
+                //                 measurements: {
+                //                     risingQuality: "Ok",
+                //                     temp: 70.8,
+                //                     time: "11:25",
+                //                     hardness: 138
+                //                 }
+                //             },
+                //             cutting: {
+                //                 cuttingTime: "01:50", // Not yet started
+                //                 blockSize: "600x200x100",
+                //                 tiltingCraneRejection: null,
+                //                 chippingRejection: null,
+                //                 sideCutterRejection: null,
+                //                 joinedRejection: null,
+                //                 trimmingRejection: null,
+                //                 wireBrokenHC: null,
+                //                 wireBrokenVC: null,
+                //                 rejectedDueToHC: null,
+                //                 rejectedDueToVC: null,
+                //                 dimensionCheck: null
+                //             },
+                //             segregation: {
+                //                 shift: "",
+                //                 totalBlocks: 0,
+                //                 size: "",
+                //                 defects: {},
+                //                 totalDefects: 0
+                //             }
+                //         },
+                //         metadata: {
+                //             createdAt: "2025-04-10T05:15:22.123Z",
+                //             updatedAt: "2025-04-10T05:38:42.456Z",
+                //             createdBy: "app_user"
+                //         }
+                //     }
+                // ];
+
                 const mockBatches: BatchRecord[] = [
+                    // 1) Just created → batching in-progress
                     {
-                        _id: "batch_1520_20250409",
-                        batchId: "1520",
-                        mouldId: "3",
+                        _id: "batch_2001",
+                        batchId: "2001",
+                        mouldId: "1",
+                        status: "In Progress",
+                        date: "2025-04-24",
+                        processSteps: {
+                            batching: { shift: "", materials: /*…*/ {} as any, process: { mixingTime: 0, dischargeTime: "", dischargeTemp: 0 } },
+                            ferryCarts: { shift: "", measurements: { flow: 0, temp: 0, height: 0, time: "" } },
+                            tiltingCrane: { shift: "", measurements: { risingQuality: "", temp: 0, time: "", hardness: 0 } },
+                            cutting: { cuttingTime: "", blockSize: "", tiltingCraneRejection: null, chippingRejection: null, sideCutterRejection: null, joinedRejection: null, trimmingRejection: null, wireBrokenHC: null, wireBrokenVC: null, rejectedDueToHC: null, rejectedDueToVC: null, dimensionCheck: null },
+                            // no autoclave field at all → pending
+                            segregation: { shift: "", totalBlocks: 0, size: "", defects: {}, totalDefects: 0 }
+                        },
+                        metadata: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), createdBy: "test" }
+                    },
+
+                    // 2) Batching done → ferryCart in-progress
+                    {
+                        _id: "batch_2002",
+                        batchId: "2002",
+                        mouldId: "1",
+                        status: "In Progress",
+                        date: "2025-04-24",
+                        processSteps: {
+                            batching: { shift: "Day", materials: {} as any, process: { mixingTime: 1, dischargeTime: "10:00", dischargeTemp: 30 } },
+                            ferryCarts: { shift: "", measurements: { flow: 0, temp: 0, height: 0, time: "" } },
+                            tiltingCrane: { shift: "", measurements: { risingQuality: "", temp: 0, time: "", hardness: 0 } },
+                            cutting: { cuttingTime: "", blockSize: "", tiltingCraneRejection: null, chippingRejection: null, sideCutterRejection: null, joinedRejection: null, trimmingRejection: null, wireBrokenHC: null, wireBrokenVC: null, rejectedDueToHC: null, rejectedDueToVC: null, dimensionCheck: null },
+                            segregation: { shift: "", totalBlocks: 0, size: "", defects: {}, totalDefects: 0 }
+                        },
+                        metadata: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), createdBy: "test" }
+                    },
+
+                    // 3) FerryCart done → tilting in-progress
+                    {
+                        _id: "batch_2003",
+                        batchId: "2003",
+                        mouldId: "1",
+                        status: "In Progress",
+                        date: "2025-04-24",
+                        processSteps: {
+                            batching: { shift: "Day", materials: {} as any, process: { mixingTime: 1, dischargeTime: "10:00", dischargeTemp: 30 } },
+                            ferryCarts: { shift: "Day", measurements: { flow: 5, temp: 25, height: 100, time: "10:20" } },
+                            tiltingCrane: { shift: "", measurements: { risingQuality: "", temp: 0, time: "", hardness: 0 } },
+                            cutting: { cuttingTime: "", blockSize: "", tiltingCraneRejection: null, chippingRejection: null, sideCutterRejection: null, joinedRejection: null, trimmingRejection: null, wireBrokenHC: null, wireBrokenVC: null, rejectedDueToHC: null, rejectedDueToVC: null, dimensionCheck: null },
+                            segregation: { shift: "", totalBlocks: 0, size: "", defects: {}, totalDefects: 0 }
+                        },
+                        metadata: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), createdBy: "test" }
+                    },
+
+                    // 4) Tilting done → cutting in-progress
+                    {
+                        _id: "batch_2004",
+                        batchId: "2004",
+                        mouldId: "1",
+                        status: "In Progress",
+                        date: "2025-04-24",
+                        processSteps: {
+                            batching: { shift: "Day", materials: {} as any, process: { mixingTime: 1, dischargeTime: "10:00", dischargeTemp: 30 } },
+                            ferryCarts: { shift: "Day", measurements: { flow: 5, temp: 25, height: 100, time: "10:20" } },
+                            tiltingCrane: { shift: "Day", measurements: { risingQuality: "Good", temp: 35, time: "10:40", hardness: 100 } },
+                            cutting: { cuttingTime: "", blockSize: "", tiltingCraneRejection: null, chippingRejection: null, sideCutterRejection: null, joinedRejection: null, trimmingRejection: null, wireBrokenHC: null, wireBrokenVC: null, rejectedDueToHC: null, rejectedDueToVC: null, dimensionCheck: null },
+                            segregation: { shift: "", totalBlocks: 0, size: "", defects: {}, totalDefects: 0 }
+                        },
+                        metadata: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), createdBy: "test" }
+                    },
+
+                    // 5) Cutting done → autoclave pending
+                    {
+                        _id: "batch_2005",
+                        batchId: "2005",
+                        mouldId: "1",
+                        status: "In Progress",
+                        date: "2025-04-24",
+                        processSteps: {
+                            batching: { shift: "Day", materials: {} as any, process: { mixingTime: 1, dischargeTime: "10:00", dischargeTemp: 30 } },
+                            ferryCarts: { shift: "Day", measurements: { flow: 5, temp: 25, height: 100, time: "10:20" } },
+                            tiltingCrane: { shift: "Day", measurements: { risingQuality: "Good", temp: 35, time: "10:40", hardness: 100 } },
+                            cutting: { cuttingTime: "11:00", blockSize: "600x200x150", tiltingCraneRejection: 0, chippingRejection: 0, sideCutterRejection: 0, joinedRejection: 0, trimmingRejection: 0, wireBrokenHC: 0, wireBrokenVC: 0, rejectedDueToHC: 0, rejectedDueToVC: 0, dimensionCheck: null },
+                            // no autoclave → stays pending
+                            segregation: { shift: "", totalBlocks: 0, size: "", defects: {}, totalDefects: 0 }
+                        },
+                        metadata: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), createdBy: "test" }
+                    },
+
+                    // 6) Autoclave in-progress (record exists, but no doorOpenTime)
+                    {
+                        _id: "batch_2006",
+                        batchId: "2006",
+                        mouldId: "1",
+                        status: "In Progress",
+                        date: "2025-04-24",
+                        processSteps: {
+                            batching: { shift: "Day", materials: {} as any, process: { mixingTime: 1, dischargeTime: "10:00", dischargeTemp: 30 } },
+                            ferryCarts: { shift: "Day", measurements: { flow: 5, temp: 25, height: 100, time: "10:20" } },
+                            tiltingCrane: { shift: "Day", measurements: { risingQuality: "Good", temp: 35, time: "10:40", hardness: 100 } },
+                            cutting: { cuttingTime: "11:00", blockSize: "600x200x150", tiltingCraneRejection: 0, chippingRejection: 0, sideCutterRejection: 0, joinedRejection: 0, trimmingRejection: 0, wireBrokenHC: 0, wireBrokenVC: 0, rejectedDueToHC: 0, rejectedDueToVC: 0, dimensionCheck: null },
+                            autoclave: { autoclaveNumber: "A1", shift: "Day", processedAt: "12:00", doorOpenTime: "" },
+                            segregation: { shift: "", totalBlocks: 0, size: "", defects: {}, totalDefects: 0 }
+                        },
+                        metadata: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), createdBy: "test" }
+                    },
+
+                    // 7) Autoclave complete → segregation in-progress
+                    {
+                        _id: "batch_2007",
+                        batchId: "2007",
+                        mouldId: "1",
+                        status: "In Progress",
+                        date: "2025-04-24",
+                        processSteps: {
+                            batching: { shift: "Day", materials: {} as any, process: { mixingTime: 1, dischargeTime: "10:00", dischargeTemp: 30 } },
+                            ferryCarts: { shift: "Day", measurements: { flow: 5, temp: 25, height: 100, time: "10:20" } },
+                            tiltingCrane: { shift: "Day", measurements: { risingQuality: "Good", temp: 35, time: "10:40", hardness: 100 } },
+                            cutting: { cuttingTime: "11:00", blockSize: "600x200x150", tiltingCraneRejection: 0, chippingRejection: 0, sideCutterRejection: 0, joinedRejection: 0, trimmingRejection: 0, wireBrokenHC: 0, wireBrokenVC: 0, rejectedDueToHC: 0, rejectedDueToVC: 0, dimensionCheck: null },
+                            autoclave: { autoclaveNumber: "A1", shift: "Day", processedAt: "12:00", doorOpenTime: "14:00" },
+                            segregation: { shift: "", totalBlocks: 0, size: "", defects: {}, totalDefects: 0 }
+                        },
+                        metadata: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), createdBy: "test" }
+                    },
+
+                    // 8) Segregation done → all completed
+                    {
+                        _id: "batch_2008",
+                        batchId: "2008",
+                        mouldId: "1",
                         status: "Completed",
-                        date: "2025-04-09",
+                        date: "2025-04-24",
                         processSteps: {
-                            batching: {
-                                shift: "Day",
-                                materials: {
-                                    freshSlurry: 2395,
-                                    wasteSlurry: 300,
-                                    cement: 340,
-                                    lime: 205,
-                                    gypsum: 25,
-                                    aluminumPowder: 1230,
-                                    dcPowder: 15,
-                                    water: 110,
-                                    solutionOil: 3
-                                },
-                                process: {
-                                    mixingTime: 2.8,
-                                    dischargeTime: "22:42",
-                                    dischargeTemp: 47
-                                }
-                            },
-                            ferryCarts: {
-                                shift: "Day",
-                                measurements: {
-                                    flow: 17,
-                                    temp: 46,
-                                    height: 290,
-                                    time: "22:46"
-                                }
-                            },
-                            tiltingCrane: {
-                                shift: "Day",
-                                measurements: {
-                                    risingQuality: "Ok",
-                                    temp: 70.1,
-                                    time: "01:13",
-                                    hardness: 140
-                                }
-                            },
-                            cutting: {
-                                cuttingTime: "01:17",
-                                blockSize: "600x200x100",
-                                tiltingCraneRejection: null,
-                                chippingRejection: null,
-                                sideCutterRejection: null,
-                                joinedRejection: null,
-                                trimmingRejection: null,
-                                wireBrokenHC: null,
-                                wireBrokenVC: null,
-                                rejectedDueToHC: null,
-                                rejectedDueToVC: null,
-                                dimensionCheck: null
-                            },
-                            segregation: {
-                                shift: "Day",
-                                totalBlocks: 252,
-                                size: "600X200X150MM",
-                                defects: {
-                                    "1": {
-                                        rainCracksCuts: 1,
-                                        cornerCracksCuts: 0,
-                                        cornerDamage: 0,
-                                        chippedBlocks: 0
-                                    },
-                                    "2": {
-                                        rainCracksCuts: 3,
-                                        cornerCracksCuts: 0,
-                                        cornerDamage: 0,
-                                        chippedBlocks: 0
-                                    },
-                                    "3": {
-                                        rainCracksCuts: 3,
-                                        cornerCracksCuts: 0,
-                                        cornerDamage: 0,
-                                        chippedBlocks: 0
-                                    },
-                                    "4": {
-                                        rainCracksCuts: 5,
-                                        cornerCracksCuts: 0,
-                                        cornerDamage: 3,
-                                        chippedBlocks: 0
-                                    },
-                                    "5": {
-                                        rainCracksCuts: 3,
-                                        cornerCracksCuts: 0,
-                                        cornerDamage: 0,
-                                        chippedBlocks: 3
-                                    },
-                                    "6": {
-                                        rainCracksCuts: 3,
-                                        cornerCracksCuts: 0,
-                                        cornerDamage: 2,
-                                        chippedBlocks: 0
-                                    }
-                                },
-                                totalDefects: 26
-                            }
+                            batching: { shift: "Day", materials: {} as any, process: { mixingTime: 1, dischargeTime: "10:00", dischargeTemp: 30 } },
+                            ferryCarts: { shift: "Day", measurements: { flow: 5, temp: 25, height: 100, time: "10:20" } },
+                            tiltingCrane: { shift: "Day", measurements: { risingQuality: "Good", temp: 35, time: "10:40", hardness: 100 } },
+                            cutting: { cuttingTime: "11:00", blockSize: "600x200x150", tiltingCraneRejection: 0, chippingRejection: 0, sideCutterRejection: 0, joinedRejection: 0, trimmingRejection: 0, wireBrokenHC: 0, wireBrokenVC: 0, rejectedDueToHC: 0, rejectedDueToVC: 0, dimensionCheck: null },
+                            autoclave: { autoclaveNumber: "A1", shift: "Day", processedAt: "12:00", doorOpenTime: "14:00" },
+                            segregation: { shift: "Day", totalBlocks: 100, size: "600x200x150", defects: { "1": { rainCracksCuts: 0, cornerCracksCuts: 0, cornerDamage: 0, chippedBlocks: 0 } }, totalDefects: 0 }
                         },
-                        metadata: {
-                            createdAt: "2025-04-09T06:18:45.461Z",
-                            updatedAt: "2025-04-09T06:18:45.461Z",
-                            createdBy: "migration_script"
-                        }
-                    },
-                    {
-                        _id: "batch_1521_20250409",
-                        batchId: "1521",
-                        mouldId: "4",
-                        status: "In Progress",
-                        date: "2025-04-09",
-                        processSteps: {
-                            batching: {
-                                shift: "Day",
-                                materials: {
-                                    freshSlurry: 2400,
-                                    wasteSlurry: 305,
-                                    cement: 345,
-                                    lime: 210,
-                                    gypsum: 28,
-                                    aluminumPowder: 1235,
-                                    dcPowder: 16,
-                                    water: 115,
-                                    solutionOil: 3.2
-                                },
-                                process: {
-                                    mixingTime: 2.9,
-                                    dischargeTime: "23:15",
-                                    dischargeTemp: 48
-                                }
-                            },
-                            ferryCarts: {
-                                shift: "Day",
-                                measurements: {
-                                    flow: 18,
-                                    temp: 47,
-                                    height: 295,
-                                    time: "23:20"
-                                }
-                            },
-                            tiltingCrane: {
-                                shift: "Day",
-                                measurements: {
-                                    risingQuality: "Ok",
-                                    temp: 71.2,
-                                    time: "01:45",
-                                    hardness: 142
-                                }
-                            },
-                            cutting: {
-                                cuttingTime: "01:50",
-                                blockSize: "600x200x100",
-                                tiltingCraneRejection: null,
-                                chippingRejection: null,
-                                sideCutterRejection: null,
-                                joinedRejection: null,
-                                trimmingRejection: null,
-                                wireBrokenHC: null,
-                                wireBrokenVC: null,
-                                rejectedDueToHC: null,
-                                rejectedDueToVC: null,
-                                dimensionCheck: null
-                            },
-                            segregation: {
-                                shift: "Day",
-                                totalBlocks: 0, // Not completed yet
-                                size: "600X200X150MM",
-                                defects: {},
-                                totalDefects: 0
-                            }
-                        },
-                        metadata: {
-                            createdAt: "2025-04-09T07:20:33.128Z",
-                            updatedAt: "2025-04-09T07:20:33.128Z",
-                            createdBy: "migration_script"
-                        }
-                    },
-                    {
-                        _id: "batch_1522_20250409",
-                        batchId: "1522",
-                        mouldId: "5",
-                        status: "In Progress",
-                        date: "2025-04-09",
-                        processSteps: {
-                            batching: {
-                                shift: "Night",
-                                materials: {
-                                    freshSlurry: 2350,
-                                    wasteSlurry: 290,
-                                    cement: 335,
-                                    lime: 200,
-                                    gypsum: 22,
-                                    aluminumPowder: 1225,
-                                    dcPowder: 14,
-                                    water: 105,
-                                    solutionOil: 2.8
-                                },
-                                process: {
-                                    mixingTime: 2.7,
-                                    dischargeTime: "01:30",
-                                    dischargeTemp: 46
-                                }
-                            },
-                            ferryCarts: {
-                                shift: "Night",
-                                measurements: {
-                                    flow: 16,
-                                    temp: 45,
-                                    height: 285,
-                                    time: "01:35",
-                                }
-                            },
-                            tiltingCrane: {
-                                shift: "Night",
-                                measurements: {
-                                    risingQuality: "",
-                                    temp: 0,
-                                    time: "",
-                                    hardness: 0
-                                }
-                            },
-                            cutting: {
-                                cuttingTime: "",
-                                blockSize: "600x200x100",
-                                tiltingCraneRejection: null,
-                                chippingRejection: null,
-                                sideCutterRejection: null,
-                                joinedRejection: null,
-                                trimmingRejection: null,
-                                wireBrokenHC: null,
-                                wireBrokenVC: null,
-                                rejectedDueToHC: null,
-                                rejectedDueToVC: null,
-                                dimensionCheck: null
-                            },
-                            segregation: {
-                                shift: "",
-                                totalBlocks: 0,
-                                size: "",
-                                defects: {},
-                                totalDefects: 0
-                            }
-                        },
-                        metadata: {
-                            createdAt: "2025-04-09T08:30:12.895Z",
-                            updatedAt: "2025-04-09T08:30:12.895Z",
-                            createdBy: "migration_script"
-                        }
-                    },
-                    {
-                        _id: "batch_1523_20250410",
-                        batchId: "1523",
-                        mouldId: "6",
-                        status: "In Progress",
-                        date: "2025-04-10",
-                        processSteps: {
-                            batching: {
-                                shift: "Day",
-                                materials: {
-                                    freshSlurry: 2380,
-                                    wasteSlurry: 310,
-                                    cement: 342,
-                                    lime: 208,
-                                    gypsum: 26,
-                                    aluminumPowder: 1228,
-                                    dcPowder: 15.5,
-                                    water: 112,
-                                    solutionOil: 3.1
-                                },
-                                process: {
-                                    mixingTime: 2.85,
-                                    dischargeTime: "10:45",
-                                    dischargeTemp: 47.5
-                                }
-                            },
-                            ferryCarts: {
-                                shift: "Day",
-                                measurements: {
-                                    flow: 17.5,
-                                    temp: 46.5,
-                                    height: 292,
-                                    time: "10:52"
-                                }
-                            },
-                            tiltingCrane: {
-                                shift: "Day",
-                                measurements: {
-                                    risingQuality: "Ok",
-                                    temp: 70.8,
-                                    time: "11:25",
-                                    hardness: 138
-                                }
-                            },
-                            cutting: {
-                                cuttingTime: "01:50", // Not yet started
-                                blockSize: "600x200x100",
-                                tiltingCraneRejection: null,
-                                chippingRejection: null,
-                                sideCutterRejection: null,
-                                joinedRejection: null,
-                                trimmingRejection: null,
-                                wireBrokenHC: null,
-                                wireBrokenVC: null,
-                                rejectedDueToHC: null,
-                                rejectedDueToVC: null,
-                                dimensionCheck: null
-                            },
-                            segregation: {
-                                shift: "",
-                                totalBlocks: 0,
-                                size: "",
-                                defects: {},
-                                totalDefects: 0
-                            }
-                        },
-                        metadata: {
-                            createdAt: "2025-04-10T05:15:22.123Z",
-                            updatedAt: "2025-04-10T05:38:42.456Z",
-                            createdBy: "app_user"
-                        }
+                        metadata: { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), createdBy: "test" }
                     }
                 ];
 
@@ -649,8 +792,14 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         });
     };
 
+    const callCountsRef = useRef<Record<string, number>>({});
+
     // Helper function to determine batch stage status from process steps
-    const getBatchStages = (batch: BatchRecord): BatchStages => {
+    const getBatchStages = useCallback((batch: BatchRecord): BatchStages => {
+        const id = batch.batchId;
+        callCountsRef.current[id] = (callCountsRef.current[id] || 0) + 1;
+        console.log(`getBatchStages called for ${id}:`, callCountsRef.current[id]);
+        
         // Default to all pending
         const stages: BatchStages = {
             batching: 'pending',
@@ -689,17 +838,19 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             stages.cutting = 'completed';
         }
 
-        // Check if in autoclave (by checking if it's in an autoclave record)
-        const inAutoclave = autoclaves.some(autoclave =>
-            autoclave.batchesProcessed.split(',').map(id => id.trim()).includes(batch.batchId)
-        );
+        const ac = batch.processSteps.autoclave;
 
-        if (inAutoclave) {
+        if (ac?.autoclaveNumber && ac.processedAt) {
+            // everything up through cutting must be done
             stages.batching = 'completed';
             stages.ferryCart = 'completed';
             stages.tilting = 'completed';
             stages.cutting = 'completed';
-            stages.autoclave = 'completed';
+
+            // if doorOpenTime exists → autoclave complete, else still in-progress
+            stages.autoclave = ac.doorOpenTime
+                ? 'completed'
+                : 'in-progress';
         }
 
         if (batch.processSteps.segregation.totalBlocks > 0) {
@@ -720,7 +871,7 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             stages.tilting = 'in-progress';
         } else if (stages.cutting === 'pending') {
             stages.cutting = 'in-progress';
-        } else if (stages.autoclave === 'pending') {
+        } else if (stages.autoclave === 'pending' && ac?.autoclaveNumber) {
             stages.autoclave = 'in-progress';
         } else if (stages.segregation === 'pending') {
             stages.segregation = 'in-progress';
@@ -734,7 +885,7 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         }
 
         return stages;
-    };
+    }, []);
 
     // Function to add a new batch
     const addBatch = (batch: BatchRecord) => {
@@ -769,7 +920,7 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     };
 
     // Function to convert BatchRecord to UI-compatible batch format
-    const convertToUiBatch = (batchRecord: BatchRecord): UiBatch => {
+    const convertToUiBatch = useCallback((batchRecord: BatchRecord): UiBatch => {
         const stages = getBatchStages(batchRecord);
 
         return {
@@ -780,16 +931,16 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             status: batchRecord.status.toLowerCase().replace(' ', '-') as 'in-progress' | 'completed' | 'pending',
             stages
         };
-    };
+    }, [getBatchStages]);
 
     // Function to update batch status
-    const updateBatchStatus = (batchId: string, status: 'In Progress' | 'Completed' | 'Pending') => {
+    const updateBatchStatus = useCallback((batchId: string, status: 'In Progress' | 'Completed' | 'Pending') => {
         setBatches((prevBatches) =>
             prevBatches.map((batch) =>
                 batch.batchId === batchId ? { ...batch, status } : batch
             )
         );
-    };
+    }, [batches]);
 
     // Function to update a specific stage within a batch
     const updateBatchStage = (batchId: string, stageName: keyof BatchStages, stageStatus: BatchStageStatus) => {

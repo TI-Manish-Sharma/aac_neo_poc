@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     View,
     Text,
@@ -64,21 +64,53 @@ const BatchCard: React.FC<{
     const [expanded, setExpanded] = useState(false);
 
     // Find which stage is currently in progress
-    const getCurrentStage = (): { stageName: string, label: string } | null => {
-        const stageMap: { [key: string]: string } = {
-            'batching': 'Batching',
-            'ferryCart': 'Ferry Cart',
-            'tilting': 'Tilting',
-            'cutting': 'Cutting',
-            'autoclave': 'Autoclave',
-            'segregation': 'Segregation'
+    // const getCurrentStage = (): { stageName: string, label: string } | null => {
+    //     const stageMap: { [key: string]: string } = {
+    //         'batching': 'Batching',
+    //         'ferryCart': 'Ferry Cart',
+    //         'tilting': 'Tilting',
+    //         'cutting': 'Cutting',
+    //         'autoclave': 'Autoclave',
+    //         'segregation': 'Segregation'
+    //     };
+
+    //     for (const [key, value] of Object.entries(batch.stages)) {
+    //         if (value === 'in-progress') {
+    //             return { stageName: key, label: stageMap[key] };
+    //         }
+    //     }
+    //     return null;
+    // };
+
+    const getCurrentStage = (): { stageName: string; label: string } | null => {
+        const stageMap: Record<string, string> = {
+            batching: 'Batching',
+            ferryCart: 'Ferry Cart',
+            tilting: 'Tilting',
+            cutting: 'Cutting',
+            autoclave: 'Autoclave',
+            segregation: 'Segregation'
         };
 
+        //–– Special case: if everything up to cutting is done but autoclave remains pending,
+        //    treat autoclave as the “current” step for display purposes:
+        if (
+            batch.stages.batching === 'completed' &&
+            batch.stages.ferryCart === 'completed' &&
+            batch.stages.tilting === 'completed' &&
+            batch.stages.cutting === 'completed' &&
+            batch.stages.autoclave === 'pending'
+        ) {
+            return { stageName: 'autoclave', label: stageMap['autoclave'] };
+        }
+
+        //–– Otherwise fall back to your normal in-progress lookup:
         for (const [key, value] of Object.entries(batch.stages)) {
             if (value === 'in-progress') {
                 return { stageName: key, label: stageMap[key] };
             }
         }
+
         return null;
     };
 
@@ -86,6 +118,18 @@ const BatchCard: React.FC<{
 
     const toggleExpanded = () => {
         setExpanded(!expanded);
+    };
+
+    const getCurrentStageDisplay = () => {
+        if (!currentStage) return '';
+        // if we're on the autoclave step, pick one of two messages
+        if (currentStage.stageName === 'autoclave') {
+            return batch.stages.autoclave === 'in-progress'
+                ? 'Batch In Autoclave'
+                : 'Ready for Autoclave';
+        }
+        // for all other stages, still use the “Ready for X” pattern
+        return `Ready for ${currentStage.label}`;
     };
 
     return (
@@ -103,8 +147,7 @@ const BatchCard: React.FC<{
                         <View style={styles.currentStageContainer}>
                             <View style={styles.currentStageDot} />
                             <ThemedText style={styles.currentStageText}>
-                                {/* {currentStage.label} in progress */}
-                                {`Ready for ${currentStage.label}`}
+                                {getCurrentStageDisplay()}
                             </ThemedText>
                         </View>
                     )}
@@ -181,19 +224,23 @@ const BatchCard: React.FC<{
 
 export default function InProgressBatches() {
     const colorScheme = useColorScheme();
-    const [uiBatches, setUiBatches] = useState<UiBatch[]>([]);
+    // const [uiBatches, setUiBatches] = useState<UiBatch[]>([]);
     const { isLoading, getBatchesByStatus, convertToUiBatch, updateBatchStage } = useBatch();
 
     // Animation values
     const { headerAnim } = useAnimations();
 
     // Load data from context when component mounts
-    useEffect(() => {
-        if (!isLoading) {
-            const inProgressBatches = getBatchesByStatus('In Progress');
-            const convertedBatches = inProgressBatches.map(batch => convertToUiBatch(batch));
-            setUiBatches(convertedBatches);
-        }
+    // useEffect(() => {
+    //     if (!isLoading) {
+    //         const inProgressBatches = getBatchesByStatus('In Progress');
+    //         const convertedBatches = inProgressBatches.map(batch => convertToUiBatch(batch));
+    //         setUiBatches(convertedBatches);
+    //     }
+    // }, [isLoading, getBatchesByStatus, convertToUiBatch]);
+    const uiBatches = useMemo(() => {
+        if (isLoading) return [];
+        return getBatchesByStatus('In Progress').map(convertToUiBatch);
     }, [isLoading, getBatchesByStatus, convertToUiBatch]);
 
     const navigateToStageForm = (batch: UiBatch, stageName: string) => {
@@ -202,12 +249,18 @@ export default function InProgressBatches() {
 
         // Only navigate if the status is 'in-progress'
         if (stageStatus === 'in-progress') {
-            const screenMapping: Record<string, string> = {
+            const screenMapping: Record<string, 
+                "/(tabs)/(screens)/(batch-screens)/batching-form" |
+                "/(tabs)/(screens)/(batch-screens)/ferry-cart-form" |
+                "/(tabs)/(screens)/(batch-screens)/tilting-crane-form" |
+                "/(tabs)/(screens)/(batch-screens)/cutting-form" |
+                "/(tabs)/(screens)/(batch-screens)/segregation-form"
+            > = {
                 batching: '/(tabs)/(screens)/(batch-screens)/batching-form',
                 ferryCart: '/(tabs)/(screens)/(batch-screens)/ferry-cart-form',
                 tilting: '/(tabs)/(screens)/(batch-screens)/tilting-crane-form',
                 cutting: '/(tabs)/(screens)/(batch-screens)/cutting-form',
-
+                segregation: '/(tabs)/(screens)/(batch-screens)/segregation-form',
                 // Add other mappings as they become available
             };
 
@@ -252,16 +305,16 @@ export default function InProgressBatches() {
                 updateBatchStage(batch.batchNumber, pendingStage as keyof BatchStages, 'in-progress');
 
                 // Update local UI state
-                setUiBatches(prev =>
-                    prev.map(b => {
-                        if (b.batchNumber === batch.batchNumber) {
-                            const updatedStages = { ...b.stages };
-                            updatedStages[pendingStage as keyof BatchStages] = 'in-progress';
-                            return { ...b, stages: updatedStages, status: 'in-progress' };
-                        }
-                        return b;
-                    })
-                );
+                // setUiBatches(prev =>
+                //     prev.map(b => {
+                //         if (b.batchNumber === batch.batchNumber) {
+                //             const updatedStages = { ...b.stages };
+                //             updatedStages[pendingStage as keyof BatchStages] = 'in-progress';
+                //             return { ...b, stages: updatedStages, status: 'in-progress' };
+                //         }
+                //         return b;
+                //     })
+                // );
 
                 // Navigate to the form for this stage
                 const updatedBatch = {

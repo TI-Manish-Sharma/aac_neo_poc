@@ -1166,9 +1166,10 @@ export default function Home() {
       router.navigate('/(tabs)/(screens)/(batch-screens)/batch');
     } else if (screen === 'AutoclaveScreen') {
       router.navigate('/(tabs)/(screens)/(autoclave-screens)/autoclave');
-    } else if (screen === 'SegregationScreen') {
-      router.navigate('/(tabs)/(screens)/segregation');
-    } else if (screen === 'MaintenanceScreen') {
+    } // else if (screen === 'SegregationScreen') {
+    //   router.navigate('/(tabs)/(screens)/segregation');
+    // } 
+    else if (screen === 'MaintenanceScreen') {
       router.navigate('/(tabs)/(screens)/maintenance');
     }
     console.log(`Navigating to ${screen}`);
@@ -1274,7 +1275,7 @@ export default function Home() {
             'Autoclave'
           )}
 
-          {renderSquareButton(
+          {/* {renderSquareButton(
             'SegregationScreen',
             <MaterialCommunityIcons
               name="shape-outline"
@@ -1282,7 +1283,7 @@ export default function Home() {
               color={pressedButton === 'SegregationScreen' ? '#FFFFFF' : '#00D2E6'}
             />,
             'Segregation'
-          )}
+          )} */}
 
           {renderSquareButton(
             'MaintenanceScreen',
