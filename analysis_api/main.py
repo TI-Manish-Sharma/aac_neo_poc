@@ -12,7 +12,15 @@ from pydantic import BaseModel
 app = FastAPI(
     title="AAC Plant Batch Quality Analysis API",
     description="API for analyzing quality metrics from AAC manufacturing process",
-    version="1.0.0"
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
+    swagger_ui_parameters={
+        "defaultModelsExpandDepth": -1,
+        "docExpansion": "none",
+        "tryItOutEnabled": True,
+    },
 )
 
 # Add CORS middleware
@@ -93,11 +101,29 @@ def get_rejection_counts(batches):
     
     return rejection_counts
 
-@app.get("/")
+@app.get(
+    "/",
+    summary="Health check",
+    description="Returns a simple message indicating the API is up and running.",
+    tags=["Root"]
+)
 def read_root():
     return {"message": "AAC Plant Batch Quality Analysis API"}
 
-@app.get("/api/batch-quality", response_model=BatchQualityStats)
+@app.get(
+    "/api/batch-quality",
+    response_model=BatchQualityStats,
+    summary="Compute batch quality statistics",
+    description=(
+        "Given optional `start_date`, `end_date`, and/or `mould_id`, "
+        "return:\n"
+        "  - total number of batches processed\n"
+        "  - count and rate of rejected batches\n"
+        "  - a breakdown of rejection counts & percentages by type\n"
+        "  - the single most common rejection type"
+    ),
+    tags=["Quality Analysis"]
+)
 async def get_batch_quality_analysis(
     start_date: Optional[str] = Query(None, description="Start date in YYYY-MM-DD format"),
     end_date: Optional[str] = Query(None, description="End date in YYYY-MM-DD format"),
@@ -194,7 +220,19 @@ async def get_batch_quality_analysis(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error analyzing batch quality: {str(e)}")
 
-@app.get("/api/rejection-trends")
+@app.get(
+    "/api/rejection-trends",
+    summary="Fetch rejection trends over time",
+    description=(
+        "Aggregate batch rejection data in a time series grouped by **day**, **week**, or **month**. "
+        "Returns for each period:\n"
+        "  - total batches\n"
+        "  - number of batches with any rejections\n"
+        "  - overall rejection rate\n"
+        "  - counts & percentages for each rejection type"
+    ),
+    tags=["Quality Analysis", "Trends"]
+)
 async def get_rejection_trends(
     start_date: Optional[str] = Query(None, description="Start date in YYYY-MM-DD format"),
     end_date: Optional[str] = Query(None, description="End date in YYYY-MM-DD format"),
@@ -336,7 +374,18 @@ async def get_rejection_trends(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error analyzing rejection trends: {str(e)}")
 
-@app.get("/api/mould-performance")
+@app.get(
+    "/api/mould-performance",
+    summary="Retrieve mould performance metrics",
+    description=(
+        "Compute, for each `mouldId`:\n"
+        "  - total batches produced\n"
+        "  - number of rejected batches\n"
+        "  - rejection rate (%)\n"
+        "Sorts the output descending by rejection rate to highlight worst-performing moulds."
+    ),
+    tags=["Quality Analysis", "Performance"]
+)
 async def get_mould_performance(
     start_date: Optional[str] = Query(None, description="Start date in YYYY-MM-DD format"),
     end_date: Optional[str] = Query(None, description="End date in YYYY-MM-DD format")
@@ -430,7 +479,18 @@ async def get_mould_performance(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error analyzing mould performance: {str(e)}")
     
-@app.get("/api/segregation-analysis")
+@app.get(
+    "/api/segregation-analysis",
+    summary="Analyze segregation defects",
+    description=(
+        "Deep-dive into block segregation data:\n"
+        "  - overall defect summary (total batches, defect rate)\n"
+        "  - defects aggregated by **type** and by **position**\n"
+        "  - per-mould defect metrics and ranking\n"
+        "  - list of top 10 batches with highest defect rates"
+    ),
+    tags=["Segregation Analysis"]
+)
 async def get_segregation_analysis(
     start_date: Optional[str] = Query(None, description="Start date in YYYY-MM-DD format"),
     end_date: Optional[str] = Query(None, description="End date in YYYY-MM-DD format"),
