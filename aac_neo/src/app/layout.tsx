@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./globals.css";
+import Navigation from "./_components/Navigation";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,8 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body>
+        <header>
+          <Navigation />
+        </header>
         {children}
       </body>
     </html>

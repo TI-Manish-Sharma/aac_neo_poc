@@ -38,15 +38,26 @@ export default function AutoclaveFormScreen() {
     const [showBatchesModal, setShowBatchesModal] = useState(false);
 
     const {
-        getBatchById,
+        getBatchStages,
         getBatchesByStage,
         batches,
         setBatches,
         updateBatchStage,
-        addAutoclave
+        addAutoclave,
+        autoclaves
     } = useBatch();
 
-    const autoclaveNumber = (params.autoclaveNumber as string) || '1';
+    const autoclaveNumber = useMemo(() => {
+        if (!autoclaves || autoclaves.length === 0) return "1"; // Start with 1 if no autoclaves exist
+        
+        // Find the highest autoclave ID
+        const highestId = Math.max(...autoclaves.map(a => parseInt(a.autoclaveId.toString(), 10)));
+        
+        // Return the next number as a string
+        return (highestId + 1).toString();
+    }, [autoclaves]);
+
+    // const autoclaveNumber = (params.autoclaveNumber as string) || '1';
     const [selectedBatches, setSelectedBatches] = useState<
         Array<{ id: string; batchNumber: string; mouldNumber: string }>
     >([]);
@@ -103,21 +114,45 @@ export default function AutoclaveFormScreen() {
     ] as (keyof AutoclaveFormData)[], []);
 
     // load available batches
+    // useEffect(() => {
+    //     try {
+    //         const autoclaveBatches = getBatchesByStage('autoclave', 'in-progress').filter(b =>
+    //             b.processSteps?.cutting?.cuttingTime !== ""
+    //         );
+
+    //         const mapped = autoclaveBatches.map(b => ({
+    //             id: b.batchId,
+    //             batchNumber: b.batchId,
+    //             mouldNumber: b.mouldId
+    //         }));
+    //         setAvailableBatches(mapped);
+    //     } catch (e) {
+    //         console.error(e);
+    //     }
+    // }, [getBatchesByStage]);
+
     useEffect(() => {
         try {
-            const autoclaveBatches = getBatchesByStage('autoclave', 'in-progress').filter(b =>
-                b.processSteps?.cutting?.cuttingTime !== ""
+            // Get batches where cutting is completed and autoclave is pending
+            const autoclaveBatches = getBatchesByStage('autoclave', 'pending').filter(b => 
+                // Ensure cutting has been completed (has a cutting time)
+                b.processSteps?.cutting?.cuttingTime !== "" &&
+                // Double-check that cutting stage is actually marked complete
+                getBatchStages(b).cutting === 'completed'
             );
+    
             const mapped = autoclaveBatches.map(b => ({
                 id: b.batchId,
                 batchNumber: b.batchId,
                 mouldNumber: b.mouldId
             }));
+            
             setAvailableBatches(mapped);
+            console.log('Available batches for autoclave:', mapped);
         } catch (e) {
-            console.error(e);
+            console.error('Error loading autoclave-ready batches:', e);
         }
-    }, [getBatchesByStage]);
+    }, [getBatchesByStage, getBatchStages]);
 
     const prevDoorOpenTime = useWatch({ control, name: 'previousDoorOpenTime' });
     const doorCloseTime = useWatch({ control, name: 'doorCloseTime' });
@@ -172,7 +207,6 @@ export default function AutoclaveFormScreen() {
     };
 
     const onSubmit = (data: AutoclaveFormData) => {
-
         Keyboard.dismiss();
         if (!data.batchesProcessed.length) {
             return Alert.alert('Missing Information', 'Please select at least one batch to process');

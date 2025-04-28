@@ -1170,7 +1170,7 @@ export default function Home() {
     //   router.navigate('/(tabs)/(screens)/segregation');
     // } 
     else if (screen === 'MaintenanceScreen') {
-      router.navigate('/(tabs)/(screens)/maintenance');
+      router.navigate('/(tabs)/(screens)/(maintenance-screens)/maintenance');
     }
     console.log(`Navigating to ${screen}`);
   };

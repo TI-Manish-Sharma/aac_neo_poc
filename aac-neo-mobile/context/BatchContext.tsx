@@ -798,8 +798,8 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const getBatchStages = useCallback((batch: BatchRecord): BatchStages => {
         const id = batch.batchId;
         callCountsRef.current[id] = (callCountsRef.current[id] || 0) + 1;
-        console.log(`getBatchStages called for ${id}:`, callCountsRef.current[id]);
-        
+        // console.log(`getBatchStages called for ${id}:`, callCountsRef.current[id]);
+
         // Default to all pending
         const stages: BatchStages = {
             batching: 'pending',
@@ -889,7 +889,11 @@ export const BatchProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     // Function to add a new batch
     const addBatch = (batch: BatchRecord) => {
-        setBatches((prevBatches) => [...prevBatches, batch]);
+        setBatches((prevBatches) => {
+            let updatedBatches = [...prevBatches, batch];
+            console.log('Updated Batches:', updatedBatches);
+            return updatedBatches;
+        });
     };
 
     // Function to add a new autoclave record

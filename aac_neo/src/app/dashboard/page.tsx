@@ -22,7 +22,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <div className="row mb-4">
                 <div className="col-12">
                     <h1 className="display-5 fw-bold text-primary mb-0">AAC Plant Quality Dashboard</h1>
-                    <p className="text-muted">Monitor rejection rates, trends, mould performance, and segregation analysis</p>
+                    <p className="text-success">Monitor rejection rates, trends, mould performance, and segregation analysis</p>
                 </div>
             </div>
 

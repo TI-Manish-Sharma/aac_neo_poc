@@ -1,25 +1,19 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
+import ChatBotScreen from '@/components/ChatBotScreen';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 
-export default function TabTwoScreen() {
+export default function AskNeoScreen() {
   return (
-    <ThemedView style={styles.titleContainer}>
-      <ThemedText type="title">Ask Neo</ThemedText>
+    <ThemedView style={styles.container}>
+      <ChatBotScreen />
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
   },
 });

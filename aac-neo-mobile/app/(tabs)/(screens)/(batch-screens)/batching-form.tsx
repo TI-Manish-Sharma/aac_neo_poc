@@ -157,7 +157,7 @@ export default function BatchingForm() {
             // Mark the next stage (ferry cart) as in-progress
             updateBatchStage(batchNumber, 'ferryCart', 'in-progress');
 
-            console.log('Updated batch ingredients:', updatedBatch);
+            console.log('Updated batch ingredients');
 
             // Navigate back with success message
             Alert.alert(

@@ -119,6 +119,8 @@ export default function TiltingCraneScreen() {
             // Find the current batch
             const currentBatch = getBatchById(batchNumber);
 
+            // console.log('In Tilting, Before Update - Batch data:', JSON.stringify(currentBatch, null, 2));
+
             if (!currentBatch) {
                 throw new Error('Batch not found');
             }
@@ -139,7 +141,7 @@ export default function TiltingCraneScreen() {
             // Mark the next stage (cutting) as in-progress
             updateBatchStage(batchNumber, 'cutting', 'in-progress');
 
-            console.log('Updated tilting crane data:', updatedBatch);
+            console.log('Updated tilting crane data');
 
             // Navigate back with success message
             Alert.alert(
@@ -296,7 +298,7 @@ export default function TiltingCraneScreen() {
                 />
             )}
 
-            
+
         </ThemedView>
     );
 }

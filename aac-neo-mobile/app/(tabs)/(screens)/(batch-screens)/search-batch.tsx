@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     View,
     Text,
@@ -18,90 +18,209 @@ import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
-import { useBatch, BatchRecord, UiBatch } from '@/context/BatchContext';
+import { useBatch, UiBatch, BatchStages, BatchStageStatus } from '@/context/BatchContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { ScreenFooter } from '@/components/ui/ScreenFooter';
 import { useAnimations } from '@/hooks/useAnimations';
+import { StatusIndicator } from '@/components/ui/StatusIndicator';
 
 const { width, height } = Dimensions.get('window');
 
-// Component for each batch search result
 const BatchCard: React.FC<{
     batch: UiBatch;
-    onSelect: (batch: UiBatch) => void;
-}> = ({ batch, onSelect }) => {
+    onEdit: (batch: UiBatch) => void;
+    onStagePress: (batch: UiBatch, stageName: string) => void
+}> = ({ batch, onEdit, onStagePress }) => {
     const colorScheme = useColorScheme();
+    const [expanded, setExpanded] = useState(false);
 
-    // Get status color
-    const getStatusColor = () => {
-        return batch.status === 'completed' ? '#2E8B57' : '#FFD700';
+    const getCurrentStage = (): { stageName: string; label: string } | null => {
+        const stageMap: Record<string, string> = {
+            batching: 'Batching',
+            ferryCart: 'Ferry Cart',
+            tilting: 'Tilting',
+            cutting: 'Cutting',
+            autoclave: 'Autoclave',
+            segregation: 'Segregation'
+        };
+
+        //–– Special case: if everything up to cutting is done but autoclave remains pending,
+        //    treat autoclave as the "current" step for display purposes:
+        if (
+            batch.stages.batching === 'completed' &&
+            batch.stages.ferryCart === 'completed' &&
+            batch.stages.tilting === 'completed' &&
+            batch.stages.cutting === 'completed' &&
+            batch.stages.autoclave === 'pending'
+        ) {
+            return { stageName: 'autoclave', label: stageMap['autoclave'] };
+        }
+
+        //–– Otherwise fall back to your normal in-progress lookup:
+        for (const [key, value] of Object.entries(batch.stages)) {
+            if (value === 'in-progress') {
+                return { stageName: key, label: stageMap[key] };
+            }
+        }
+
+        return null;
     };
 
-    // Format date for better readability
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
+    // New function to get modified stage status based on logical progression
+    const getModifiedStageStatus = (stageName: string): BatchStageStatus => {
+        // Original behavior for early stages
+        if (stageName !== 'autoclave' && stageName !== 'segregation') {
+            return batch.stages[stageName as keyof BatchStages];
+        }
+
+        // Special handling for autoclave and segregation
+        const allPreviousCompleted =
+            batch.stages.batching === 'completed' &&
+            batch.stages.ferryCart === 'completed' &&
+            batch.stages.tilting === 'completed' &&
+            batch.stages.cutting === 'completed';
+
+        // For Autoclave stage handling
+        if (stageName === 'autoclave') {
+            return batch.stages.autoclave;
+        }
+
+        // For Segregation stage handling
+        if (stageName === 'segregation') {
+            // If Autoclave is completed and Segregation is in-progress, show yellow
+            if (batch.stages.autoclave === 'completed' && batch.stages.segregation === 'in-progress') {
+                return 'in-progress';
+            }
+
+            // If all previous stages including Autoclave are completed and Segregation is pending,
+            // it should be shown as pending/gray
+            if (allPreviousCompleted && batch.stages.autoclave === 'completed' &&
+                batch.stages.segregation === 'pending') {
+                return 'pending';
+            }
+
+            // If we're still at the Autoclave stage (pending or in-progress), 
+            // Segregation should always be gray/pending
+            if (allPreviousCompleted &&
+                (batch.stages.autoclave === 'pending' || batch.stages.autoclave === 'in-progress')) {
+                return 'pending';
+            }
+        }
+
+        return batch.stages[stageName as keyof BatchStages];
+    };
+
+    const currentStage = getCurrentStage();
+
+    const toggleExpanded = () => {
+        setExpanded(!expanded);
+    };
+
+    const getCurrentStageDisplay = () => {
+        if (!currentStage) return '';
+        // if we're on the autoclave step, pick one of two messages
+        if (currentStage.stageName === 'autoclave') {
+            return batch.stages.autoclave === 'in-progress'
+                ? 'Batch In Autoclave'
+                : 'Ready for Autoclave';
+        }
+        // for all other stages, still use the "Ready for X" pattern
+        return `Ready for ${currentStage.label}`;
     };
 
     return (
-        <TouchableOpacity
-            style={styles.batchCard}
-            onPress={() => onSelect(batch)}
-            activeOpacity={0.7}
-        >
-            <View style={styles.cardHeader}>
+        <View style={styles.batchCard}>
+            <TouchableOpacity
+                style={styles.cardHeader}
+                onPress={toggleExpanded}
+                activeOpacity={0.7}
+            >
                 <View style={styles.headerLeft}>
                     <ThemedText type="subtitle" style={styles.batchNumber}>
                         Batch #{batch.batchNumber}
                     </ThemedText>
-                    <View style={styles.statusContainer}>
-                        <View
-                            style={[
-                                styles.statusIndicator,
-                                { backgroundColor: getStatusColor() }
-                            ]}
-                        />
-                        <ThemedText
-                            style={[
-                                styles.statusText,
-                                { color: getStatusColor() }
-                            ]}
-                        >
-                            {batch.status === 'completed' ? 'Completed' : 'In Progress'}
-                        </ThemedText>
-                    </View>
+                    {!expanded && currentStage && (
+                        <View style={styles.currentStageContainer}>
+                            <View style={styles.currentStageDot} />
+                            <ThemedText style={styles.currentStageText}>
+                                {getCurrentStageDisplay()}
+                            </ThemedText>
+                        </View>
+                    )}
                 </View>
                 <View style={styles.headerRight}>
-                    <ThemedText style={styles.mouldNumber}>
-                        Mould: {batch.mouldNumber}
-                    </ThemedText>
+                    {currentStage?.stageName !== 'autoclave' && (
+                        <TouchableOpacity
+                            onPress={() => onEdit(batch)}
+                            style={styles.editButton}
+                        >
+                            <FontAwesome
+                                name="pencil"
+                                size={16}
+                                color={Colors[colorScheme ?? 'light'].tint}
+                            />
+                        </TouchableOpacity>
+                    )}
+                    <FontAwesome
+                        name={expanded ? "chevron-up" : "chevron-down"}
+                        size={16}
+                        color={Colors[colorScheme ?? 'light'].text}
+                    />
                 </View>
-            </View>
+            </TouchableOpacity>
 
-            <View style={styles.divider} />
+            {expanded && (
+                <>
+                    <View style={styles.divider} />
 
-            <View style={styles.batchInfo}>
-                <ThemedText style={styles.createdDate}>
-                    Created: {formatDate(batch.createdAt)}
-                </ThemedText>
+                    <View style={styles.statusGrid}>
+                        <StatusIndicator
+                            status={getModifiedStageStatus('batching')}
+                            label="Batching"
+                            onPress={() => onStagePress(batch, 'batching')}
+                        />
+                        <StatusIndicator
+                            status={getModifiedStageStatus('ferryCart')}
+                            label="Ferry Cart"
+                            onPress={() => onStagePress(batch, 'ferryCart')}
+                        />
+                        <StatusIndicator
+                            status={getModifiedStageStatus('tilting')}
+                            label="Tilting"
+                            onPress={() => onStagePress(batch, 'tilting')}
+                        />
+                        <StatusIndicator
+                            status={getModifiedStageStatus('cutting')}
+                            label="Cutting"
+                            onPress={() => onStagePress(batch, 'cutting')}
+                        />
+                        <StatusIndicator
+                            status={getModifiedStageStatus('autoclave')}
+                            label="Autoclave"
+                            onPress={() => onStagePress(batch, 'autoclave')}
+                        />
+                        <StatusIndicator
+                            status={getModifiedStageStatus('segregation')}
+                            label="Segregation"
+                            onPress={() => onStagePress(batch, 'segregation')}
+                        />
+                    </View>
 
-                <FontAwesome
-                    name="angle-right"
-                    size={20}
-                    color="#00A3B4"
-                />
-            </View>
-        </TouchableOpacity>
+                    <View style={styles.batchInfo}>
+                        <ThemedText style={styles.batchDetail}>Mould: {batch.mouldNumber}</ThemedText>
+                        <ThemedText style={styles.batchDetail}>
+                            Created: {new Date(batch.createdAt).toLocaleDateString()}
+                        </ThemedText>
+                    </View>
+                </>
+            )}
+        </View>
     );
 };
 
 export default function SearchBatchScreen() {
     const colorScheme = useColorScheme();
-    const { batches, isLoading, convertToUiBatch } = useBatch();
+    const { batches, isLoading, convertToUiBatch, updateBatchStage } = useBatch();
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<UiBatch[]>([]);
     const [hasSearched, setHasSearched] = useState(false);
@@ -141,12 +260,88 @@ export default function SearchBatchScreen() {
 
     // Handle batch selection
     const handleSelectBatch = (batch: UiBatch) => {
-        if (batch.status === 'completed') {
-            // Navigate to completed batch details (if you have a screen for this)
-            alert(`Viewing completed batch ${batch.batchNumber}`);
+        // Simply display batch details in an alert for both completed and in-progress batches
+        alert(`Viewing batch details for ${batch.batchNumber}`);
+    };
+
+    const navigateToStageForm = (batch: UiBatch, stageName: string) => {
+        // Get the status of the current stage
+        const stageStatus = batch.stages[stageName as keyof BatchStages];
+
+        // Only navigate if the status is 'in-progress'
+        if (stageStatus === 'in-progress') {
+            const screenMapping: Record<string,
+                "/(tabs)/(screens)/(batch-screens)/batching-form" |
+                "/(tabs)/(screens)/(batch-screens)/ferry-cart-form" |
+                "/(tabs)/(screens)/(batch-screens)/tilting-crane-form" |
+                "/(tabs)/(screens)/(batch-screens)/cutting-form" |
+                "/(tabs)/(screens)/(batch-screens)/segregation-form"
+            > = {
+                batching: '/(tabs)/(screens)/(batch-screens)/batching-form',
+                ferryCart: '/(tabs)/(screens)/(batch-screens)/ferry-cart-form',
+                tilting: '/(tabs)/(screens)/(batch-screens)/tilting-crane-form',
+                cutting: '/(tabs)/(screens)/(batch-screens)/cutting-form',
+                segregation: '/(tabs)/(screens)/(batch-screens)/segregation-form',
+                // Add other mappings as they become available
+            };
+
+            const screenPath = screenMapping[stageName];
+            if (screenPath) {
+                router.push({
+                    pathname: screenPath,
+                    params: {
+                        batchNumber: batch.batchNumber,
+                        mouldNumber: batch.mouldNumber
+                    }
+                });
+
+                console.log("Navigating to:", screenPath, "with params:", {
+                    batchNumber: batch.batchNumber,
+                    mouldNumber: batch.mouldNumber
+                });
+            }
+        }
+    };
+
+    const handleEditBatch = (batch: UiBatch) => {
+        // Find the current in-progress stage
+        const stageNames = ['batching', 'ferryCart', 'tilting', 'cutting', 'autoclave', 'segregation'];
+        const currentStage = stageNames.find(stage =>
+            batch.stages[stage as keyof BatchStages] === 'in-progress'
+        );
+
+        if (currentStage) {
+            navigateToStageForm(batch, currentStage);
         } else {
-            // For in-progress batches, navigate to the in-progress batches screen
-            router.push('/(tabs)/(screens)/(batch-screens)/in-progress-batches');
+            // If no stage is in progress, determine which one should be next
+            const pendingStage = stageNames.find(stage =>
+                batch.stages[stage as keyof BatchStages] === 'pending'
+            );
+
+            if (pendingStage) {
+                // Alert is kept similar to maintain functionality
+                alert(`The next stage is ${pendingStage}. Would you like to start it?`);
+
+                // Update batch stages in context
+                updateBatchStage(batch.batchNumber, pendingStage as keyof BatchStages, 'in-progress');
+
+                // Navigate to the form for this stage
+                const updatedBatch = {
+                    ...batch,
+                    stages: { ...batch.stages, [pendingStage]: 'in-progress' as BatchStageStatus }
+                };
+                navigateToStageForm(updatedBatch, pendingStage);
+            } else {
+                alert('All stages for this batch have been completed.');
+            }
+        }
+    };
+
+    const handleStagePress = (batch: UiBatch, stageName: string) => {
+        const stageStatus = batch.stages[stageName as keyof BatchStages];
+
+        if (stageStatus === 'in-progress') {
+            navigateToStageForm(batch, stageName);
         }
     };
 
@@ -232,8 +427,20 @@ export default function SearchBatchScreen() {
                             renderItem={({ item }) => (
                                 <BatchCard
                                     batch={item}
-                                    onSelect={handleSelectBatch}
+                                    onEdit={handleEditBatch}
+                                    onStagePress={handleStagePress}
                                 />
+                                // <BatchCard
+                                //     batch={item}
+                                //     onSelect={handleSelectBatch}
+                                //     onStagePress={(batch, stageName) => {
+                                //         // This is just a display in search view - no navigation
+                                //         const stageStatus = batch.stages[stageName as keyof BatchStages];
+                                //         if (stageStatus === 'in-progress') {
+                                //             alert(`Stage ${stageName} is in progress for batch ${batch.batchNumber}`);
+                                //         }
+                                //     }}
+                                // />
                             )}
                             contentContainerStyle={[
                                 styles.listContent,
@@ -377,6 +584,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
         textAlign: 'center',
     },
+
+    // BatchCard styles
     batchCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
@@ -395,11 +604,16 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
+    editButton: {
+        marginRight: 14,
+        padding: 2,
+    },
     headerLeft: {
         flex: 1,
     },
     headerRight: {
-        padding: 4,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     batchNumber: {
         fontSize: 18,
@@ -424,15 +638,63 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
     },
+    currentStageContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 4,
+    },
+    currentStageDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        backgroundColor: '#FFD700',
+        marginRight: 6,
+    },
+    currentStageText: {
+        fontSize: 14,
+        fontStyle: 'italic',
+    },
+
+    // Expanded card items
     divider: {
         height: 1,
         backgroundColor: '#EEEEEE',
         marginVertical: 12,
     },
+    statusGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginBottom: 12,
+    },
+    statusItem: {
+        width: '30%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    statusLabel: {
+        fontSize: 14,
+    },
     batchInfo: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    batchDetail: {
+        fontSize: 14,
+        color: '#666666',
+    },
+    viewDetailsButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+    },
+    viewDetailsText: {
+        fontSize: 14,
+        color: '#00A3B4',
+        fontWeight: '500',
     },
     createdDate: {
         fontSize: 14,

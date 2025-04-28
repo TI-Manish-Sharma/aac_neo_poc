@@ -124,7 +124,7 @@ export default function FerryCartScreen() {
             // Mark the next stage (tilting) as in-progress
             updateBatchStage(batchNumber, 'tilting', 'in-progress');
 
-            console.log('Updated ferry cart data:', updatedBatch);
+            console.log('Updated ferry cart data');
 
             // Navigate back with success message
             Alert.alert(

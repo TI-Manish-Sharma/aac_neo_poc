@@ -142,7 +142,7 @@ export default function CuttingFormScreen() {
             // Mark next stage as in-progress
             updateBatchStage(batchNumber, 'autoclave', 'in-progress');
 
-            console.log('Updated tilting crane data:', updatedBatches);
+            console.log('Updated Cutting Form data');
 
             // Navigate back with success message
             Alert.alert(

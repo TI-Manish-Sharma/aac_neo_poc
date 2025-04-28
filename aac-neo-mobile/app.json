@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AAC Neo",
-    "slug": "technizeredge-aac-neo",
+    "slug": "aac-neo-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon3.png",
@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/icon3.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.technizeredge.aacneo"
+      "package": "com.technizeredge.aacneo",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
