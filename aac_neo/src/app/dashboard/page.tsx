@@ -5,15 +5,15 @@ import SegregationAnalysis from './components/SegregationAnalysis';
 import CuttingProcess from './cutting-process/components/CuttingProcess';
 import RejectionTrends from './rejection-trends/components/RejectionTrends';
 
-interface DashboardProps {
+type DashboardProps = {
     baseApiUrl?: string;
     refreshInterval?: number;
-}
+};
 
-const Dashboard: React.FC<DashboardProps> = ({
+export default function Dashboard({
     baseApiUrl = process.env.NEXT_PUBLIC_ANALYTICS_API_BASE_URL,
     refreshInterval = 0
-}) => {
+}: DashboardProps) {
     // State for active tab
     const [activeTab, setActiveTab] = useState<string>('overview');
     // State for mobile menu visibility
@@ -237,5 +237,3 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
     );
 };
-
-export default Dashboard;
