@@ -46,7 +46,7 @@ const HeroSection = () => {
                 alt="AAC Plant Dashboard"
                 width={600}
                 height={400}
-                className="rounded-lg"
+                className="rounded-lg w-full h-auto"
                 priority
               />
             </div>

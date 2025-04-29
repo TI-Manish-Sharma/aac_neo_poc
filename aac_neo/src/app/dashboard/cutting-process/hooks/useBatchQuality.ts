@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { BatchQualityMetrics } from "../types/BatchQualityMetrics";
 import { BatchQualityService } from "../types/BatchQualityService";
 
@@ -38,8 +38,12 @@ export function useBatchQuality(
         }
     }, [service]);
 
+    const didFetch = useRef(false);
     useEffect(() => {
-        fetchData();
+        if (!didFetch.current) {
+            didFetch.current = true;
+            fetchData();
+        }
     }, [fetchData]);
 
     useEffect(() => {

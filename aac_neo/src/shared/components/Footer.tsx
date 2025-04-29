@@ -76,14 +76,14 @@ export default function Footer() {
                                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                                 </svg>
                                 <a href="mailto:contact@aacneo.com" className="hover:text-cyan-400 transition-colors">
-                                    contact@aacneo.com
+                                    contactus@technizeredge.com
                                 </a>
                             </li>
                             <li className="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                                 </svg>
-                                <span>San Francisco, CA</span>
+                                <span>Pune, Bharat</span>
                             </li>
                         </ul>
                     </div>

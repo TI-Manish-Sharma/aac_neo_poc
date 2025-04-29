@@ -20,7 +20,7 @@ export interface RejectionTrendsProps {
 }
 
 const RejectionTrends: React.FC<RejectionTrendsProps> = ({
-    apiUrl = 'http://localhost:8000/api/rejection-trends',
+    apiUrl = '/api/rejection-trends',
     refreshInterval = 0, // 0 means no auto-refresh
     title = 'Rejection Trends Analysis'
 }) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ApiBatchQualityService } from '../services/BatchQualityApi';
 import { RejectionTypesChart } from './RejectionTypesChart';
 import { RejectionAlert } from './RejectionAlert';
@@ -23,7 +23,7 @@ const CuttingProcess: React.FC<CuttingProcessProps> = ({
   title = 'Cutting Process Quality Dashboard'
 }) => {
   // Create repository and use application hook
-  const service = new ApiBatchQualityService(apiUrl);
+  const service = useMemo(() => new ApiBatchQualityService(apiUrl), [apiUrl]);
   const { data, isLoading, error, lastUpdated, refresh } = useBatchQuality(service, {
     refreshInterval
   });
