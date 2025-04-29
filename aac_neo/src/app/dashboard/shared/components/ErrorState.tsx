@@ -3,11 +3,11 @@ import { AlertTriangle, RefreshCw } from 'lucide-react';
 
 interface ErrorStateProps {
     error: string;
-    apiUrl: string;
+    apiUrl?: string;
     onRetry: () => void;
 }
 
-export const ErrorState: React.FC<ErrorStateProps> = ({ error, apiUrl, onRetry }) => {
+export const ErrorState: React.FC<ErrorStateProps> = ({ error, onRetry }) => {
     return (
         <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
             <div className="flex items-center mb-3">

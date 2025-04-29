@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Filter } from 'lucide-react';
 import { ErrorBanner } from '../../shared/components/ErrorBanner';
 import LoadingIndicator from '../../shared/components/LoadingIndicator';

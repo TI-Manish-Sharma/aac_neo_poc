@@ -38,7 +38,7 @@ const CuttingProcess: React.FC<CuttingProcessProps> = ({
 
   // Show error state
   if (error && !data) {
-    return <ErrorState error={error} apiUrl={apiUrl} onRetry={refresh} />;
+    return <ErrorState error={error} onRetry={refresh} />;
   }
 
   // If we have no data but no error either

@@ -1,15 +1,15 @@
 import React from 'react';
-import { UseFormRegister, FieldError, RegisterOptions } from 'react-hook-form';
+import { UseFormRegister, FieldError, RegisterOptions, FieldValues, Path } from 'react-hook-form';
 
-interface TextAreaFieldProps {
+interface TextAreaFieldProps<TFieldValues extends FieldValues = FieldValues> {
     id: string;
     label: string;
-    register: UseFormRegister<any>;
+    register: UseFormRegister<TFieldValues>;
     name: string;
     error?: FieldError;
     placeholder?: string;
     className?: string;
-    registerOptions?: RegisterOptions;
+    registerOptions?: RegisterOptions<TFieldValues, Path<TFieldValues>>;
     disabled?: boolean;
     required?: boolean;
     rows?: number;

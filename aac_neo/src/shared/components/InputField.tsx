@@ -1,16 +1,16 @@
 import React from 'react';
-import { UseFormRegister, FieldError, RegisterOptions } from 'react-hook-form';
+import { UseFormRegister, FieldError, RegisterOptions, FieldValues, Path } from 'react-hook-form';
 
-interface InputFieldProps {
+interface InputFieldProps<TFieldValues extends FieldValues = FieldValues> {
     id: string;
     label: string;
     type?: 'text' | 'email' | 'password' | 'number' | 'tel';
-    register: UseFormRegister<any>;
+    register: UseFormRegister<FieldValues>;
     name: string;
     error?: FieldError;
     placeholder?: string;
     className?: string;
-    registerOptions?: RegisterOptions;
+    registerOptions?: RegisterOptions<TFieldValues, Path<TFieldValues>>;
     disabled?: boolean;
     required?: boolean;
 }

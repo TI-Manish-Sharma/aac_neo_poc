@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { BatchQualityMetrics } from "../types/BatchQualityMetrics";
 import { BatchQualityService } from "../types/BatchQualityService";
 
@@ -24,7 +24,7 @@ export function useBatchQuality(
     const [error, setError] = useState<string | null>(null);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setIsLoading(true);
             const batchQualityMetrics = await service.fetchBatchQualityMetrics();
@@ -36,11 +36,11 @@ export function useBatchQuality(
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [service]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     useEffect(() => {
         if (refreshInterval <= 0) return;
@@ -50,7 +50,7 @@ export function useBatchQuality(
         }, refreshInterval * 1000);
 
         return () => clearInterval(intervalId);
-    }, [refreshInterval]);
+    }, [refreshInterval, fetchData]);
 
     return {
         data,

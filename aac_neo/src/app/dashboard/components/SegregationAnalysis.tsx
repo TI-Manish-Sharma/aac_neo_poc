@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     BarChart,
     Bar,
@@ -11,8 +11,6 @@ import {
     XAxis,
     YAxis,
     CartesianGrid,
-    Line,
-    LineChart,
     RadarChart,
     PolarGrid,
     PolarAngleAxis,
@@ -99,12 +97,12 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
 
     // Colors for charts
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-    const DEFECT_COLORS = {
-        'rainCracksCuts': '#0088FE',
-        'cornerCracksCuts': '#00C49F',
-        'cornerDamage': '#FFBB28',
-        'chippedBlocks': '#FF8042'
-    };
+    // const DEFECT_COLORS = {
+    //     'rainCracksCuts': '#0088FE',
+    //     'cornerCracksCuts': '#00C49F',
+    //     'cornerDamage': '#FFBB28',
+    //     'chippedBlocks': '#FF8042'
+    // };
 
     // Function to format date for API
     const formatDateForApi = (date: Date): string => {
@@ -112,7 +110,7 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
     };
 
     // Function to fetch data from API
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setIsLoading(true);
 
@@ -154,12 +152,12 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
             setError(err instanceof Error ? err.message : 'An unknown error occurred');
             setIsLoading(false);
         }
-    };
+    }, [apiUrl, endDate, mouldId, startDate]);
 
     // Initial data fetch
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     // Set up auto-refresh if interval is provided
     useEffect(() => {
@@ -170,7 +168,7 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
         }, refreshInterval * 1000);
 
         return () => clearInterval(intervalId);
-    }, [refreshInterval]);
+    }, [refreshInterval, fetchData]);
 
     // Format date for display
     const formatDate = (date: Date) => {

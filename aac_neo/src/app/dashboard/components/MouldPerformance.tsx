@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   BarChart,
   Bar,
@@ -42,6 +42,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
 
   // Filter states
   const [startDate, setStartDate] = useState<Date | null>(new Date(new Date().setMonth(new Date().getMonth() - 1)));
+  // eslint-disable-next-line
   const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortConfig, setSortConfig] = useState<{ key: keyof MouldPerformanceData; direction: 'ascending' | 'descending' }>({
@@ -63,7 +64,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
   };
 
   // Function to fetch data from API
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
 
@@ -105,12 +106,12 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
       setIsLoading(false);
     }
-  };
+  }, [apiUrl, startDate, endDate]);
 
   // Initial data fetch
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   // Set up auto-refresh if interval is provided
   useEffect(() => {
@@ -121,7 +122,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
     }, refreshInterval * 1000);
 
     return () => clearInterval(intervalId);
-  }, [refreshInterval]);
+  }, [refreshInterval, fetchData]);
 
   // Filter data when search term changes
   useEffect(() => {
