@@ -34,7 +34,7 @@ const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
                 title: 'Schedule Mould Maintenance',
                 description: `Moulds ${highDefectMoulds.join(', ')} are showing high defect rates. Consider inspecting and scheduling maintenance for these moulds to reduce defects.`,
                 icon: <AlertTriangle size={24} />,
-                color: 'text-danger'
+                color: 'text-red-600'
             });
         }
 
@@ -45,7 +45,7 @@ const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
                 title: 'Optimize Process Parameters',
                 description: `Consider adjusting water content and hardness settings. Batches with "UNDER" or "OVER" rising quality show significantly more defects. Target optimal hardness range of 135-145 for better quality.`,
                 icon: <TrendingDown size={24} />,
-                color: 'text-warning'
+                color: 'text-amber-600'
             });
         }
 
@@ -75,7 +75,7 @@ const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
                 title: `Address ${mostCommonDefectType.type} Issues`,
                 description: defectRecommendation,
                 icon: <Lightbulb size={24} />,
-                color: 'text-primary'
+                color: 'text-blue-600'
             });
         }
 
@@ -86,7 +86,7 @@ const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
                 title: 'Optimize Problem Positions',
                 description: `Positions ${worstPositions.join(', ')} show higher defect rates. Investigate potential causes such as uneven temperature distribution, mould wear, or process variations affecting these positions.`,
                 icon: <TrendingDown size={24} />,
-                color: 'text-info'
+                color: 'text-cyan-600'
             });
         }
 
@@ -97,7 +97,7 @@ const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
                 title: 'Process is Running Well',
                 description: 'All quality indicators are within acceptable ranges. Continue current practices and monitor for any changes.',
                 icon: <ThumbsUp size={24} />,
-                color: 'text-success'
+                color: 'text-green-600'
             });
         }
 
@@ -107,28 +107,26 @@ const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
     const recommendations = generateRecommendations();
 
     return (
-        <div className="row mb-4">
-            <div className="col-12">
-                <div className="card bg-light">
-                    <div className="card-body">
-                        <h2 className="h5 fw-semibold mb-3">Recommendations & Insights</h2>
+        <div className="w-full mb-8">
+            <div className="w-full">
+                <div className="bg-gray-50 rounded-lg shadow">
+                    <div className="p-6">
+                        <h2 className="text-lg font-semibold mb-4">Recommendations & Insights</h2>
 
                         {recommendations.length === 0 ? (
-                            <p className="text-muted">No recommendations available for the current data.</p>
+                            <p className="text-gray-500">No recommendations available for the current data.</p>
                         ) : (
-                            <div className="row g-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {recommendations.map((rec, index) => (
-                                    <div className="col-md-6" key={index}>
-                                        <div className="card shadow-sm">
-                                            <div className="card-body">
-                                                <div className="d-flex align-items-center mb-2">
-                                                    <div className={`me-2 ${rec.color}`}>
-                                                        {rec.icon}
-                                                    </div>
-                                                    <h3 className="h6 fw-bold mb-0">{rec.title}</h3>
+                                    <div key={index} className="bg-white rounded-lg shadow">
+                                        <div className="p-4">
+                                            <div className="flex items-center mb-2">
+                                                <div className={`mr-2 ${rec.color}`}>
+                                                    {rec.icon}
                                                 </div>
-                                                <p className="card-text small mb-0">{rec.description}</p>
+                                                <h3 className="text-sm font-bold">{rec.title}</h3>
                                             </div>
+                                            <p className="text-xs text-gray-700">{rec.description}</p>
                                         </div>
                                     </div>
                                 ))}

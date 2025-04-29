@@ -1,0 +1,1 @@
+export type GroupByOption = 'day' | 'week' | 'month';

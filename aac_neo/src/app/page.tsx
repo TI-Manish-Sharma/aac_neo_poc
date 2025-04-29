@@ -1,7 +1,14 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-import LandingPage from "./_components/LandingPage";
+import HeroSection from "@/shared/components/HeroSection";
+import QualityInsightsSection from "@/shared/components/QualityInsightsSection";
 
 export default function Home() {
-  return <LandingPage />;
+  return (
+    <div className="landing-page">
+      {/* Hero Section */}
+      <HeroSection />
+
+      {/* Main Features Section */}
+      <QualityInsightsSection />
+    </div>
+  );
 }
