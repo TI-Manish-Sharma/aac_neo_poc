@@ -1,12 +1,12 @@
 import React from 'react';
 import { UseFormRegister, FieldError, RegisterOptions, FieldValues, Path } from 'react-hook-form';
 
-interface InputFieldProps<TFieldValues extends FieldValues = FieldValues> {
+interface InputFieldProps<TFieldValues extends FieldValues> {
     id: string;
     label: string;
     type?: 'text' | 'email' | 'password' | 'number' | 'tel';
-    register: UseFormRegister<FieldValues>;
-    name: string;
+    register: UseFormRegister<TFieldValues>;
+    name: Path<TFieldValues>;
     error?: FieldError;
     placeholder?: string;
     className?: string;
@@ -15,7 +15,7 @@ interface InputFieldProps<TFieldValues extends FieldValues = FieldValues> {
     required?: boolean;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
+const InputField = <TFieldValues extends FieldValues>({
     id,
     label,
     type = 'text',
@@ -27,7 +27,7 @@ const InputField: React.FC<InputFieldProps> = ({
     registerOptions = {},
     disabled = false,
     required = false,
-}) => {
+}: InputFieldProps<TFieldValues>) => {
     return (
         <div className="mb-6">
             <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">

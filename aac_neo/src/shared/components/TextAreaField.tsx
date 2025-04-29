@@ -1,11 +1,11 @@
 import React from 'react';
 import { UseFormRegister, FieldError, RegisterOptions, FieldValues, Path } from 'react-hook-form';
 
-interface TextAreaFieldProps<TFieldValues extends FieldValues = FieldValues> {
+interface TextAreaFieldProps<TFieldValues extends FieldValues> {
     id: string;
     label: string;
     register: UseFormRegister<TFieldValues>;
-    name: string;
+    name: Path<TFieldValues>;
     error?: FieldError;
     placeholder?: string;
     className?: string;
@@ -15,7 +15,7 @@ interface TextAreaFieldProps<TFieldValues extends FieldValues = FieldValues> {
     rows?: number;
 }
 
-const TextAreaField: React.FC<TextAreaFieldProps> = ({
+const TextAreaField = <TFieldValues extends FieldValues>({
     id,
     label,
     register,
@@ -27,7 +27,7 @@ const TextAreaField: React.FC<TextAreaFieldProps> = ({
     disabled = false,
     required = false,
     rows = 5
-}) => {
+}: TextAreaFieldProps<TFieldValues>) => {
     return (
         <div className="mb-6">
             <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">

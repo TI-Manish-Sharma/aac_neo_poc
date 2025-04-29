@@ -44,7 +44,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmitSuccess }) => {
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6">Send us a Message</h2>
 
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <InputField 
+                    <InputField<ContactFormData> 
                         id="name"
                         label="Full Name"
                         register={register}
@@ -53,7 +53,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmitSuccess }) => {
                         required
                     />
 
-                    <InputField 
+                    <InputField<ContactFormData> 
                         id="email"
                         label="Email Address"
                         type="email"
@@ -63,7 +63,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmitSuccess }) => {
                         required
                     />
 
-                    <InputField 
+                    <InputField<ContactFormData> 
                         id="subject"
                         label="Subject"
                         register={register}
@@ -72,7 +72,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmitSuccess }) => {
                         required
                     />
 
-                    <TextAreaField
+                    <TextAreaField<ContactFormData>
                         id="message"
                         label="Message"
                         register={register}
