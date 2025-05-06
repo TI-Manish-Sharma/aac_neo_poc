@@ -75,15 +75,9 @@ export default function RootLayout({
     >
       <head>
         <link rel="manifest" href="/site.webmanifest" />
+        <link rel="icon" href="/icon-48x48.png" sizes="48x48" type="image/png"></link>
       </head>
       <body className="flex flex-col min-h-screen bg-gray-50 antialiased">
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 z-50 bg-blue-600 text-white p-4 m-2 focus:outline-none focus:ring-2 focus:ring-blue-300"
-        >
-          Skip to main content
-        </a>
-
         <header>
           <Navigation />
         </header>
