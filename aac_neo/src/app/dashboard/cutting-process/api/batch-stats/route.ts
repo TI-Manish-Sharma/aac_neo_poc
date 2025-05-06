@@ -42,6 +42,14 @@ export async function GET() {
         {}
     );
 
+    // Find the maximum rejection count
+    const maxRejectionCount = Math.max(...Object.values(dynamicRejections));
+    
+    // Find all rejection types that have the maximum count (handles ties)
+    const mostCommonRejections = Object.entries(dynamicRejections)
+        .filter(([_, count]) => count === maxRejectionCount)
+        .map(([type]) => type);
+
     const mockData: BatchQualityMetricsApi = {
         total_batches: totalBatches,
         rejected_batches: rejectedBatches,
@@ -53,9 +61,9 @@ export async function GET() {
             count,
             percentage: parseFloat(((count / rejectedBatches) * 100).toFixed(2)),
         })),
-        most_common_rejection: Object.keys(dynamicRejections).reduce((a, b) =>
-            dynamicRejections[a] > dynamicRejections[b] ? a : b
-        ),
+        // Now returns an array of the most common rejection(s)
+        most_common_rejections: mostCommonRejections,
+        most_common_rejection: mostCommonRejections[0], // or any other logic to pick one
     };
 
     return NextResponse.json<BatchQualityMetricsApi>(mockData);
