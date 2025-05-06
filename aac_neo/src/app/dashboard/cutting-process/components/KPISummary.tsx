@@ -13,8 +13,8 @@ export const KPISummary: React.FC<KPISummaryProps> = ({ metrics }) => {
                 <p className="text-2xl md:text-3xl font-bold text-gray-800">{metrics.totalBatches}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                <p className="text-sm font-medium text-red-600 mb-1">Rejected Batches</p>
-                <p className="text-2xl md:text-3xl font-bold text-gray-800">{metrics.rejectedBatches}</p>
+                <p className="text-sm font-medium text-red-600 mb-1">Batches with Rejection</p>
+                <p className="text-2xl md:text-3xl font-bold text-gray-800">{metrics.batchesWithRejection}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
                 <p className="text-sm font-medium text-amber-600 mb-1">Rejection Rate</p>

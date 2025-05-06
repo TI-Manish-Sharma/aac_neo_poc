@@ -23,7 +23,7 @@ export const ProductionOverviewChart: React.FC<ProductionOverviewChartProps> = (
             const item = payload[0].payload;
             return (
                 <div className="bg-white rounded-md border border-gray-200 p-2 shadow-md">
-                    <p className="font-medium">{`${item.name}: ${item.value} batches`}</p>
+                    <p className="font-medium">{`${item.name}: ${item.value}`}</p>
                     <p className="text-gray-500 text-sm">{`${item.percentage}% of total`}</p>
                 </div>
             );

@@ -18,7 +18,7 @@ interface CuttingProcessProps {
 }
 
 const CuttingProcess: React.FC<CuttingProcessProps> = ({
-  apiUrl = '/api/batch-quality',
+  apiUrl = '/dashboard/cutting-process/api/batch-stats',
   refreshInterval = 0,
   title = 'Cutting Process Quality Dashboard'
 }) => {

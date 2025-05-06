@@ -1,5 +1,14 @@
 'use client';
+
 import React, { useState } from 'react';
+import {
+    ChartBar,
+    ChartLine,
+    Box,
+    ChartPie,
+    Scissors
+} from 'lucide-react';
+
 import CuttingProcess from '../cutting-process/components/CuttingProcess';
 import RejectionTrends from '../rejection-trends/components/RejectionTrends';
 import MouldPerformance from './MouldPerformance';
@@ -19,20 +28,21 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
     // State for mobile menu visibility
     const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
-    // Tab configuration
+    // Tab configuration with Lucide-react icons
     const tabs = [
-        { id: 'overview', label: 'Overview', icon: 'chart-bar' },
-        { id: 'trends', label: 'Rejection Trends', icon: 'chart-line' },
-        { id: 'moulds', label: 'Mould Performance', icon: 'cube' },
-        { id: 'segregation', label: 'Segregation Analysis', icon: 'chart-pie' }
+        { id: 'overview', label: 'Overview', icon: ChartBar },
+        { id: 'cutting-process-quality', label: 'Cutting Quality', icon: Scissors },
+        { id: 'trends', label: 'Rejection Trends', icon: ChartLine },
+        { id: 'moulds', label: 'Mould Performance', icon: Box },
+        { id: 'segregation', label: 'Segregation Analysis', icon: ChartPie }
     ];
 
-    // Function to toggle mobile menu
+    // Toggle mobile menu
     const toggleMobileMenu = () => {
         setMobileMenuOpen(!mobileMenuOpen);
     };
 
-    // Function to handle tab selection and close mobile menu
+    // Handle tab selection and close mobile menu
     const handleTabSelect = (tabId: string) => {
         setActiveTab(tabId);
         setMobileMenuOpen(false);
@@ -85,49 +95,9 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
                             <button
                                 key={tab.id}
                                 onClick={() => handleTabSelect(tab.id)}
-                                className={`w-full text-left px-4 py-3 flex items-center ${activeTab === tab.id ? 'bg-cyan-50 text-cyan-600' : 'text-gray-700 hover:bg-gray-50'
-                                    }`}
+                                className={`w-full text-left px-4 py-3 flex items-center ${activeTab === tab.id ? 'bg-cyan-50 text-cyan-600' : 'text-gray-700 hover:bg-gray-50'}`}
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5 mr-3"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    {tab.icon === 'chart-bar' && (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                                        />
-                                    )}
-                                    {tab.icon === 'chart-line' && (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
-                                        />
-                                    )}
-                                    {tab.icon === 'cube' && (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                                        />
-                                    )}
-                                    {tab.icon === 'chart-pie' && (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M12.025 4.725a5.975 5.975 0 018.25 8.25L12.025 4.725z"
-                                        />
-                                    )}
-                                </svg>
+                                <tab.icon className="h-5 w-5 mr-3" />
                                 {tab.label}
                             </button>
                         ))}
@@ -149,46 +119,7 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
                             aria-current={activeTab === tab.id ? 'page' : undefined}
                         >
                             <div className="flex items-center">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5 mr-2"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    {tab.icon === 'chart-bar' && (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                                        />
-                                    )}
-                                    {tab.icon === 'chart-line' && (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
-                                        />
-                                    )}
-                                    {tab.icon === 'cube' && (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                                        />
-                                    )}
-                                    {tab.icon === 'chart-pie' && (
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z M12.025 4.725a5.975 5.975 0 018.25 8.25L12.025 4.725z"
-                                        />
-                                    )}
-                                </svg>
+                                <tab.icon className="h-5 w-5 mr-2" />
                                 {tab.label}
                             </div>
                         </button>
@@ -200,8 +131,31 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
             <div className="bg-white rounded-lg shadow-sm p-3 md:p-6">
                 {/* Overview Tab */}
                 {activeTab === 'overview' && (
+                    <div>
+                        <h2 className="text-2xl font-semibold mb-4">Overview</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {/* Total Batches Card */}
+                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                                <p className="text-sm text-gray-500">Total Batches</p>
+                                <p className="text-3xl font-bold">—</p>
+                            </div>
+                            {/* Rejected Batches Card */}
+                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                                <p className="text-sm text-gray-500">Rejected Batches</p>
+                                <p className="text-3xl font-bold">—</p>
+                            </div>
+                            {/* Rejection Rate Card */}
+                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                                <p className="text-sm text-gray-500">Rejection Rate</p>
+                                <p className="text-3xl font-bold">—</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Cutting Process Quality Tab */}
+                {activeTab === 'cutting-process-quality' && (
                     <CuttingProcess
-                        apiUrl={`${baseApiUrl}/api/batch-quality`}
                         refreshInterval={refreshInterval}
                         title="Cutting Process - Quality Dashboard"
                     />
