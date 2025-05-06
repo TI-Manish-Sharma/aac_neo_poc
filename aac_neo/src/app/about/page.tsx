@@ -33,7 +33,7 @@ export default function AboutPage() {
                     <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
                         <h3 className="text-xl font-semibold text-gray-800">Our Solution</h3>
                         <p className="text-gray-600">
-                            Behind the scenes, advanced analytics read your data and speak your language—delivering crystal-clear trends and "next step" suggestions in seconds through intuitive dashboards.
+                            Behind the scenes, advanced analytics read your data and speak your language—delivering crystal-clear trends and &quot;next step&quot; suggestions in seconds through intuitive dashboards.
                         </p>
                     </div>
                 </div>

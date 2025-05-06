@@ -25,7 +25,7 @@ export async function GET() {
     // generate random “weights” and scale them to sum = rejectedBatches
     const weights = rejectionKeys.map(() => Math.random());
     const weightSum = weights.reduce((a, b) => a + b, 0);
-    let counts = weights.map(w => Math.floor((w / weightSum) * rejectedBatches));
+    const counts = weights.map(w => Math.floor((w / weightSum) * rejectedBatches));
 
     // fix any rounding drift
     let drift = rejectedBatches - counts.reduce((a, b) => a + b, 0);
