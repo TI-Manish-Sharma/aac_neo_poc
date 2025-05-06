@@ -41,8 +41,8 @@ export default function Support() {
                 <SupportCard
                     icon={<Video className="w-8 h-8 text-cyan-500" />}
                     title="Training Resources"
-                    description="Access video tutorials and training sessions to master AAC Neo"
-                    link="/documentation/tutorials"
+                    description="Training Programs for operational excellence in AAC Manufacturing"
+                    link="https://aacindiainstitute.com/training"
                     linkText="View Resources"
                 />
             </div>

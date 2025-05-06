@@ -32,9 +32,9 @@ const HeroSection = () => {
                 <Link href="/contact" className="bg-cyan-400 hover:bg-cyan-500 text-white font-medium px-6 py-3 rounded-lg transition duration-300">
                   Request Demo
                 </Link>
-                <button className="border border-gray-400 hover:border-gray-500 text-gray-700 font-medium px-6 py-3 rounded-lg transition duration-300">
+                <Link href="/documentation" className="border border-gray-400 hover:border-gray-500 text-gray-700 font-medium px-6 py-3 rounded-lg transition duration-300">
                   Learn More
-                </button>
+                </Link>
               </div>
             </div>
           </div>

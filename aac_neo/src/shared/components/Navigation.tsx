@@ -14,7 +14,10 @@ export default function Navigation() {
     // Navigation links array for better maintainability
     const navLinks = [
         { href: "/", label: "Home" },
+        { href: "/features", label: "Features" },
         { href: "/dashboard", label: "Dashboard" },
+        { href: "/contact", label: "Contact" },
+        { href: "/about", label: "About" },
     ];
 
     // Resources dropdown items
@@ -160,13 +163,6 @@ export default function Navigation() {
                                 </div>
                             )}
                         </div>
-
-                        <Link
-                            href="/contact"
-                            className="text-gray-800 hover:text-cyan-400 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-cyan-300 after:transition-all hover:after:w-full"
-                        >
-                            Contact
-                        </Link>
                     </div>
                 </div>
 
@@ -212,14 +208,6 @@ export default function Navigation() {
                                 ))}
                             </div>
                         </div>
-
-                        <Link
-                            href="/contact"
-                            className="text-gray-800 hover:text-cyan-400 font-medium pl-1 border-l-4 border-transparent hover:border-cyan-500 transition-colors"
-                            onClick={() => setIsMenuOpen(false)}
-                        >
-                            Contact
-                        </Link>
                     </div>
                 </div>
             </div>

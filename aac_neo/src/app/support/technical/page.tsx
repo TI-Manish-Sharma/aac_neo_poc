@@ -145,9 +145,6 @@ export default function TechnicalSupport() {
                     If you&apos;ve tried the troubleshooting steps above and are still experiencing issues, please contact our technical support team.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                    <Link href="/support" className="bg-cyan-400 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        Submit Support Ticket
-                    </Link>
                     <a href="mailto:tech-support@aacneo.com" className="bg-white hover:bg-gray-100 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors border border-gray-200">
                         Email Tech Support
                     </a>
