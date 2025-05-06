@@ -116,7 +116,7 @@ function generateMockData(params: RequestParams): RejectionTrend[] {
 
 function generatePeriods(startDate: Date, endDate: Date, groupBy: string): string[] {
     const periods: string[] = [];
-    let currentDate = new Date(startDate);
+    const currentDate = new Date(startDate);
 
     while (currentDate <= endDate) {
         if (groupBy === 'day') {
