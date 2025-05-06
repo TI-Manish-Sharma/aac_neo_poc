@@ -114,9 +114,6 @@ export default function Support() {
                     <Link href="/documentation" className="px-6 py-3 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow">
                         Documentation
                     </Link>
-                    <Link href="/blog" className="px-6 py-3 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow">
-                        Blog & Updates
-                    </Link>
                 </div>
             </div>
 

@@ -22,7 +22,6 @@ export default function Navigation() {
         { href: "/documentation", label: "Documentation" },
         { href: "/support", label: "Support" },
         { href: "/faq", label: "FAQ" },
-        { href: "/blog", label: "Blog" },
     ];
 
     // Handle scroll event to add shadow when scrolled
