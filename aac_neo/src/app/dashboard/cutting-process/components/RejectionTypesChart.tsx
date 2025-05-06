@@ -9,8 +9,8 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
-    Cell,
-    LabelList
+    LabelList,
+    TooltipProps
 } from 'recharts';
 import { RejectionType } from '../types/RejectionType';
 
@@ -32,7 +32,7 @@ export function RejectionTypesChart({
         isMobile: true,
         isTablet: false
     });
-    
+
     useEffect(() => {
         const handleResize = () => {
             const width = window.innerWidth;
@@ -41,19 +41,19 @@ export function RejectionTypesChart({
                 isTablet: width >= 640 && width <= 1024 // Wider tablet range
             });
         };
-        
+
         // Initial check
         handleResize();
-        
+
         // Add event listener
         window.addEventListener('resize', handleResize);
-        
+
         // Cleanup
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     const { isMobile, isTablet } = screenSize;
-    
+
     // Simpler mobile layout with fixed dimensions
     if (isMobile) {
         // Process data to ensure it has the needed properties
@@ -65,7 +65,10 @@ export function RejectionTypesChart({
         }));
 
         // Custom tooltip for better mobile display
-        const CustomTooltip = ({ active, payload }: any) => {
+        const CustomTooltip = ({
+            active,
+            payload,
+        }: TooltipProps<number, string>) => {
             if (active && payload && payload.length) {
                 return (
                     <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
@@ -83,7 +86,7 @@ export function RejectionTypesChart({
             <div className="w-full">
                 <div className="w-full bg-gray-50 rounded-lg p-4 border border-gray-100">
                     <h2 className="text-lg font-semibold text-gray-800 mb-3">{title}</h2>
-                    
+
                     {/* Simplified horizontal bar chart for mobile */}
                     <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
@@ -93,8 +96,8 @@ export function RejectionTypesChart({
                                 margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
                                 barSize={20}
                             >
-                                <XAxis 
-                                    type="number" 
+                                <XAxis
+                                    type="number"
                                     hide={true}
                                 />
                                 <YAxis
@@ -106,25 +109,25 @@ export function RejectionTypesChart({
                                     tickLine={false}
                                 />
                                 <Tooltip content={<CustomTooltip />} />
-                                <Bar 
-                                    dataKey="count" 
-                                    name="Number of Batches" 
+                                <Bar
+                                    dataKey="count"
+                                    name="Number of Batches"
                                     fill={primaryColor}
                                     radius={[0, 4, 4, 0]}
                                     background={{ fill: '#eee' }}
                                 >
-                                    <LabelList 
-                                        dataKey="count" 
-                                        position="insideRight" 
-                                        fill="#ffffff" 
+                                    <LabelList
+                                        dataKey="count"
+                                        position="insideRight"
+                                        fill="#ffffff"
                                         fontSize={12}
-                                        formatter={(value: any) => value}
+                                        formatter={(value: string | number) => value}
                                     />
                                 </Bar>
                             </ReChartsBar>
                         </ResponsiveContainer>
                     </div>
-                    
+
                     {/* Simple legend for mobile */}
                     <div className="mt-4 flex items-center justify-center">
                         <div className="flex items-center">
@@ -136,7 +139,7 @@ export function RejectionTypesChart({
             </div>
         );
     }
-    
+
     // Original desktop implementation with improvements
     const config = {
         barSize: isTablet ? 24 : 40,
@@ -150,7 +153,7 @@ export function RejectionTypesChart({
         <div className="w-full overflow-x-auto">
             <div className="min-w-[500px] bg-gray-50 rounded-lg p-4 border border-gray-100">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">{title}</h2>
-                
+
                 <ResponsiveContainer
                     width="100%"
                     aspect={config.aspectRatio}
@@ -158,11 +161,11 @@ export function RejectionTypesChart({
                 >
                     <ReChartsBar
                         data={data}
-                        margin={{ 
-                            top: 20, 
-                            right: 30, 
-                            left: 20, 
-                            bottom: config.bottomMargin 
+                        margin={{
+                            top: 20,
+                            right: 30,
+                            left: 20,
+                            bottom: config.bottomMargin
                         }}
                         barGap={8}
                         barSize={config.barSize}
@@ -171,9 +174,9 @@ export function RejectionTypesChart({
                             dataKey="type"
                             interval={0}
                             angle={config.xAxisAngle}
-                            tick={{ 
-                                fontSize: config.tickFontSize, 
-                                textAnchor: 'end' 
+                            tick={{
+                                fontSize: config.tickFontSize,
+                                textAnchor: 'end'
                             }}
                             padding={{ left: 20, right: 20 }}
                             height={config.bottomMargin - 20}
@@ -182,11 +185,11 @@ export function RejectionTypesChart({
                             yAxisId="left"
                             orientation="left"
                             tick={{ fontSize: config.tickFontSize }}
-                            label={{ 
-                                value: 'Count', 
-                                angle: -90, 
+                            label={{
+                                value: 'Count',
+                                angle: -90,
                                 dx: -10,
-                                fontSize: config.tickFontSize 
+                                fontSize: config.tickFontSize
                             }}
                         />
                         <YAxis
@@ -194,26 +197,26 @@ export function RejectionTypesChart({
                             orientation="right"
                             domain={[0, 'dataMax']}
                             tick={{ fontSize: config.tickFontSize }}
-                            label={{ 
-                                value: 'Percentage (%)', 
-                                angle: 90, 
+                            label={{
+                                value: 'Percentage (%)',
+                                angle: 90,
                                 dx: 10,
-                                fontSize: config.tickFontSize 
+                                fontSize: config.tickFontSize
                             }}
                         />
 
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                        
-                        <Tooltip 
+
+                        <Tooltip
                             formatter={(value, name) =>
                                 name === 'Number of Batches'
                                     ? [value, 'Count']
                                     : [`${value}%`, 'Percentage']
                             }
                         />
-                        
-                        <Legend 
-                            verticalAlign="top" 
+
+                        <Legend
+                            verticalAlign="top"
                             height={36}
                             wrapperStyle={{ fontSize: config.tickFontSize }}
                         />
@@ -225,7 +228,7 @@ export function RejectionTypesChart({
                             fill={primaryColor}
                             radius={[4, 4, 0, 0]}
                         />
-                        
+
                         <Bar
                             yAxisId="right"
                             dataKey="percentage"

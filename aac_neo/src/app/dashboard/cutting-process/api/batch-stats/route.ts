@@ -47,7 +47,7 @@ export async function GET() {
     
     // Find all rejection types that have the maximum count (handles ties)
     const mostCommonRejections = Object.entries(dynamicRejections)
-        .filter(([_, count]) => count === maxRejectionCount)
+        .filter(([, count]) => count === maxRejectionCount)
         .map(([type]) => type);
 
     const mockData: BatchQualityMetricsApi = {

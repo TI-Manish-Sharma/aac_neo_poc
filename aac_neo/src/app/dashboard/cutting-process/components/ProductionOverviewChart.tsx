@@ -32,7 +32,7 @@ export const ProductionOverviewChart: React.FC<ProductionOverviewChartProps> = (
     };
 
     // Responsive label renderer that adapts to screen size
-    const renderCustomizedLabel = ({ name, percent, cx, cy, midAngle, innerRadius, outerRadius }: { name: string; percent: number; cx: number; cy: number; midAngle: number; innerRadius: number; outerRadius: number }) => {
+    const renderCustomizedLabel = ({ percent, cx, cy, midAngle, innerRadius, outerRadius }: { percent: number; cx: number; cy: number; midAngle: number; innerRadius: number; outerRadius: number }) => {
         // Only show labels if segment is large enough (more than a 5% share)
         if (percent < 0.05) return null;
 
@@ -101,7 +101,7 @@ export const ProductionOverviewChart: React.FC<ProductionOverviewChartProps> = (
                             layout="horizontal"
                             verticalAlign="bottom"
                             align="center"
-                            formatter={(value, entry, index) => {
+                            formatter={(value) => {
                                 // Responsive legend text
                                 return (
                                     <span className="text-xs md:text-sm">{value}</span>
