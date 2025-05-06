@@ -76,7 +76,7 @@ export default function Footer() {
                                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                                 </svg>
                                 <a href="mailto:contact@aacneo.com" className="hover:text-cyan-400 transition-colors">
-                                    contactus@technizeredge.com
+                                    contact@aacneo.com
                                 </a>
                             </li>
                             <li className="flex items-center">
