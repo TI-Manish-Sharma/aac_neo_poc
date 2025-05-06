@@ -164,7 +164,6 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
                 {/* Rejection Trends Tab */}
                 {activeTab === 'trends' && (
                     <RejectionTrends
-                        apiUrl={`${baseApiUrl}/api/rejection-trends`}
                         refreshInterval={refreshInterval}
                         title="Cutting Process - Rejection Trends Analysis"
                     />

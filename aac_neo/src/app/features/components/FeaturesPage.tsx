@@ -106,35 +106,39 @@ export default function FeaturesPage() {
                                 ))}
                             </ul>
                         </div>
-                        <div className="relative">
-                            <div className="bg-white p-3 rounded-lg shadow-md">
-                                <Image
-                                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=500&h=350&auto=format&fit=crop"
-                                    alt="Analytics Dashboard showing quality improvements"
-                                    width={500}
-                                    height={350}
-                                    className="rounded-lg"
-                                />
-                            </div>
-                            <div className="absolute -top-5 -right-5 bg-cyan-500 text-white p-3 rounded-full shadow-lg">
-                                <span className="font-bold">-42%</span>
+                        <div className="flex justify-center items-center w-full">
+                            <div className="relative">
+                                <div className="bg-white p-3 rounded-lg shadow-md">
+                                    <Image
+                                        src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=500&h=350&auto=format&fit=crop"
+                                        alt="Analytics Dashboard showing quality improvements"
+                                        width={500}
+                                        height={350}
+                                        className="rounded-lg"
+                                    />
+                                </div>
+                                <div className="absolute -top-5 -right-5 bg-cyan-500 text-white p-3 rounded-full shadow-lg">
+                                    <span className="font-bold">-42%</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
-                        <div className="order-2 md:order-1 relative">
-                            <div className="bg-white p-3 rounded-lg shadow-md">
-                                <Image
-                                    src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=500&h=350&auto=format&fit=crop"
-                                    alt="Factory workers reviewing quality data"
-                                    width={500}
-                                    height={350}
-                                    className="rounded-lg"
-                                />
-                            </div>
-                            <div className="absolute -bottom-5 -left-5 bg-blue-500 text-white p-3 rounded-full shadow-lg">
-                                <span className="font-bold">+38%</span>
+                        <div className="flex justify-center items-center w-full">
+                            <div className="order-2 md:order-1 relative">
+                                <div className="bg-white p-3 rounded-lg shadow-md">
+                                    <Image
+                                        src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=500&h=350&auto=format&fit=crop"
+                                        alt="Factory workers reviewing quality data"
+                                        width={500}
+                                        height={350}
+                                        className="rounded-lg"
+                                    />
+                                </div>
+                                <div className="absolute -bottom-5 -left-5 bg-blue-500 text-white p-3 rounded-full shadow-lg">
+                                    <span className="font-bold">+38%</span>
+                                </div>
                             </div>
                         </div>
                         <div className="order-1 md:order-2">
