@@ -144,7 +144,7 @@ const FAQ: React.FC = () => {
             answer: (
                 <>
                     <p>
-                        If you're experiencing issues with the dashboard loading, please try these troubleshooting steps:
+                        If you&apos;re experiencing issues with the dashboard loading, please try these troubleshooting steps:
                     </p>
                     <ol className="list-decimal pl-5 mt-2 space-y-1">
                         <li>Refresh your browser page</li>
@@ -155,7 +155,7 @@ const FAQ: React.FC = () => {
                         <li>Try accessing from a different browser or device</li>
                     </ol>
                     <p className="mt-2">
-                        If the issue persists, please contact our technical support team at support@aacneo.com with details about the problem and any error messages you're seeing.
+                        If the issue persists, please contact our technical support team at support@aacneo.com with details about the problem and any error messages you&apos;re seeing.
                     </p>
                 </>
             ),
@@ -206,7 +206,7 @@ const FAQ: React.FC = () => {
                         <li>Optional on-site training for larger implementations</li>
                     </ul>
                     <p className="mt-2">
-                        We also offer a dedicated account manager for enterprise customers to ensure you're getting the most value from the platform.
+                        We also offer a dedicated account manager for enterprise customers to ensure you&apos;re getting the most value from the platform.
                     </p>
                 </>
             ),
@@ -217,16 +217,16 @@ const FAQ: React.FC = () => {
             answer: (
                 <>
                     <p>
-                        Limited access to dashboard features is typically related to user permissions. Here's what you can do:
+                        Limited access to dashboard features is typically related to user permissions. Here&apos;s what you can do:
                     </p>
                     <ol className="list-decimal pl-5 mt-2 space-y-1">
                         <li>Check your user role in the profile settings</li>
-                        <li>Contact your organization's AAC Neo administrator to request additional permissions</li>
-                        <li>Verify that your subscription plan includes the features you're trying to access</li>
-                        <li>Make sure you're using the latest version of the application</li>
+                        <li>Contact your organization&apos;s AAC Neo administrator to request additional permissions</li>
+                        <li>Verify that your subscription plan includes the features you&apos;re trying to access</li>
+                        <li>Make sure you&apos;re using the latest version of the application</li>
                     </ol>
                     <p className="mt-2">
-                        If you're an administrator and experiencing this issue, please contact our support team for assistance with your account configuration.
+                        If you&apos;re an administrator and experiencing this issue, please contact our support team for assistance with your account configuration.
                     </p>
                 </>
             ),
@@ -360,7 +360,7 @@ const FAQ: React.FC = () => {
                     Still have questions?
                 </h2>
                 <p className="text-gray-600 mb-4">
-                    If you couldn't find the answer you were looking for, our team is here to help.
+                    If you couldn&apos;t find the answer you were looking for, our team is here to help.
                 </p>
                 <Link
                     href="/contact"

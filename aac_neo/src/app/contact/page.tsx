@@ -1,6 +1,5 @@
 import React from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import ContactForm from './components/ContactForm';
 import AACContactInformation from './components/AACContactInformation';
 

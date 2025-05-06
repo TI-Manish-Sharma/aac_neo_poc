@@ -17,7 +17,7 @@ export default function Support() {
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold text-gray-800 mb-4">Support Center</h1>
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                    We're here to help you make the most of AAC Neo and resolve any issues you may encounter.
+                    We&apos;re here to help you make the most of AAC Neo and resolve any issues you may encounter.
                 </p>
             </div>
 

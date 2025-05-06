@@ -23,7 +23,7 @@ export default function TechnicalSupport() {
                             <h3 className="font-medium text-gray-800">Dashboard Not Loading</h3>
                         </div>
                         <p className="text-gray-600 text-sm mb-3">
-                            If your dashboard isn't loading or displays errors, try these steps:
+                            If your dashboard isn&apos;t loading or displays errors, try these steps:
                         </p>
                         <ol className="list-decimal pl-5 text-sm text-gray-600 space-y-1">
                             <li>Clear your browser cache and cookies</li>
@@ -39,7 +39,7 @@ export default function TechnicalSupport() {
                             <h3 className="font-medium text-gray-800">Chart Visualization Issues</h3>
                         </div>
                         <p className="text-gray-600 text-sm mb-3">
-                            If charts aren't rendering correctly or showing no data:
+                            If charts aren&apos;t rendering correctly or showing no data:
                         </p>
                         <ol className="list-decimal pl-5 text-sm text-gray-600 space-y-1">
                             <li>Check that your date filters are set correctly</li>
@@ -55,7 +55,7 @@ export default function TechnicalSupport() {
                             <h3 className="font-medium text-gray-800">Data Synchronization</h3>
                         </div>
                         <p className="text-gray-600 text-sm mb-3">
-                            If you're experiencing data synchronization issues:
+                            If you&apos;re experiencing data synchronization issues:
                         </p>
                         <ol className="list-decimal pl-5 text-sm text-gray-600 space-y-1">
                             <li>Check your API connection status</li>
@@ -77,7 +77,7 @@ export default function TechnicalSupport() {
                             <li>Reduce the date range in your filters</li>
                             <li>Close other resource-intensive applications</li>
                             <li>Try using a wired internet connection</li>
-                            <li>Check with colleagues if they're experiencing similar issues</li>
+                            <li>Check with colleagues if they&apos;re experiencing similar issues</li>
                         </ol>
                     </div>
                 </div>
@@ -142,7 +142,7 @@ export default function TechnicalSupport() {
             <div className="bg-cyan-50 border-l-4 border-cyan-500 p-6 rounded-lg">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">Need More Help?</h2>
                 <p className="text-gray-600 mb-4">
-                    If you've tried the troubleshooting steps above and are still experiencing issues, please contact our technical support team.
+                    If you&apos;ve tried the troubleshooting steps above and are still experiencing issues, please contact our technical support team.
                 </p>
                 <div className="flex flex-wrap gap-4">
                     <Link href="/support" className="bg-cyan-400 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-medium transition-colors">

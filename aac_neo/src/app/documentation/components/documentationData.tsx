@@ -27,14 +27,14 @@ export const documentationSections: Section[] = [
                 </p>
                 <ol className="list-decimal pl-6 mb-4 space-y-2">
                     <li>Navigate to the AAC Neo website and log in with your credentials</li>
-                    <li>Click on the "Dashboard" button in the navigation bar</li>
+                    <li>Click on the &quot;Dashboard&quot; button in the navigation bar</li>
                     <li>You will be directed to the main dashboard page with various analytics tabs</li>
                 </ol>
 
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-4 my-6 rounded">
                     <p className="text-blue-700">
                         <strong>Note:</strong> Your admin may have provided you with specific login credentials.
-                        If you're having trouble accessing the dashboard, please contact your system administrator.
+                        If you&apos;re having trouble accessing the dashboard, please contact your system administrator.
                     </p>
                 </div>
             </div>
@@ -187,7 +187,7 @@ export const documentationSections: Section[] = [
 
                 <div className="bg-green-50 border-l-4 border-green-500 p-4 my-6 rounded">
                     <p className="text-green-700">
-                        <strong>Best Practice:</strong> When implementing process improvements, use the "Group By" feature
+                        <strong>Best Practice:</strong> When implementing process improvements, use the &quot;Group By&quot; feature
                         to compare weekly or monthly data before and after your changes to measure their effectiveness.
                     </p>
                 </div>

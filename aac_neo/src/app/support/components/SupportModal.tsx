@@ -109,7 +109,7 @@ const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) => {
                                         </div>
                                         <div className="ml-3">
                                             <p className="text-sm text-green-700">
-                                                Your support request has been submitted successfully. We'll get back to you soon.
+                                                Your support request has been submitted successfully. We&apos;ll get back to you soon.
                                             </p>
                                         </div>
                                     </div>
