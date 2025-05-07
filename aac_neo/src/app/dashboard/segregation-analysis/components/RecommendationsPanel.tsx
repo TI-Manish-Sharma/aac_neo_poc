@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, Lightbulb, ThumbsUp, TrendingDown } from 'lucide-react';
-import { SegregationAnalysisData } from '../types';
+import { SegregationAnalysisData } from '../types/SegregationAnalysisData';
 
 interface RecommendationsPanelProps {
     data: SegregationAnalysisData;
@@ -103,33 +103,27 @@ const RecommendationsPanel: React.FC<RecommendationsPanelProps> = ({ data }) => 
     const recommendations = generateRecommendations();
 
     return (
-        <div className="w-full">
-            <div className="w-full">
-                <div className="bg-gray-50 rounded-lg shadow-sm">
-                    <div className="p-6">
-                        <h2 className="text-lg font-semibold mb-4">Recommendations & Insights</h2>
+        <div className="mb-6">
+            <div className="bg-gray-50 rounded-lg shadow-sm p-4">
+                <h2 className="text-lg font-semibold mb-4">Recommendations & Insights</h2>
 
-                        {recommendations.length === 0 ? (
-                            <p className="text-gray-500">No recommendations available for the current data.</p>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {recommendations.map((rec, index) => (
-                                    <div key={index} className="bg-white rounded-lg shadow-sm">
-                                        <div className="p-4">
-                                            <div className="flex items-center mb-2">
-                                                <div className={`mr-2 ${rec.color}`}>
-                                                    {rec.icon}
-                                                </div>
-                                                <h3 className="text-sm font-bold">{rec.title}</h3>
-                                            </div>
-                                            <p className="text-xs text-gray-700">{rec.description}</p>
-                                        </div>
+                {recommendations.length === 0 ? (
+                    <p className="text-gray-500">No recommendations available for the current data.</p>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {recommendations.map((rec, index) => (
+                            <div key={index} className="bg-white rounded-lg shadow p-4">
+                                <div className="flex items-center mb-2">
+                                    <div className={`mr-2 ${rec.color}`}>
+                                        {rec.icon}
                                     </div>
-                                ))}
+                                    <h3 className="text-md font-bold">{rec.title}</h3>
+                                </div>
+                                <p className="text-sm text-gray-700">{rec.description}</p>
                             </div>
-                        )}
+                        ))}
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

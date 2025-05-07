@@ -23,11 +23,11 @@ export async function GET(request: Request) {
 }
 
 function generateMockData(params: RequestParams): MouldPerformanceData[] {
-    const { start_date, end_date, mould_id } = params;
+    const { mould_id } = params;
 
     // Parse dates or use defaults
-    const startDate = start_date ? new Date(start_date) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
-    const endDate = end_date ? new Date(end_date) : new Date(); // today
+    // const startDate = start_date ? new Date(start_date) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // 30 days ago
+    // const endDate = end_date ? new Date(end_date) : new Date(); // today
 
     // Define ranges for random data generation
     const totalMoulds = 32; // Total number of moulds to generate
@@ -44,7 +44,7 @@ function generateMockData(params: RequestParams): MouldPerformanceData[] {
     ];
 
     // Generate data for all moulds
-    let mouldData: MouldPerformanceData[] = [];
+    const mouldData: MouldPerformanceData[] = [];
 
     for (let i = 1; i <= totalMoulds; i++) {
         // Skip if mould_id is specified and doesn't match

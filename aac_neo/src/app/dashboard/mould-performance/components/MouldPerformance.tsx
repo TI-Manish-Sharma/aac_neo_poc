@@ -10,10 +10,11 @@ import {
   CartesianGrid,
   Cell
 } from 'recharts';
-import { RefreshCw, AlertTriangle, Calendar, Search, ArrowDownUp } from 'lucide-react';
+import { RefreshCw, AlertTriangle, Calendar, Search, ArrowDownUp, Filter } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { MouldPerformanceData } from '../types/MouldPerformanceData';
+import { Header } from '../../shared/components/Header';
 
 interface MouldPerformanceProps {
   apiUrl?: string;
@@ -188,39 +189,29 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
     return 'bg-green-500 text-white';
   };
 
+  const [showFilters, setShowFilters] = useState<boolean>(false);
+
+  const toggleFilters = () => {
+    setShowFilters(prev => !prev);
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <h1 className="text-2xl font-bold">{title}</h1>
+    <div className="bg-white rounded-lg shadow-md p-4 md:p-6">
+      <Header title={title}
+        lastUpdated={lastUpdated}
+        isLoading={isLoading}
+        onRefresh={handleRefresh}>
 
-        <div className="flex items-center mt-3 md:mt-0">
-          {lastUpdated && (
-            <span className="text-xs text-gray-500 mr-3 mt-1">
-              Last updated: {formatDate(lastUpdated)}
-            </span>
-          )}
-
-          {isLoading ? (
-            <button className="bg-gray-400 text-white px-4 py-2 rounded flex items-center" disabled>
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Updating...
-            </button>
-          ) : (
-            <button
-              onClick={handleRefresh}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
-            >
-              <RefreshCw size={16} className="mr-2" /> Refresh
-            </button>
-          )}
-        </div>
-      </div>
+        <button
+          onClick={toggleFilters}
+          className="flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition duration-200">
+          <Filter size={16} className="mr-2" />
+          <span>Filters</span>
+        </button>
+      </Header>
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      {showFilters && (<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
             <Calendar size={16} className="mr-2" /> Start Date
@@ -248,7 +239,10 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
         </div>
         <div className="flex items-end">
           <button
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+            className={`w-full h-10 p-2 rounded font-medium transition duration-200 ${isLoading
+              ? "bg-blue-300 text-blue-800 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600 text-white"
+              }`}
             onClick={handleApplyFilters}
             disabled={isLoading}
           >
@@ -263,7 +257,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
             ) : 'Apply Filters'}
           </button>
         </div>
-      </div>
+      </div>)}
 
       {/* Show error banner if encountered an error */}
       {error && (

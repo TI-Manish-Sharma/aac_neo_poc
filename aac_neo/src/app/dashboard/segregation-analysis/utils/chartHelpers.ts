@@ -1,4 +1,4 @@
-import { DefectByType, DefectByPosition, MouldPerformance, BatchDefect } from '../types';
+import { DefectByPosition, MouldPerformance, BatchDefect } from '../types';
 
 // Colors for charts
 export const CHART_COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
