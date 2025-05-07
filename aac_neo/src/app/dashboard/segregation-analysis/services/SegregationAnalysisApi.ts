@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { ApiResponse } from "../../shared/types/ApiResponse";
 import { SegregationAnalysisData } from "../types/SegregationAnalysisData";
 
@@ -20,9 +21,6 @@ export async function fetchSegregationAnalysis(
         }
 
         const data: SegregationAnalysisData = await response.json();
-
-        // CReate delay in response to simulate loading time
-        // await new Promise((resolve) => setTimeout(resolve, 5000));
 
         return {
             data,

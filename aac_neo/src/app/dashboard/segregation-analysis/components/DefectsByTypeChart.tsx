@@ -47,7 +47,7 @@ const DefectsByTypeChart: React.FC<DefectsByTypeChartProps> = ({ data, detailed 
                                 ))}
                             </Pie>
                             <Tooltip
-                                formatter={(value, name, props) => [value, 'Count']}
+                                formatter={(value) => [value, 'Count']}
                                 labelFormatter={(label) => data[label].type}
                             />
                             <Legend />
