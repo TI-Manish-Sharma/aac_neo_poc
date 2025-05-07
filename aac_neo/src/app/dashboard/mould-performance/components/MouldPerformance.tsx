@@ -13,14 +13,7 @@ import {
 import { RefreshCw, AlertTriangle, Calendar, Search, ArrowDownUp } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
-// Define TypeScript interfaces
-interface MouldPerformanceData {
-  MouldId: string;
-  TotalBatches: number;
-  RejectedBatches: number;
-  RejectionRate: number;
-}
+import { MouldPerformanceData } from '../types/MouldPerformanceData';
 
 interface MouldPerformanceProps {
   apiUrl?: string;
@@ -29,7 +22,7 @@ interface MouldPerformanceProps {
 }
 
 const MouldPerformance: React.FC<MouldPerformanceProps> = ({
-  apiUrl = 'http://localhost:8000/api/mould-performance',
+  apiUrl = '/dashboard/mould-performance/api/mould',
   refreshInterval = 0, // 0 means no auto-refresh
   title = 'Mould Performance Analysis'
 }) => {

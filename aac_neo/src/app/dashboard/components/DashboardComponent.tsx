@@ -11,7 +11,7 @@ import {
 
 import CuttingProcess from '../cutting-process/components/CuttingProcess';
 import RejectionTrends from '../rejection-trends/components/RejectionTrends';
-import MouldPerformance from './MouldPerformance';
+import MouldPerformance from '../mould-performance/components/MouldPerformance';
 import SegregationAnalysis from './SegregationAnalysis';
 
 interface DashboardComponentProps {
@@ -172,7 +172,6 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
                 {/* Mould Performance Tab */}
                 {activeTab === 'moulds' && (
                     <MouldPerformance
-                        apiUrl={`${baseApiUrl}/api/mould-performance`}
                         refreshInterval={refreshInterval}
                         title="Mould Performance Analysis"
                     />
