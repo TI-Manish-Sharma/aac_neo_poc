@@ -20,8 +20,8 @@ import {
 import { RefreshCw, AlertTriangle, Calendar, Search, Download } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import RecommendationsComponent from './RecommendationsComponent';
-import { SegregationData } from '../types/SegregationData';
+import RecommendationsPanel from './RecommendationsPanel';
+import { SegregationAnalysisData } from '../types';
 
 interface SegregationAnalysisProps {
     apiUrl?: string;
@@ -35,7 +35,7 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
     title = 'Segregation Analysis Dashboard'
 }) => {
     // State for data
-    const [data, setData] = useState<SegregationData | null>(null);
+    const [data, setData] = useState<SegregationAnalysisData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -94,7 +94,7 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
                 throw new Error(`API request failed with status ${response.status}`);
             }
 
-            const responseData: SegregationData = await response.json();
+            const responseData: SegregationAnalysisData = await response.json();
             setData(responseData);
             setLastUpdated(new Date());
             setError(null);
@@ -384,7 +384,7 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
                                     </div>
                                 </div>
 
-                                <RecommendationsComponent data={data} />
+                                <RecommendationsPanel data={data} />
 
                                 {/* Overview Charts */}
                                 <div className="row g-4">

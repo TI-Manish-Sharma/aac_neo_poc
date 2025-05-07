@@ -1,16 +1,12 @@
 import React from 'react';
 import { AlertTriangle, Lightbulb, ThumbsUp, TrendingDown } from 'lucide-react';
+import { SegregationAnalysisData } from '../types';
 
-interface RecommendationsData {
-    mouldPerformance: { mouldId: string; averageDefectsPerBatch: number }[];
-    defectsByType: { type: string; count: number }[];
-    defectsByPosition: { position: string; percentage: number }[];
-    summary: { defectRate: number };
+interface RecommendationsPanelProps {
+    data: SegregationAnalysisData;
 }
 
-const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
-    if (!data) return null;
-
+const RecommendationsPanel: React.FC<RecommendationsPanelProps> = ({ data }) => {
     // Generate recommendations based on data analysis
     const generateRecommendations = () => {
         const recommendations = [];
@@ -107,9 +103,9 @@ const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
     const recommendations = generateRecommendations();
 
     return (
-        <div className="w-full mb-8">
+        <div className="w-full">
             <div className="w-full">
-                <div className="bg-gray-50 rounded-lg shadow">
+                <div className="bg-gray-50 rounded-lg shadow-sm">
                     <div className="p-6">
                         <h2 className="text-lg font-semibold mb-4">Recommendations & Insights</h2>
 
@@ -118,7 +114,7 @@ const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {recommendations.map((rec, index) => (
-                                    <div key={index} className="bg-white rounded-lg shadow">
+                                    <div key={index} className="bg-white rounded-lg shadow-sm">
                                         <div className="p-4">
                                             <div className="flex items-center mb-2">
                                                 <div className={`mr-2 ${rec.color}`}>
@@ -139,4 +135,4 @@ const RecommendationsComponent = ({ data }: { data: RecommendationsData }) => {
     );
 };
 
-export default RecommendationsComponent;
+export default RecommendationsPanel;
