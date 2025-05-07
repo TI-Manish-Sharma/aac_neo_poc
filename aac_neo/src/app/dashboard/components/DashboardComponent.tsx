@@ -180,7 +180,7 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
                 {/* Segregation Analysis Tab */}
                 {activeTab === 'segregation' && (
                     <SegregationAnalysis
-                        apiUrl={`${baseApiUrl}/api/segregation-analysis`}
+                        // apiUrl={`${baseApiUrl}/api/segregation-analysis`}
                         refreshInterval={refreshInterval}
                         title="Segregation Analysis Dashboard"
                     />

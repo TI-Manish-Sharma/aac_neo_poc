@@ -1,47 +1,38 @@
-// src/app/dashboard/segregation-analysis/services/SegregationAnalysisApi.ts
-import { SegregationAnalysisData, SegregationAnalysisParams } from "../types";
+import { ApiResponse } from "../../shared/types/ApiResponse";
+import { SegregationAnalysisData } from "../types/SegregationAnalysisData";
 
-export interface SegregationAnalysisService {
-    fetchSegregationAnalysisData(params: SegregationAnalysisParams): Promise<SegregationAnalysisData>;
-}
+export async function fetchSegregationAnalysis(
+    apiUrl: string
+): Promise<ApiResponse<SegregationAnalysisData>> {
+    try {
+        const response = await fetch(apiUrl);
 
-export class ApiSegregationAnalysisService implements SegregationAnalysisService {
-    constructor(private apiUrl: string) { }
-
-    async fetchSegregationAnalysisData(params: SegregationAnalysisParams): Promise<SegregationAnalysisData> {
-        try {
-            // Build query string from params
-            const queryParams = new URLSearchParams();
-
-            if (params.start_date) {
-                queryParams.append('start_date', params.start_date);
+        if (!response.ok) {
+            if (response.status === 404) {
+                return {
+                    data: null as any,
+                    error: "No data found for the selected criteria.",
+                    status: 404
+                };
             }
 
-            if (params.end_date) {
-                queryParams.append('end_date', params.end_date);
-            }
-
-            if (params.mould_id) {
-                queryParams.append('mould_id', params.mould_id);
-            }
-
-            const url = `${this.apiUrl}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                if (response.status === 404) {
-                    throw new Error('No data found for the selected criteria.');
-                }
-                throw new Error(`API request failed with status ${response.status}`);
-            }
-
-            const data: SegregationAnalysisData = await response.json();
-            return data;
-        } catch (error) {
-            throw error instanceof Error
-                ? error
-                : new Error('An unknown error occurred fetching segregation analysis data');
+            throw new Error(`API request failed with status ${response.status}`);
         }
+
+        const data: SegregationAnalysisData = await response.json();
+
+        // CReate delay in response to simulate loading time
+        // await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        return {
+            data,
+            status: response.status
+        };
+    } catch (error) {
+        return {
+            data: null as any,
+            error: error instanceof Error ? error.message : 'An unknown error occurred',
+            status: 500
+        };
     }
 }
