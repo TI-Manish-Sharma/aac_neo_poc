@@ -21,56 +21,7 @@ import { RefreshCw, AlertTriangle, Calendar, Search, Download } from 'lucide-rea
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import RecommendationsComponent from './RecommendationsComponent';
-
-// Define TypeScript interfaces
-interface DefectByType {
-    type: string;
-    count: number;
-    percentage: number;
-}
-
-interface DefectByPosition {
-    position: string;
-    rainCracksCuts: number;
-    cornerCracksCuts: number;
-    cornerDamage: number;
-    chippedBlocks: number;
-    total: number;
-    percentage: number;
-}
-
-interface MouldPerformance {
-    mouldId: string;
-    totalBatches: number;
-    totalDefects: number;
-    averageDefectsPerBatch: number;
-    defectTypes: Array<{
-        type: string;
-        count: number;
-    }>;
-}
-
-interface BatchDefect {
-    batchId: string;
-    mouldId: string;
-    date: string;
-    totalBlocks: number;
-    totalDefects: number;
-    defectRate: number;
-}
-
-interface SegregationData {
-    summary: {
-        totalBatches: number;
-        batchesWithDefects: number;
-        totalDefects: number;
-        defectRate: number;
-    };
-    defectsByType: DefectByType[];
-    defectsByPosition: DefectByPosition[];
-    mouldPerformance: MouldPerformance[];
-    worstBatches: BatchDefect[];
-}
+import { SegregationData } from '../types/SegregationData';
 
 interface SegregationAnalysisProps {
     apiUrl?: string;
