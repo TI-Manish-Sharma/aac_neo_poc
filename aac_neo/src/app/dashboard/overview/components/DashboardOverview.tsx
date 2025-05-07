@@ -359,7 +359,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                     </div>
 
                     {/* Quick Links */}
-                    <div className="mt-6">
+                    {/* <div className="mt-6">
                         <h3 className="text-lg font-medium text-gray-800 mb-4">Quick Actions</h3>
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <button className="bg-white hover:bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-center gap-2 transition-colors">
@@ -379,7 +379,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                                 <span>Generate Report</span>
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </>
             )}
         </>

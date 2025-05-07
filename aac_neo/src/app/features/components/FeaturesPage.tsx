@@ -86,7 +86,7 @@ export default function FeaturesPage() {
                         <div>
                             <h3 className="text-2xl font-bold text-gray-800 mb-4">Reduce Rejection Rates</h3>
                             <p className="text-gray-600 mb-6">
-                                Our customers have seen up to 42% reduction in rejection rates through improved monitoring and proactive maintenance. By identifying patterns in defects, you can implement targeted improvements that significantly boost your production yield.
+                                Our customers have seen substantial reduction in rejection rates through improved monitoring and proactive maintenance. By identifying patterns in defects, you can implement targeted improvements that significantly boost your production yield.
                             </p>
                             <ul className="space-y-3">
                                 {[
@@ -144,7 +144,7 @@ export default function FeaturesPage() {
                         <div className="order-1 md:order-2">
                             <h3 className="text-2xl font-bold text-gray-800 mb-4">Improve Operational Efficiency</h3>
                             <p className="text-gray-600 mb-6">
-                                Transform your quality management approach from reactive to proactive. Our analytics help you optimize maintenance schedules, reduce downtime, and make data-driven decisions that boost productivity by up to 38%.
+                                Transform your quality management approach from reactive to proactive. Our analytics help you optimize maintenance schedules, reduce downtime, and make data-driven decisions that boost productivity substantially.
                             </p>
                             <ul className="space-y-3">
                                 {[
