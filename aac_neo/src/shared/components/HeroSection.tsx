@@ -29,8 +29,8 @@ const HeroSection = () => {
                 production facility with real-time insights and predictive analysis.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link href="/contact" className="bg-cyan-400 hover:bg-cyan-500 text-white font-medium px-6 py-3 rounded-lg transition duration-300">
-                  Request Demo
+                <Link href="/dashboard" className="bg-cyan-400 hover:bg-cyan-500 text-white font-medium px-6 py-3 rounded-lg transition duration-300">
+                  Access Dashboard
                 </Link>
                 <Link href="/documentation" className="border border-gray-400 hover:border-gray-500 text-gray-700 font-medium px-6 py-3 rounded-lg transition duration-300">
                   Learn More

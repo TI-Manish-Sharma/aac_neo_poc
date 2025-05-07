@@ -8,11 +8,6 @@ import {
     Tooltip,
     Legend,
     ResponsiveContainer,
-    RadarChart,
-    PolarGrid,
-    PolarAngleAxis,
-    PolarRadiusAxis,
-    Radar
 } from 'recharts';
 import { DefectByPosition } from '../types';
 
@@ -93,7 +88,7 @@ const DefectsByPositionChart: React.FC<DefectsByPositionChartProps> = ({ data, d
                                 </ResponsiveContainer>
                             </div>
                             {/* Second chart: Radar */}
-                            <div className="h-1/2">
+                            {/* <div className="h-1/2">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
                                         <PolarGrid />
@@ -131,7 +126,7 @@ const DefectsByPositionChart: React.FC<DefectsByPositionChartProps> = ({ data, d
                                         <Tooltip />
                                     </RadarChart>
                                 </ResponsiveContainer>
-                            </div>
+                            </div> */}
                         </>
                     )}
                 </ResponsiveContainer>

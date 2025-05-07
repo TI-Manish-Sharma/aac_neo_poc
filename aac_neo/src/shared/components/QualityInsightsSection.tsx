@@ -81,8 +81,8 @@ const QualityInsightsSection = () => {
                                 <Link href="/features" className="border border-cyan-400 text-cyan-400 hover:bg-cyan-50 rounded-full px-6 py-2 font-medium transition">
                                     Learn More
                                 </Link>
-                                <Link href="/dashboard" className="bg-cyan-400 text-white hover:bg-cyan-500 rounded-full px-6 py-2 font-medium transition">
-                                    Access Dashboard
+                                <Link href="/contact" className="bg-cyan-400 text-white hover:bg-cyan-500 rounded-full px-6 py-2 font-medium transition">
+                                    Request Demo
                                 </Link>
                             </div>
                         </div>

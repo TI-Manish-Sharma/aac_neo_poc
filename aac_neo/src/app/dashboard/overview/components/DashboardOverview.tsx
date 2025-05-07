@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
-import { RefreshCw, ArrowUpRight, BarChart2, PieChart, AlertCircle, ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowUpRight, BarChart2, PieChart, AlertCircle, ArrowDown, ArrowUp } from 'lucide-react';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
     BarChart,
