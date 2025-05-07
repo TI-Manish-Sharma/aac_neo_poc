@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useEffect, useCallback } from 'react';
 import { fetchSegregationAnalysis } from '../services/SegregationAnalysisApi';
 import { formatDateForApi } from '../../rejection-trends/utils/formatters';

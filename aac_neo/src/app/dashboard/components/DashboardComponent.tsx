@@ -13,6 +13,7 @@ import CuttingProcess from '../cutting-process/components/CuttingProcess';
 import RejectionTrends from '../rejection-trends/components/RejectionTrends';
 import MouldPerformance from '../mould-performance/components/MouldPerformance';
 import SegregationAnalysis from '../segregation-analysis/components/SegregationAnalysis';
+import DashboardOverview from '../overview/components/DashboardOverview';
 
 interface DashboardComponentProps {
     baseApiUrl?: string;
@@ -20,7 +21,7 @@ interface DashboardComponentProps {
 }
 
 const DashboardComponent: React.FC<DashboardComponentProps> = ({
-    baseApiUrl = process.env.NEXT_PUBLIC_ANALYTICS_API_BASE_URL,
+    // baseApiUrl = process.env.NEXT_PUBLIC_ANALYTICS_API_BASE_URL,
     refreshInterval = 0
 }) => {
     // State for active tab
@@ -131,26 +132,29 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
             <div className="bg-white rounded-lg shadow-sm p-3 md:p-6">
                 {/* Overview Tab */}
                 {activeTab === 'overview' && (
-                    <div>
-                        <h2 className="text-2xl font-semibold mb-4">Overview</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {/* Total Batches Card */}
-                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <p className="text-sm text-gray-500">Total Batches</p>
-                                <p className="text-3xl font-bold">—</p>
-                            </div>
-                            {/* Rejected Batches Card */}
-                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <p className="text-sm text-gray-500">Rejected Batches</p>
-                                <p className="text-3xl font-bold">—</p>
-                            </div>
-                            {/* Rejection Rate Card */}
-                            <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <p className="text-sm text-gray-500">Rejection Rate</p>
-                                <p className="text-3xl font-bold">—</p>
-                            </div>
-                        </div>
-                    </div>
+                    // <div>
+                    //     <h2 className="text-2xl font-semibold mb-4">Overview</h2>
+                    //     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    //         {/* Total Batches Card */}
+                    //         <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                    //             <p className="text-sm text-gray-500">Total Batches</p>
+                    //             <p className="text-3xl font-bold">—</p>
+                    //         </div>
+                    //         {/* Rejected Batches Card */}
+                    //         <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                    //             <p className="text-sm text-gray-500">Rejected Batches</p>
+                    //             <p className="text-3xl font-bold">—</p>
+                    //         </div>
+                    //         {/* Rejection Rate Card */}
+                    //         <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+                    //             <p className="text-sm text-gray-500">Rejection Rate</p>
+                    //             <p className="text-3xl font-bold">—</p>
+                    //         </div>
+                    //     </div>
+                    // </div>
+                    <DashboardOverview
+                        refreshInterval={refreshInterval}
+                    />
                 )}
 
                 {/* Cutting Process Quality Tab */}

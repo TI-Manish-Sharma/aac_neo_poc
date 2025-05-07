@@ -10,7 +10,7 @@ import {
   CartesianGrid,
   Cell
 } from 'recharts';
-import { RefreshCw, AlertTriangle, Calendar, Search, ArrowDownUp, Filter } from 'lucide-react';
+import { AlertTriangle, Calendar, Search, ArrowDownUp, Filter } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { MouldPerformanceData } from '../types/MouldPerformanceData';
@@ -151,11 +151,6 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
     });
 
     setFilteredData(sortedData);
-  };
-
-  // Format date for display
-  const formatDate = (date: Date) => {
-    return date.toLocaleString();
   };
 
   // Handle manual refresh

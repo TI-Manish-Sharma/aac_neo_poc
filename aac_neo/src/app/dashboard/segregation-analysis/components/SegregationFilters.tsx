@@ -2,7 +2,6 @@ import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Calendar, Search } from 'lucide-react';
-import LoadingIndicator from '../../shared/components/LoadingIndicator';
 
 interface SegregationFiltersProps {
     filters: {
