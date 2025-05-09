@@ -2,7 +2,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { LifeBuoy, Mail, MessageSquare, Clock, Video } from 'lucide-react';
-import SupportModal from './components/SupportModal';
 import SupportCard from './components/SupportCard';
 import SupportCardClient from './components/SupportCardClient';
 
