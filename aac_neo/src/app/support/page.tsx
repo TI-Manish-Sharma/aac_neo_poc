@@ -1,17 +1,17 @@
 // src/app/support/page.tsx
-'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { LifeBuoy, Mail, MessageSquare, Clock, Video } from 'lucide-react';
 import SupportModal from './components/SupportModal';
 import SupportCard from './components/SupportCard';
+import SupportCardClient from './components/SupportCardClient';
+
+export const metadata = {
+    title: 'Support',
+    description: 'Get help and support for AAC Neo',
+};
 
 export default function Support() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
-
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center mb-12">
@@ -30,11 +30,10 @@ export default function Support() {
                     linkText="Get Technical Help"
                 />
 
-                <SupportCard
+                <SupportCardClient
                     icon={<MessageSquare className="w-8 h-8 text-cyan-500" />}
                     title="Contact Support Team"
                     description="Reach out to our support team for assistance with your account"
-                    onClick={openModal}
                     linkText="Contact Support"
                 />
 
@@ -116,9 +115,6 @@ export default function Support() {
                     </Link>
                 </div>
             </div>
-
-            {/* Support Modal */}
-            <SupportModal isOpen={isModalOpen} onClose={closeModal} />
         </div>
     );
 }

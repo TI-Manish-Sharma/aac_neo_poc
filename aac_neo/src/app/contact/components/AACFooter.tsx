@@ -4,15 +4,14 @@ import Link from 'next/link';
 import React from 'react';
 
 const AACFooter: React.FC = () => (
-    <footer className="bg-gradient-to-r from-cyan-50 to-white px-6 py-8">
+    <footer className="mt-auto bg-gradient-to-r from-cyan-50 to-white px-6 py-3">
         <div className="flex justify-center space-x-6">
             <Link
                 href="https://www.facebook.com/aacindiainstitute/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="AAC India Institute on Facebook"
-                className="p-3 bg-white rounded-full shadow hover:bg-cyan-100 transform hover:scale-110 transition"
-            >
+                className="p-3 bg-white rounded-full shadow hover:bg-cyan-100 transform hover:scale-110 transition">
                 {/* Facebook SVG */}
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />

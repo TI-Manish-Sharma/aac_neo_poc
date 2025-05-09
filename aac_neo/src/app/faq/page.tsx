@@ -3,7 +3,7 @@ import React from 'react';
 import FAQ from './components/FAQ';
 
 export const metadata = {
-    title: 'FAQ - AAC Neo',
+    title: 'FAQ',
     description: 'Frequently Asked Questions about AAC Neo Plant Intelligence',
 };
 

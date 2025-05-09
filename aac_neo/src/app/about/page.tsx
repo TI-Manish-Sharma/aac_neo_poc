@@ -1,8 +1,12 @@
-'use client';
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Lightbulb, Zap, ShieldCheck, Users, Clock, Target, Lock } from 'lucide-react';
+
+export const metadata = {
+    title: 'About Us',
+    description: 'Learn more about Technizer Edge and our mission to transform AAC production insights.',
+};
 
 export default function AboutPage() {
     return (
@@ -15,7 +19,7 @@ export default function AboutPage() {
                 <p className="text-lg leading-relaxed max-w-2xl mx-auto text-gray-600">
                     No spreadsheets, no guesswork. Instantly understand your AAC production metrics in plain English.
                 </p>
-                <Link href="/dashboard" className="inline-block px-8 py-3 bg-cyan-400 text-white font-semibold rounded-lg shadow hover:bg-cyan-500 transition">
+                <Link href="/contact" className="inline-block px-8 py-3 bg-cyan-400 text-white font-semibold rounded-lg shadow hover:bg-cyan-500 transition">
                     Register for Free Trial
                 </Link>
             </section>
