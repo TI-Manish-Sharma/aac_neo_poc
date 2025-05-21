@@ -23,8 +23,8 @@ const WorstBatchesTable: React.FC<WorstBatchesTableProps> = ({ data }) => {
     };
 
     return (
-        <div className="bg-gray-50 rounded-lg p-4 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Worst Batches by Defect Rate</h2>
+        <div className="bg-gray-50 rounded-lg p-4 shadow-sm mb-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Worst Batches (&gt;5%) by Defect Rate</h2>
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                     <thead>
@@ -38,7 +38,10 @@ const WorstBatchesTable: React.FC<WorstBatchesTableProps> = ({ data }) => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                        {data.map((batch, index) => (
+                        {data
+                        .sort((a, b) => b.defectRate - a.defectRate)
+                        .slice(0, 5) // Limit to top 5 batches
+                        .map((batch, index) => (
                             <tr key={index} className={getBgColorClass(batch.defectRate)}>
                                 <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{batch.batchId}</td>
                                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{batch.mouldId}</td>

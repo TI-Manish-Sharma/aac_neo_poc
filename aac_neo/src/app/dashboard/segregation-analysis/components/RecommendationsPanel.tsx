@@ -50,8 +50,8 @@ const RecommendationsPanel: React.FC<RecommendationsPanelProps> = ({ data }) => 
             let defectRecommendation = '';
 
             switch (mostCommonDefectType.type) {
-                case 'Rain Cracks/Cuts':
-                    defectRecommendation = 'Consider adjusting curing conditions and humidity levels to reduce rain cracks. Review mixing time and temperature control.';
+                case 'Rising Crack':
+                    defectRecommendation = 'Consider adjusting curing conditions and humidity levels to reduce rising cracks. Review mixing time and temperature control.';
                     break;
                 case 'Corner Cracks/Cuts':
                     defectRecommendation = 'Inspect cutting equipment and adjust cutting timing. Review mould release procedures.';
@@ -79,8 +79,8 @@ const RecommendationsPanel: React.FC<RecommendationsPanelProps> = ({ data }) => 
         if (worstPositions.length > 0) {
             recommendations.push({
                 type: 'position',
-                title: 'Optimize Problem Positions',
-                description: `Positions ${worstPositions.join(', ')} show higher defect rates. Investigate potential causes such as uneven temperature distribution, mould wear, or process variations affecting these positions.`,
+                title: 'Optimize Problem Layers',
+                description: `Layers ${worstPositions.join(', ')} show higher defect rates. Investigate potential causes such as uneven temperature distribution, mould wear, or process variations affecting these positions.`,
                 icon: <TrendingDown size={24} />,
                 color: 'text-cyan-600'
             });

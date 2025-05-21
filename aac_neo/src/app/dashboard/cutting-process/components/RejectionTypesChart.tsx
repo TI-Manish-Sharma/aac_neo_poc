@@ -54,16 +54,19 @@ export function RejectionTypesChart({
 
     const { isMobile, isTablet } = screenSize;
 
-    // Simpler mobile layout with fixed dimensions
-    if (isMobile) {
-        // Process data to ensure it has the needed properties
-        const processedData = data.map(item => ({
+    // Process data to ensure it has the needed properties
+    const processedData = data
+        .sort((a, b) => b.count - a.count) // Sort by count descending
+        .slice(0, 3) // Take top 3
+        .map(item => ({
             ...item,
             count: typeof item.count === 'number' ? item.count : 0,
             percentage: typeof item.percentage === 'number' ? item.percentage : 0,
             type: item.type || 'Unknown'
         }));
 
+    // Simpler mobile layout with fixed dimensions
+    if (isMobile) {
         // Custom tooltip for better mobile display
         const CustomTooltip = ({
             active,
@@ -123,18 +126,29 @@ export function RejectionTypesChart({
                                         fontSize={12}
                                         formatter={(value: string | number) => value}
                                     />
+
                                 </Bar>
+                                <Legend
+                                    layout="horizontal"
+                                    align="center"
+                                    verticalAlign="top"
+                                    formatter={(value) => {
+                                        return (
+                                            <span className="text-xs md:text-sm">{value}</span>
+                                        );
+                                    }}
+                                />
                             </ReChartsBar>
                         </ResponsiveContainer>
                     </div>
 
                     {/* Simple legend for mobile */}
-                    <div className="mt-4 flex items-center justify-center">
+                    {/* <div className="mt-4 flex items-center justify-center">
                         <div className="flex items-center">
                             <div className="w-4 h-4 mr-2" style={{ backgroundColor: primaryColor }}></div>
                             <span className="text-sm">Number of Batches</span>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         );
@@ -156,17 +170,14 @@ export function RejectionTypesChart({
 
                 <ResponsiveContainer
                     width="100%"
-                    aspect={config.aspectRatio}
+                    height="100%"
                     debounce={50}
+                    aspect={config.aspectRatio}
+                // debounce={50}
                 >
                     <ReChartsBar
-                        data={data}
-                        margin={{
-                            top: 20,
-                            right: 30,
-                            left: 20,
-                            bottom: config.bottomMargin
-                        }}
+                        data={processedData}
+                        margin={{ top: 5, right: 5, left: 5, bottom: config.bottomMargin }}
                         barGap={8}
                         barSize={config.barSize}
                     >
@@ -216,9 +227,15 @@ export function RejectionTypesChart({
                         />
 
                         <Legend
+                            layout="horizontal"
+                            align="center"
                             verticalAlign="top"
-                            height={36}
-                            wrapperStyle={{ fontSize: config.tickFontSize }}
+                            height={config.bottomMargin}
+                            formatter={(value) => {
+                                return (
+                                    <span className="text-xs md:text-sm">{value}</span>
+                                );
+                            }}
                         />
 
                         <Bar

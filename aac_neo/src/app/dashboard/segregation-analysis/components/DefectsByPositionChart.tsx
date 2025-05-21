@@ -28,7 +28,7 @@ const DefectsByPositionChart: React.FC<DefectsByPositionChartProps> = ({ data, d
     return (
         <div className="bg-gray-50 rounded-lg p-4 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                {detailed ? 'Defect Types by Position' : 'Defects by Position'}
+                {detailed ? 'Defect Types by Layer' : 'Defects by Layer'}
             </h2>
             <div className={`h-64 ${detailed ? 'md:h-96' : 'md:h-80'}`}>
                 <ResponsiveContainer width="100%" height="100%">

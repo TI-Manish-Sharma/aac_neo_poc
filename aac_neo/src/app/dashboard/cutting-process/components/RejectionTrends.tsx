@@ -10,7 +10,7 @@ import InfoMessage from './InfoMessage';
 import RejectionRateChart from './RejectionRateChart';
 import RejectionTrendsFilters from './RejectionTrendsFilters';
 import RejectionTrendsTable from './RejectionTrendsTable';
-import RejectionTypesChart from './RejectionTypesChart';
+import RejectionTypesTrendsChart from './RejectionTypesTrendsChart';
 import { Header } from '../../shared/components/Header';
 
 export interface RejectionTrendsProps {
@@ -20,7 +20,7 @@ export interface RejectionTrendsProps {
 }
 
 const RejectionTrends: React.FC<RejectionTrendsProps> = ({
-    apiUrl = '/dashboard/rejection-trends/api/trends',
+    apiUrl = '/dashboard/cutting-process/api/trends',
     refreshInterval = 0, // 0 means no auto-refresh
     title = 'Rejection Trends Analysis'
 }) => {
@@ -118,7 +118,7 @@ const RejectionTrends: React.FC<RejectionTrendsProps> = ({
                     <RejectionRateChart data={trendLineData} />
 
                     {/* Rejection Types Chart */}
-                    <RejectionTypesChart data={rejectionTypesData} />
+                    <RejectionTypesTrendsChart data={rejectionTypesData} />
 
                     {/* Rejection Trends Table */}
                     <RejectionTrendsTable data={trendsData} />

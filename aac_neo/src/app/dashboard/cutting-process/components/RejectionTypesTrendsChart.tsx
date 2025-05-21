@@ -16,7 +16,7 @@ interface RejectionTypesChartProps {
     data: RejectionTypesData[];
 }
 
-const RejectionTypesChart: React.FC<RejectionTypesChartProps> = ({ data }) => {
+const RejectionTypesTrendsChart: React.FC<RejectionTypesChartProps> = ({ data }) => {
     return (
         <div className="bg-gray-50 rounded-lg p-4 shadow-sm">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">Rejection Types Over Time (%)</h2>
@@ -69,4 +69,4 @@ const RejectionTypesChart: React.FC<RejectionTypesChartProps> = ({ data }) => {
     );
 };
 
-export default RejectionTypesChart;
+export default RejectionTypesTrendsChart;

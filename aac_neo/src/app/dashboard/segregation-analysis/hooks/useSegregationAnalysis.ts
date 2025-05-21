@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { useState, useEffect, useCallback } from 'react';
 import { fetchSegregationAnalysis } from '../services/SegregationAnalysisApi';
-import { formatDateForApi } from '../../rejection-trends/utils/formatters';
+import { formatDateForApi } from '../../cutting-process/utils/formatters';
 
 // Define the filters interface
 interface SegregationFilters {

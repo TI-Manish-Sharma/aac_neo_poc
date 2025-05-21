@@ -57,7 +57,7 @@ function generateMockData(params: RequestParams): SegregationAnalysisData {
 function generateBaseData(): SegregationAnalysisData {
     // 1️⃣ Defect types
     const defectTypes = [
-        { type: "Rain Cracks/Cuts", min: 80, max: 120 },
+        { type: "Rising Cracks", min: 80, max: 120 },
         { type: "Corner Cracks/Cuts", min: 40, max: 70 },
         { type: "Corner Damage", min: 15, max: 35 },
         { type: "Chipped Blocks", min: 60, max: 90 },

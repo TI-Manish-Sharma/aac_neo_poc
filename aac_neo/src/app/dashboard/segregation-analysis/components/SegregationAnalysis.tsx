@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { useSegregationAnalysis } from '../hooks/useSegregationAnalysis';
 import SegregationFilters from './SegregationFilters';
 import DefectsByTypeChart from './DefectsByTypeChart';
-import SegregationTable from './SegregationTable';
 import DefectsByPositionChart from './DefectsByPositionChart';
-import MouldPerformanceChart from './MouldPerformanceChart';
 import WorstBatchesTable from './WorstBatchesTable';
 import RecommendationsPanel from './RecommendationsPanel';
 import { ErrorState } from '../../shared/components/ErrorState';
@@ -39,9 +37,7 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
         error,
         lastUpdated,
         filters,
-        activeTab,
         handleApplyFilters,
-        handleTabChange,
         handleRefresh,
         updateStartDate,
         updateEndDate,
@@ -96,7 +92,7 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
                             d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                         />
                     </svg>
-                    CSV Export
+                    Export
                 </button>
             </Header>
 
@@ -113,156 +109,19 @@ const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
                 isLoading={isLoading}
             />)}
 
-            {/* Tab Navigation */}
-            <div className="mb-6 border-b border-gray-200">
-                <nav className="flex flex-wrap -mb-px">
-                    <button
-                        onClick={() => handleTabChange('overview')}
-                        className={`mr-4 py-4 px-1 font-medium text-sm border-b-2 transition-colors duration-200 ease-out ${activeTab === 'overview'
-                            ? 'border-cyan-500 text-cyan-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        aria-current={activeTab === 'overview' ? 'page' : undefined}
-                    >
-                        Overview
-                    </button>
-                    <button
-                        onClick={() => handleTabChange('defect-types')}
-                        className={`mr-4 py-4 px-1 font-medium text-sm border-b-2 transition-colors duration-200 ease-out ${activeTab === 'defect-types'
-                            ? 'border-cyan-500 text-cyan-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        aria-current={activeTab === 'defect-types' ? 'page' : undefined}
-                    >
-                        Defect Types
-                    </button>
-                    <button
-                        onClick={() => handleTabChange('positions')}
-                        className={`mr-4 py-4 px-1 font-medium text-sm border-b-2 transition-colors duration-200 ease-out ${activeTab === 'positions'
-                            ? 'border-cyan-500 text-cyan-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        aria-current={activeTab === 'positions' ? 'page' : undefined}
-                    >
-                        Position Analysis
-                    </button>
-                    <button
-                        onClick={() => handleTabChange('moulds')}
-                        className={`mr-4 py-4 px-1 font-medium text-sm border-b-2 transition-colors duration-200 ease-out ${activeTab === 'moulds'
-                            ? 'border-cyan-500 text-cyan-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        aria-current={activeTab === 'moulds' ? 'page' : undefined}
-                    >
-                        Mould Performance
-                    </button>
-                    <button
-                        onClick={() => handleTabChange('batches')}
-                        className={`mr-4 py-4 px-1 font-medium text-sm border-b-2 transition-colors duration-200 ease-out ${activeTab === 'batches'
-                            ? 'border-cyan-500 text-cyan-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        aria-current={activeTab === 'batches' ? 'page' : undefined}
-                    >
-                        Worst Batches
-                    </button>
-                </nav>
-            </div>
-
             {/* KPI Summary - only shown on overview tab */}
-            {activeTab === 'overview' && <KPISummary metrics={data.summary} />}
+            <KPISummary metrics={data.summary} />
 
             {/* Recommendations Panel - only shown on overview tab */}
-            {activeTab === 'overview' && <RecommendationsPanel data={data} />}
+            <RecommendationsPanel data={data} />
 
-            {/* Tab Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <DefectsByTypeChart data={data.defectsByType} />
+                <DefectsByPositionChart data={data.defectsByPosition} />
+            </div>
+
             <div className="space-y-6">
-                {/* Overview Tab */}
-                {activeTab === 'overview' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <DefectsByTypeChart data={data.defectsByType} />
-                        <DefectsByPositionChart data={data.defectsByPosition} />
-                    </div>
-                )}
-
-                {/* Defect Types Tab */}
-                {activeTab === 'defect-types' && (
-                    <div className="space-y-6">
-                        <DefectsByTypeChart data={data.defectsByType} detailed={true} />
-                        <SegregationTable
-                            data={data.defectsByType}
-                            columns={[
-                                { key: 'type', header: 'Defect Type' },
-                                { key: 'count', header: 'Count' },
-                                { key: 'percentage', header: 'Percentage' }
-                            ]}
-                            title="Defect Types Details"
-                        />
-                    </div>
-                )}
-
-                {/* Position Analysis Tab */}
-                {activeTab === 'positions' && (
-                    <div className="space-y-6">
-                        <DefectsByPositionChart data={data.defectsByPosition} detailed={true} />
-                        <SegregationTable
-                            data={data.defectsByPosition.map((pos: { position: string; rainCracksCuts: number; cornerCracksCuts: number; cornerDamage: number; chippedBlocks: number; total: number; percentage: number }) => ({
-                                position: pos.position,
-                                rainCracksCuts: pos.rainCracksCuts,
-                                cornerCracksCuts: pos.cornerCracksCuts,
-                                cornerDamage: pos.cornerDamage,
-                                chippedBlocks: pos.chippedBlocks,
-                                total: pos.total,
-                                percentage: pos.percentage
-                            }))}
-                            columns={[
-                                { key: 'position', header: 'Position' },
-                                { key: 'rainCracksCuts', header: 'Rain Cracks/Cuts' },
-                                { key: 'cornerCracksCuts', header: 'Corner Cracks/Cuts' },
-                                { key: 'cornerDamage', header: 'Corner Damage' },
-                                { key: 'chippedBlocks', header: 'Chipped Blocks' },
-                                { key: 'total', header: 'Total' },
-                                { key: 'percentage', header: 'Percentage' }
-                            ]}
-                            title="Position Details"
-                        />
-                    </div>
-                )}
-
-                {/* Mould Performance Tab */}
-                {activeTab === 'moulds' && (
-                    <div className="space-y-6">
-                        <MouldPerformanceChart data={data.mouldPerformance} />
-                        <SegregationTable
-                            data={data.mouldPerformance.map((mould: { mouldId: string; totalBatches: number; totalDefects: number; averageDefectsPerBatch: number }) => ({
-                                mouldId: mould.mouldId,
-                                totalBatches: mould.totalBatches,
-                                totalDefects: mould.totalDefects,
-                                averageDefectsPerBatch: mould.averageDefectsPerBatch
-                            }))}
-                            columns={[
-                                { key: 'mouldId', header: 'Mould ID' },
-                                { key: 'totalBatches', header: 'Total Batches' },
-                                { key: 'totalDefects', header: 'Total Defects' },
-                                { key: 'averageDefectsPerBatch', header: 'Avg. Defects/Batch' }
-                            ]}
-                            title="Mould Performance Details"
-                            rowClassNameFn={(row) => {
-                                const defectsPerBatch = row.averageDefectsPerBatch as number;
-                                if (defectsPerBatch > 20) return 'bg-red-50';
-                                if (defectsPerBatch > 10) return 'bg-yellow-50';
-                                return '';
-                            }}
-                        />
-                    </div>
-                )}
-
-                {/* Worst Batches Tab */}
-                {activeTab === 'batches' && (
-                    <div className="space-y-6">
-                        <WorstBatchesTable data={data.worstBatches} />
-                    </div>
-                )}
+                <WorstBatchesTable data={data.worstBatches} />
             </div>
         </div>
     );

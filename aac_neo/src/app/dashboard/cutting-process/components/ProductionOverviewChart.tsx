@@ -42,24 +42,6 @@ export const ProductionOverviewChart: React.FC<ProductionOverviewChartProps> = (
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
         const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-        // For mobile screens, only show percentage
-        if (window.innerWidth < 768) {
-            return (
-                <text
-                    x={x}
-                    y={y}
-                    fill="#fff"
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize="12"
-                    fontWeight="bold"
-                >
-                    {`${(percent * 100).toFixed(0)}%`}
-                </text>
-            );
-        }
-
-        // For larger screens, show name and percentage
         return (
             <text
                 x={x}
@@ -102,7 +84,6 @@ export const ProductionOverviewChart: React.FC<ProductionOverviewChartProps> = (
                             verticalAlign="bottom"
                             align="center"
                             formatter={(value) => {
-                                // Responsive legend text
                                 return (
                                     <span className="text-xs md:text-sm">{value}</span>
                                 );

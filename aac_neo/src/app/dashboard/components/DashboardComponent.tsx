@@ -1,19 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
 import {
-    ChartBar,
-    ChartLine,
     Box,
+    ChartBar,
     ChartPie,
     Scissors
 } from 'lucide-react';
+import React, { useState } from 'react';
 
-import CuttingProcess from '../cutting-process/components/CuttingProcess';
-import RejectionTrends from '../rejection-trends/components/RejectionTrends';
+import CombinedCuttingDashboard from '../cutting-process/components/CombinedCuttingDashboard';
 import MouldPerformance from '../mould-performance/components/MouldPerformance';
-import SegregationAnalysis from '../segregation-analysis/components/SegregationAnalysis';
 import DashboardOverview from '../overview/components/DashboardOverview';
+import SegregationAnalysis from '../segregation-analysis/components/SegregationAnalysis';
 
 interface DashboardComponentProps {
     baseApiUrl?: string;
@@ -32,10 +30,9 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
     // Tab configuration with Lucide-react icons
     const tabs = [
         { id: 'overview', label: 'Overview', icon: ChartBar },
-        { id: 'cutting-process-quality', label: 'Cutting Quality', icon: Scissors },
-        { id: 'trends', label: 'Rejection Trends', icon: ChartLine },
-        { id: 'moulds', label: 'Mould Performance', icon: Box },
-        { id: 'segregation', label: 'Segregation Analysis', icon: ChartPie }
+        { id: 'cutting-process-quality', label: 'Cutting', icon: Scissors },
+        { id: 'moulds', label: 'Mould Box', icon: Box },
+        { id: 'segregation', label: 'Segregation', icon: ChartPie }
     ];
 
     // Toggle mobile menu
@@ -53,10 +50,10 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
         <div className="container mx-auto px-4 py-4 md:py-8 overflow-hidden">
             <div className="mb-4 md:mb-8">
                 <h1 className="text-xl md:text-4xl font-bold text-gray-800 mb-2 break-words">
-                    <span className="text-cyan-500">AAC Plant</span> Quality Dashboard
+                    <span className="text-cyan-500">AAC Plant</span> Data-Driven Quality Insights
                 </h1>
                 <p className="text-sm md:text-lg text-gray-600">
-                    Monitor rejection rates, trends, mould performance, and segregation analysis
+                    Monitor rejection rates, trends, mould box performance, and segregation analysis
                 </p>
             </div>
 
@@ -159,17 +156,13 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
 
                 {/* Cutting Process Quality Tab */}
                 {activeTab === 'cutting-process-quality' && (
-                    <CuttingProcess
+                    // <CuttingProcess
+                    //     refreshInterval={refreshInterval}
+                    //     title="Cutting Process Rejection Analysis"
+                    // />
+                    <CombinedCuttingDashboard
                         refreshInterval={refreshInterval}
-                        title="Cutting Process - Quality Dashboard"
-                    />
-                )}
-
-                {/* Rejection Trends Tab */}
-                {activeTab === 'trends' && (
-                    <RejectionTrends
-                        refreshInterval={refreshInterval}
-                        title="Cutting Process - Rejection Trends Analysis"
+                        title="Cutting Process Analysis"
                     />
                 )}
 
@@ -177,7 +170,7 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
                 {activeTab === 'moulds' && (
                     <MouldPerformance
                         refreshInterval={refreshInterval}
-                        title="Mould Performance Analysis"
+                        title="Mould Box Performance Analysis"
                     />
                 )}
 
@@ -186,7 +179,7 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
                     <SegregationAnalysis
                         // apiUrl={`${baseApiUrl}/api/segregation-analysis`}
                         refreshInterval={refreshInterval}
-                        title="Segregation Analysis Dashboard"
+                        title="Segregation Analysis"
                     />
                 )}
             </div>

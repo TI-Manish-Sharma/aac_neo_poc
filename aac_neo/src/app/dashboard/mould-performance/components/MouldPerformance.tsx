@@ -25,7 +25,7 @@ interface MouldPerformanceProps {
 const MouldPerformance: React.FC<MouldPerformanceProps> = ({
   apiUrl = '/dashboard/mould-performance/api/mould',
   refreshInterval = 0, // 0 means no auto-refresh
-  title = 'Mould Performance Analysis'
+  title = 'Mould Box Performance Analysis'
 }) => {
   // State for mould performance data
   const [mouldData, setMouldData] = useState<MouldPerformanceData[]>([]);
@@ -46,9 +46,8 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
 
   // Color scheme for charts
   const getBarColor = (rejectionRate: number) => {
-    if (rejectionRate > 50) return '#ef4444'; // Red (red-500)
-    if (rejectionRate > 30) return '#f97316'; // Orange (orange-500)
-    if (rejectionRate > 10) return '#eab308'; // Yellow (yellow-500)
+    if (rejectionRate > 10) return '#ef4444'; // Red (red-500)
+    if (rejectionRate > 5) return '#f97316'; // Orange (orange-500)
     return '#22c55e'; // Green (green-500)
   };
 
@@ -222,7 +221,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-            <Search size={16} className="mr-2" /> Search Mould ID
+            <Search size={16} className="mr-2" /> Search Mould Box ID
           </label>
           <input
             type="text"
@@ -268,7 +267,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
       {isLoading && (
         <div className="text-center my-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
-          <p className="mt-3 text-gray-500">Loading mould performance data...</p>
+          <p className="mt-3 text-gray-500">Loading mould box performance data...</p>
         </div>
       )}
 
@@ -279,8 +278,8 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
             <AlertTriangle className="text-blue-500 mr-2" size={20} />
             <p className="m-0">
               {searchTerm.trim() !== ''
-                ? `No moulds matching "${searchTerm}" found.`
-                : 'No mould performance data available for the selected period.'}
+                ? `No mould boxs matching "${searchTerm}" found.`
+                : 'No mould box performance data available for the selected period.'}
             </p>
           </div>
         </div>
@@ -291,7 +290,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
         <>
           {/* Top 10 Moulds Chart */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h2 className="text-lg font-semibold mb-3">Top 10 Moulds by Rejection Rate</h2>
+            <h2 className="text-lg font-semibold mb-3">Top 10 Mould Box(s) by Rejection Rate</h2>
             <div className="h-96">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
@@ -304,7 +303,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
                   <YAxis type="category" dataKey="MouldId" width={80} />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="RejectionRate" name="Rejection Rate (%)">
+                  <Bar dataKey="RejectionRate" name="Rejection Rate (%)" fill="#ef4444">
                     {top10Moulds.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={getBarColor(entry.RejectionRate)} />
                     ))}
@@ -318,7 +317,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
           {/* Summary Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-blue-500 mb-1 text-sm font-medium">Total Moulds</p>
+              <p className="text-blue-500 mb-1 text-sm font-medium">Total Mould Box(s)</p>
               <p className="text-3xl font-bold">{filteredData.length}</p>
             </div>
             <div className="bg-gray-50 rounded-lg p-4">
@@ -328,7 +327,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
               </p>
             </div>
             <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-yellow-500 mb-1 text-sm font-medium">High-Risk Moulds</p>
+              <p className="text-yellow-500 mb-1 text-sm font-medium">High-Risk Mould Box(s)</p>
               <p className="text-3xl font-bold">
                 {filteredData.filter(mould => mould.RejectionRate > 50).length}
               </p>
@@ -343,14 +342,14 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
 
           {/* Mould Performance Table */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
-            <h2 className="text-lg font-semibold mb-3">Mould Performance Details</h2>
+            <h2 className="text-lg font-semibold mb-3">Mould Box Performance Details</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white">
                 <thead className="bg-gray-100">
                   <tr>
                     <th onClick={() => handleSort('MouldId')} className="px-4 py-2 cursor-pointer text-left">
                       <div className="flex items-center">
-                        Mould ID
+                        Mould Box ID
                         {sortConfig.key === 'MouldId' && (
                           <ArrowDownUp size={14} className={`ml-1 ${sortConfig.direction === 'ascending' ? 'transform rotate-180' : ''}`} />
                         )}
@@ -366,7 +365,7 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
                     </th>
                     <th onClick={() => handleSort('RejectedBatches')} className="px-4 py-2 cursor-pointer text-left">
                       <div className="flex items-center">
-                        Rejected Batches
+                        Batches with Rejection
                         {sortConfig.key === 'RejectedBatches' && (
                           <ArrowDownUp size={14} className={`ml-1 ${sortConfig.direction === 'ascending' ? 'transform rotate-180' : ''}`} />
                         )}
@@ -402,27 +401,27 @@ const MouldPerformance: React.FC<MouldPerformanceProps> = ({
 
           {/* Risk Analysis */}
           <div className="bg-gray-50 rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-3">Mould Risk Analysis</h2>
+            <h2 className="text-lg font-semibold mb-3">Mould Box Risk Analysis</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-red-100 border-l-4 border-red-500 p-4 rounded">
                 <h5 className="font-bold text-red-800">High Risk Moulds ({'>'}50%)</h5>
                 <p className="mb-1">Count: {filteredData.filter(mould => mould.RejectionRate > 50).length}</p>
-                <p className="text-sm text-red-700">These moulds have critical failure rates and should be inspected immediately.</p>
+                <p className="text-sm text-red-700">These mould box(s) have critical failure rates and should be inspected immediately.</p>
               </div>
               <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
-                <h5 className="font-bold text-yellow-800">Medium Risk Moulds (30-50%)</h5>
+                <h5 className="font-bold text-yellow-800">Medium Risk Mould Box(s) (30-50%)</h5>
                 <p className="mb-1">Count: {filteredData.filter(mould => mould.RejectionRate > 30 && mould.RejectionRate <= 50).length}</p>
-                <p className="text-sm text-yellow-700">These moulds have significant failure rates and should be scheduled for maintenance.</p>
+                <p className="text-sm text-yellow-700">These mould box(s) have significant failure rates and should be scheduled for maintenance.</p>
               </div>
               <div className="bg-blue-100 border-l-4 border-blue-500 p-4 rounded">
-                <h5 className="font-bold text-blue-800">Low Risk Moulds (10-30%)</h5>
+                <h5 className="font-bold text-blue-800">Low Risk Mould Box(s) (10-30%)</h5>
                 <p className="mb-1">Count: {filteredData.filter(mould => mould.RejectionRate > 10 && mould.RejectionRate <= 30).length}</p>
-                <p className="text-sm text-blue-700">These moulds have acceptable failure rates but should be monitored regularly.</p>
+                <p className="text-sm text-blue-700">These mould box(s) have acceptable failure rates but should be monitored regularly.</p>
               </div>
               <div className="bg-green-100 border-l-4 border-green-500 p-4 rounded">
-                <h5 className="font-bold text-green-800">Optimal Moulds (&lt;10%)</h5>
+                <h5 className="font-bold text-green-800">Optimal Mould Box(s) (&lt;10%)</h5>
                 <p className="mb-1">Count: {filteredData.filter(mould => mould.RejectionRate <= 10).length}</p>
-                <p className="text-sm text-green-700">These moulds are performing well with minimal rejections.</p>
+                <p className="text-sm text-green-700">These mould box(s) are performing well with minimal rejections.</p>
               </div>
             </div>
           </div>
