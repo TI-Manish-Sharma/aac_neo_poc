@@ -1,29 +1,23 @@
 import React from 'react';
-import { Gauge, ArrowUpRight } from 'lucide-react';
+import { Gauge } from 'lucide-react';
 
-interface ProductionEfficiencyProps {
+interface ProductionEfficiencyMetricsProps {
     data: {
         oee: number;
         availability: number;
         performance: number;
         quality: number;
-        targetOee?: number;
+        targetOee: number;
     };
-    title?: string;
-    showDetails?: boolean;
-    onViewDetails?: () => void;
+    title: string;
+    showDetails: boolean;
 }
 
-const ProductionEfficiencyMetrics: React.FC<ProductionEfficiencyProps> = ({
-    data,
-    title = 'Production Efficiency (OEE)',
-    showDetails = false,
-    onViewDetails
-}) => {
+const ProductionEfficiencyMetrics: React.FC<ProductionEfficiencyMetricsProps> = ({ data, title }) => {
     // Helper function to determine color based on metric value
-    const getColorClass = (value: number, threshold1 = 65, threshold2 = 85) => {
-        if (value >= threshold2) return 'text-green-500';
-        if (value >= threshold1) return 'text-amber-500';
+    const getColorClass = (value: number): string => {
+        if (value >= 85) return 'text-green-500';
+        if (value >= 65) return 'text-amber-500';
         return 'text-red-500';
     };
 
@@ -39,13 +33,19 @@ const ProductionEfficiencyMetrics: React.FC<ProductionEfficiencyProps> = ({
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                     <div
-                        className={`h-2.5 rounded-full ${value >= 85 ? 'bg-green-500' : value >= 65 ? 'bg-amber-500' : 'bg-red-500'
-                            }`}
+                        className={`h-2.5 rounded-full ${value >= 85 ? 'bg-green-500' : value >= 65 ? 'bg-amber-500' : 'bg-red-500'}`}
                         style={{ width: `${value}%` }}
                     ></div>
                 </div>
             </div>
         );
+    };
+
+    // Get color based on OEE value
+    const getOeeColor = (value: number): string => {
+        if (value >= 85) return "#10B981"; // green
+        if (value >= 65) return "#F59E0B"; // amber
+        return "#EF4444"; // red
     };
 
     return (
@@ -55,62 +55,83 @@ const ProductionEfficiencyMetrics: React.FC<ProductionEfficiencyProps> = ({
                     <div className="p-2 bg-indigo-100 rounded-lg mr-3">
                         <Gauge size={24} className="text-indigo-600" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-800">{title}</h3>
+                    <h3 className="text-lg font-medium text-gray-800">{title || "Production Efficiency (OEE)"}</h3>
                 </div>
-                {showDetails && (
-                    <button
-                        onClick={onViewDetails}
-                        className="text-cyan-500 hover:text-cyan-600 text-sm flex items-center"
-                    >
-                        View Details <ArrowUpRight size={14} className="ml-1" />
-                    </button>
-                )}
             </div>
 
-            {/* OEE Gauge Visualization */}
+            {/* Simplified OEE Gauge Visualization */}
             <div className="flex justify-center mb-6">
-                <div className="relative w-48 h-24 flex items-center justify-center">
-                    <div className="absolute w-48 h-48 top-0 flex items-center justify-center">
-                        <svg viewBox="0 0 100 50" className="w-full">
-                            {/* Background arc */}
-                            <path
-                                d="M 10,50 A 40,40 0 0,1 90,50"
-                                fill="none"
-                                stroke="#E5E7EB"
-                                strokeWidth="8"
-                            />
+                <div className="relative w-40 h-40">
+                    {/* Background circle */}
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                        {/* Gray background semicircle */}
+                        <path
+                            d="M 10,50 A 40,40 0 1,1 90,50"
+                            fill="none"
+                            stroke="#E5E7EB"
+                            strokeWidth="8"
+                            strokeLinecap="round"
+                        />
 
-                            {/* Target indicator if provided */}
-                            {data.targetOee && (
+                        {/* Colored arc representing the OEE value */}
+                        <path
+                            d="M 10,50 A 40,40 0 0,1 90,50"
+                            fill="none"
+                            stroke={getOeeColor(data.oee)}
+                            strokeWidth="8"
+                            strokeLinecap="round"
+                            strokeDasharray={`${data.oee * 1.26} 126`}
+                        />
+
+                        {/* Target marker */}
+                        {data.targetOee && (
+                            <g transform={`rotate(${180 - data.targetOee * 1.8} 50 50)`}>
                                 <line
-                                    x1={50 - 40 * Math.cos((data.targetOee / 100) * Math.PI)}
-                                    y1={50 - 40 * Math.sin((data.targetOee / 100) * Math.PI)}
-                                    x2={50 - 30 * Math.cos((data.targetOee / 100) * Math.PI)}
-                                    y2={50 - 30 * Math.sin((data.targetOee / 100) * Math.PI)}
+                                    x1="50"
+                                    y1="15"
+                                    x2="50"
+                                    y2="5"
                                     stroke="#6366F1"
                                     strokeWidth="2"
                                     strokeDasharray="2,1"
                                 />
-                            )}
-
-                            {/* Value arc */}
-                            <path
-                                d={`M 10,50 A 40,40 0 ${data.oee > 50 ? 1 : 0},1 ${10 + 80 * (data.oee / 100)},${50 - Math.sqrt(1600 * (data.oee / 100) * (1 - data.oee / 100))}`}
-                                fill="none"
-                                stroke={data.oee >= 85 ? "#10B981" : data.oee >= 65 ? "#F59E0B" : "#EF4444"}
-                                strokeWidth="8"
-                            />
-                        </svg>
-                    </div>
-
-                    {/* OEE Value */}
-                    <div className="text-center mt-8">
-                        <span className={`text-3xl font-bold ${getColorClass(data.oee)}`}>{data.oee}%</span>
-                        <p className="text-sm text-gray-500">Overall OEE</p>
-                        {data.targetOee && (
-                            <p className="text-xs text-gray-400 mt-1">Target: {data.targetOee}%</p>
+                            </g>
                         )}
-                    </div>
+
+                        {/* OEE Value */}
+                        <text
+                            x="50"
+                            y="55"
+                            textAnchor="middle"
+                            className={getColorClass(data.oee)}
+                            fontSize="18"
+                            fontWeight="bold"
+                        >
+                            {data.oee}%
+                        </text>
+
+                        <text
+                            x="50"
+                            y="70"
+                            textAnchor="middle"
+                            fill="#6B7280"
+                            fontSize="8"
+                        >
+                            Overall OEE
+                        </text>
+
+                        {data.targetOee && (
+                            <text
+                                x="50"
+                                y="80"
+                                textAnchor="middle"
+                                fill="#9CA3AF"
+                                fontSize="6"
+                            >
+                                Target: {data.targetOee}%
+                            </text>
+                        )}
+                    </svg>
                 </div>
             </div>
 

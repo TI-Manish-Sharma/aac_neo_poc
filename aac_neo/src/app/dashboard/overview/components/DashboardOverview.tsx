@@ -7,8 +7,6 @@ import LoadingIndicator from '../../shared/components/LoadingIndicator';
 import SummaryCard from './SummaryCard';
 import MouldPerformanceChart from './MouldPerformanceChart';
 import AlertsPanel from './AlertsPanel';
-import RejectionTrendChart from './RejectionTrendChart';
-import DefectTypeBreakdown from './DefectTypeBreakdown';
 import ProductionEfficiencyMetrics from './ProductionEfficiencyMetrics';
 import CostImpactAnalysis from './CostImpactAnalysis';
 import PerformanceComparison from './PerformanceComparison';
@@ -206,25 +204,13 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                 <>
                     {/* Configuration Menu */}
                     <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h3 className="text-base font-medium text-gray-700 mb-3">Dashboard Configuration</h3>
+                        <h3 className="text-base font-medium text-gray-700 mb-3">Select Views to display</h3>
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                            <button
-                                onClick={() => toggleComponent('trends')}
-                                className={`px-2 py-1 text-xs rounded border ${activeComponents.trends ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
-                            >
-                                Rejection Trends
-                            </button>
-                            <button
-                                onClick={() => toggleComponent('defectTypes')}
-                                className={`px-2 py-1 text-xs rounded border ${activeComponents.defectTypes ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
-                            >
-                                Defect Types
-                            </button>
                             <button
                                 onClick={() => toggleComponent('mouldPerformance')}
                                 className={`px-2 py-1 text-xs rounded border ${activeComponents.mouldPerformance ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
                             >
-                                Mould Performance
+                                Mould Box Performance
                             </button>
                             <button
                                 onClick={() => toggleComponent('alerts')}
@@ -313,30 +299,6 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                         />
                     </div>
 
-                    {/* Time-based Rejection Trend Chart - New Component */}
-                    {activeComponents.trends && (
-                        <div className="mb-6">
-                            <RejectionTrendChart
-                                data={data.rejectionTrends}
-                                title="Rejection Rate Trend"
-                                height={60}
-                                chartType="line"
-                                showBatchCount={true}
-                            />
-                        </div>
-                    )}
-
-                    {/* Defect Type Breakdown - New Component */}
-                    {activeComponents.defectTypes && (
-                        <div className="mb-6">
-                            <DefectTypeBreakdown
-                                data={data.rejectionTypes}
-                                title="Defect Type Breakdown"
-                                height={60}
-                            />
-                        </div>
-                    )}
-
                     {/* Grid layout for Mould Performance and Alerts (now conditional) */}
                     {(activeComponents.mouldPerformance || activeComponents.alerts) && (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -371,13 +333,13 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                         <div className="mb-6">
                             <ProductionEfficiencyMetrics
                                 data={{
-                                    oee: 78.2,
+                                    oee: 77.3,
                                     availability: 92.5,
-                                    performance: 85.7,
-                                    quality: 87.1,
-                                    targetOee: 85
+                                    performance: 90.7,
+                                    quality: 92.1,
+                                    targetOee: 95
                                 }}
-                                title="Production Efficiency (OEE)"
+                                title="Production Efficiency (Overall Equipment Effectiveness)"
                                 showDetails={false}
                             />
                         </div>
@@ -389,27 +351,27 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                             <CostImpactAnalysis
                                 data={{
                                     summary: {
-                                        totalCost: 1250000,
-                                        previousPeriodCost: 1320000,
+                                        totalCost: 125000,
+                                        previousPeriodCost: 132000,
                                         percentChange: -5.3,
                                         currency: '₹',
-                                        costPerRejection: 48000
+                                        costPerRejection: 4800
                                     },
                                     breakdown: [
-                                        { category: 'TiltingCrane', cost: 380000, percentage: 30.4 },
-                                        { category: 'Chipping', cost: 325000, percentage: 26.0 },
-                                        { category: 'SideCutter', cost: 290000, percentage: 23.2 },
-                                        { category: 'Joined', cost: 180000, percentage: 14.4 },
-                                        { category: 'Others', cost: 75000, percentage: 6.0 }
+                                        { category: 'TiltingCrane', cost: 38000, percentage: 30.4 },
+                                        { category: 'Chipping', cost: 32500, percentage: 26.0 },
+                                        { category: 'SideCutter', cost: 29000, percentage: 23.2 },
+                                        { category: 'Joined', cost: 18000, percentage: 14.4 },
+                                        { category: 'Others', cost: 7500, percentage: 6.0 }
                                     ],
                                     trend: [
-                                        { period: 'Week 1', cost: 350000, target: 300000 },
-                                        { period: 'Week 2', cost: 320000, target: 300000 },
-                                        { period: 'Week 3', cost: 305000, target: 300000 },
-                                        { period: 'Week 4', cost: 275000, target: 300000 }
+                                        { period: 'Week 1', cost: 35000, target: 30000 },
+                                        { period: 'Week 2', cost: 32000, target: 30000 },
+                                        { period: 'Week 3', cost: 30500, target: 30000 },
+                                        { period: 'Week 4', cost: 27500, target: 30000 }
                                     ]
                                 }}
-                                title="Cost Impact Analysis"
+                                title="Cost Impact Analysis (Weekly)"
                                 height={50}
                             />
                         </div>
@@ -529,32 +491,189 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                             <PredictiveAlerts
                                 data={{
                                     alerts: [
-                                        { id: 'pa1', mouldId: 'M-01', mouldName: 'M-01', metricName: 'Defect Rate', currentValue: 21.7, predictedValue: 24.5, threshold: 25.0, unit: '%', timeToThreshold: 36, confidence: 85, trend: 'up', category: 'defect_rate', severity: 'critical', timestamp: '2025-05-08T08:25:43Z', historicalData: [
-                                            { time: '2025-04-01', value: 15.8 },
-                                            { time: '2025-04-15', value: 17.2 },
-                                            { time: '2025-05-01', value: 19.5 },
-                                            { time: '2025-05-08', value: 21.7 }
-                                        ] },
-                                        { id: 'pa2', metricName: 'TiltingCrane Wear', currentValue: 68, predictedValue: 82, threshold: 85, unit: '%', timeToThreshold: 72, confidence: 78, trend: 'up', category: 'machine_wear', severity: 'high', timestamp: '2025-05-08T07:42:18Z', historicalData: [
-                                            { time: '2025-03-15', value: 45 },
-                                            { time: '2025-04-01', value: 52 },
-                                            { time: '2025-04-15', value: 60 },
-                                            { time: '2025-05-01', value: 65 },
-                                            { time: '2025-05-08', value: 68 }
-                                        ] },
-                                        { id: 'pa3', mouldId: 'M-08', mouldName: 'M-08', metricName: 'Tool Life', currentValue: 72, predictedValue: 85, threshold: 90, unit: '%', timeToThreshold: 120, confidence: 65, trend: 'up', category: 'tool_wear', severity: 'medium', timestamp: '2025-05-08T06:35:52Z', historicalData: [
-                                            { time: '2025-04-01', value: 45 },
-                                            { time: '2025-04-15', value: 58 },
-                                            { time: '2025-05-01', value: 65 },
-                                            { time: '2025-05-08', value: 72 }
-                                        ] }
+                                        // Original 3 alerts
+                                        {
+                                            id: 'pa1',
+                                            mouldId: 'M-01',
+                                            mouldName: 'M-01',
+                                            metricName: 'Defect Rate',
+                                            currentValue: 21.7,
+                                            predictedValue: 24.5,
+                                            threshold: 25.0,
+                                            unit: '%',
+                                            timeToThreshold: 36, // 1 day 12 hrs 
+                                            confidence: 85,
+                                            trend: 'up',
+                                            category: 'defect_rate',
+                                            severity: 'critical',
+                                            timestamp: '2025-05-08T08:25:43Z',
+                                            historicalData: [
+                                                { time: '2025-04-01', value: 15.8 },
+                                                { time: '2025-04-15', value: 17.2 },
+                                                { time: '2025-05-01', value: 19.5 },
+                                                { time: '2025-05-08', value: 21.7 }
+                                            ]
+                                        },
+                                        {
+                                            id: 'pa2',
+                                            metricName: 'TiltingCrane Wear',
+                                            currentValue: 68,
+                                            predictedValue: 82,
+                                            threshold: 85,
+                                            unit: '%',
+                                            timeToThreshold: 72, // 3 days 
+                                            confidence: 78,
+                                            trend: 'up',
+                                            category: 'machine_wear',
+                                            severity: 'high',
+                                            timestamp: '2025-05-08T07:42:18Z',
+                                            historicalData: [
+                                                { time: '2025-03-15', value: 45 },
+                                                { time: '2025-04-01', value: 52 },
+                                                { time: '2025-04-15', value: 60 },
+                                                { time: '2025-05-01', value: 65 },
+                                                { time: '2025-05-08', value: 68 }
+                                            ]
+                                        },
+                                        {
+                                            id: 'pa3',
+                                            mouldId: 'M-08',
+                                            mouldName: 'M-08',
+                                            metricName: 'Tool Life',
+                                            currentValue: 72,
+                                            predictedValue: 85,
+                                            threshold: 90,
+                                            unit: '%',
+                                            timeToThreshold: 120, // 5 days
+                                            confidence: 65,
+                                            trend: 'up',
+                                            category: 'tool_wear',
+                                            severity: 'medium',
+                                            timestamp: '2025-05-08T06:35:52Z',
+                                            historicalData: [
+                                                { time: '2025-04-01', value: 45 },
+                                                { time: '2025-04-15', value: 58 },
+                                                { time: '2025-05-01', value: 65 },
+                                                { time: '2025-05-08', value: 72 }
+                                            ]
+                                        },
+
+                                        // Additional 5 alerts to match the total of 8
+                                        {
+                                            id: 'pa4',
+                                            mouldId: 'M-12',
+                                            mouldName: 'M-12',
+                                            metricName: 'Defect Rate',
+                                            currentValue: 18.3,
+                                            predictedValue: 22.8,
+                                            threshold: 25.0,
+                                            unit: '%',
+                                            timeToThreshold: 96, // 4 days
+                                            confidence: 72,
+                                            trend: 'up',
+                                            category: 'defect_rate',
+                                            severity: 'high',
+                                            timestamp: '2025-05-08T09:15:23Z',
+                                            historicalData: [
+                                                { time: '2025-04-05', value: 12.4 },
+                                                { time: '2025-04-18', value: 14.5 },
+                                                { time: '2025-05-02', value: 16.8 },
+                                                { time: '2025-05-08', value: 18.3 }
+                                            ]
+                                        },
+                                        {
+                                            id: 'pa5',
+                                            metricName: 'Material Viscosity',
+                                            currentValue: 2.8,
+                                            predictedValue: 3.7,
+                                            threshold: 4.0,
+                                            unit: '',
+                                            timeToThreshold: 84, // 3.5 days
+                                            confidence: 68,
+                                            trend: 'up',
+                                            category: 'material_quality',
+                                            severity: 'medium',
+                                            timestamp: '2025-05-08T10:05:11Z',
+                                            historicalData: [
+                                                { time: '2025-04-01', value: 1.9 },
+                                                { time: '2025-04-15', value: 2.3 },
+                                                { time: '2025-05-01', value: 2.6 },
+                                                { time: '2025-05-08', value: 2.8 }
+                                            ]
+                                        },
+                                        {
+                                            id: 'pa6',
+                                            mouldId: 'M-03',
+                                            mouldName: 'M-03',
+                                            metricName: 'Temperature Deviation',
+                                            currentValue: 3.2,
+                                            predictedValue: 4.8,
+                                            threshold: 5.0,
+                                            unit: '°C',
+                                            timeToThreshold: 48, // 2 days
+                                            confidence: 71,
+                                            trend: 'up',
+                                            category: 'machine_wear',
+                                            severity: 'high',
+                                            timestamp: '2025-05-08T08:55:30Z',
+                                            historicalData: [
+                                                { time: '2025-04-10', value: 1.8 },
+                                                { time: '2025-04-20', value: 2.3 },
+                                                { time: '2025-05-01', value: 2.9 },
+                                                { time: '2025-05-08', value: 3.2 }
+                                            ]
+                                        },
+                                        {
+                                            id: 'pa7',
+                                            mouldId: 'M-15',
+                                            mouldName: 'M-15',
+                                            metricName: 'Oil Contamination',
+                                            currentValue: 82,
+                                            predictedValue: 91,
+                                            threshold: 95,
+                                            unit: 'ppm',
+                                            timeToThreshold: 168, // 7 days
+                                            confidence: 65,
+                                            trend: 'up',
+                                            category: 'machine_wear',
+                                            severity: 'low',
+                                            timestamp: '2025-05-08T07:20:15Z',
+                                            historicalData: [
+                                                { time: '2025-03-20', value: 60 },
+                                                { time: '2025-04-10', value: 67 },
+                                                { time: '2025-04-25', value: 75 },
+                                                { time: '2025-05-08', value: 82 }
+                                            ]
+                                        },
+                                        {
+                                            id: 'pa8',
+                                            mouldId: 'M-24',
+                                            mouldName: 'M-24',
+                                            metricName: 'Power Consumption',
+                                            currentValue: 88,
+                                            predictedValue: 94,
+                                            threshold: 95,
+                                            unit: '%',
+                                            timeToThreshold: 192, // 8 days
+                                            confidence: 60,
+                                            trend: 'up',
+                                            category: 'machine_wear',
+                                            severity: 'low',
+                                            timestamp: '2025-05-08T11:10:42Z',
+                                            historicalData: [
+                                                { time: '2025-03-15', value: 65 },
+                                                { time: '2025-04-01', value: 73 },
+                                                { time: '2025-04-20', value: 81 },
+                                                { time: '2025-05-08', value: 88 }
+                                            ]
+                                        }
                                     ],
                                     stats: {
                                         totalAlerts: 8,
-                                        criticalAlerts: 2,
+                                        criticalAlerts: 1,
                                         highAlerts: 3,
                                         mediumAlerts: 2,
-                                        lowAlerts: 1
+                                        lowAlerts: 2
                                     }
                                 }}
                                 title="Predictive Alerts"

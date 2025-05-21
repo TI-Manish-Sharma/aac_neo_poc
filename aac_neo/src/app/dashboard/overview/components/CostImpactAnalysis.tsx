@@ -110,7 +110,7 @@ const CostImpactAnalysis: React.FC<CostImpactProps> = ({
             {/* Cost Breakdown Chart */}
             <div className="mb-6">
                 <h4 className="text-sm font-medium text-gray-600 mb-3">Cost Breakdown by Type</h4>
-                <div className={`h-${height}`}>
+                <div style={{ height: `${height * 8}px` }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                             data={breakdown}
@@ -138,7 +138,7 @@ const CostImpactAnalysis: React.FC<CostImpactProps> = ({
                         <BarChart2 size={16} className="mr-2 text-gray-400" />
                         Cost Trend
                     </h4>
-                    <div className={`h-${height}`}>
+                    <div style={{ height: `${height * 8}px` }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                                 data={trend}
