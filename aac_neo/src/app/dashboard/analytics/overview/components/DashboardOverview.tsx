@@ -688,23 +688,76 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                             <TopPerformingMoulds
                                 data={{
                                     topMoulds: [
-                                        // Sample data - replace with actual API data
-                                        { id: 'M-22', name: 'M-22', defectRate: 1.2, totalBatches: 87, totalProduction: 4350, consistency: 95, efficiency: 98.2 },
-                                        { id: 'M-15', name: 'M-15', defectRate: 1.5, totalBatches: 92, totalProduction: 4600, consistency: 92, efficiency: 97.8 },
-                                        { id: 'M-03', name: 'M-03', defectRate: 1.8, totalBatches: 76, totalProduction: 3800, consistency: 88, efficiency: 96.9 },
-                                        { id: 'M-19', name: 'M-19', defectRate: 2.1, totalBatches: 84, totalProduction: 4200, consistency: 86, efficiency: 96.0 },
-                                        { id: 'M-07', name: 'M-07', defectRate: 2.3, totalBatches: 80, totalProduction: 4000, consistency: 84, efficiency: 95.8 }
+                                        {
+                                            id: "MB-001",
+                                            name: "Mould Box A1",
+                                            defectRate: 1.2,
+                                            totalBatches: 150,
+                                            totalProduction: 15000,
+                                            consistency: 95,
+                                            previousDefectRate: 1.8,
+                                            uptime: 98.5,
+                                            efficiency: 92.3,
+                                            bestPerformanceDate: "2024-05-15"
+                                        },
+                                        {
+                                            id: "MB-002",
+                                            name: "Mould Box B2",
+                                            defectRate: 1.5,
+                                            totalBatches: 140,
+                                            totalProduction: 14200,
+                                            consistency: 92,
+                                            previousDefectRate: 2.1,
+                                            uptime: 97.2,
+                                            efficiency: 89.7,
+                                            bestPerformanceDate: "2024-05-18"
+                                        },
+                                        {
+                                            id: "MB-003",
+                                            name: "Mould Box C3",
+                                            defectRate: 1.8,
+                                            totalBatches: 135,
+                                            totalProduction: 13800,
+                                            consistency: 90,
+                                            previousDefectRate: 2.3,
+                                            uptime: 96.8,
+                                            efficiency: 87.5,
+                                            bestPerformanceDate: "2024-05-12"
+                                        },
+                                        {
+                                            id: "MB-004",
+                                            name: "Mould Box D4",
+                                            defectRate: 2.1,
+                                            totalBatches: 128,
+                                            totalProduction: 12600,
+                                            consistency: 88,
+                                            previousDefectRate: 2.8,
+                                            uptime: 95.5,
+                                            efficiency: 85.2,
+                                            bestPerformanceDate: "2024-05-10"
+                                        },
+                                        {
+                                            id: "MB-005",
+                                            name: "Mould Box E5",
+                                            defectRate: 2.4,
+                                            totalBatches: 120,
+                                            totalProduction: 11800,
+                                            consistency: 85,
+                                            previousDefectRate: 3.1,
+                                            uptime: 94.2,
+                                            efficiency: 82.8,
+                                            bestPerformanceDate: "2024-05-08"
+                                        }
                                     ],
                                     stats: {
-                                        averageDefectRate: 4.2,
+                                        averageDefectRate: 3.2,
                                         lowestDefectRate: 1.2,
-                                        highestEfficiency: 98.2,
-                                        totalTopPerformers: 8
+                                        highestEfficiency: 92.3,
+                                        totalTopPerformers: 5
                                     },
-                                    timeFrame: 'Last 30 days'
+                                    timeFrame: "Last 30 days"
                                 }}
                                 title="Top Performing Mould Boxes"
-                                height={60}
                                 showViewDetails={false}
                             />
                         </div>

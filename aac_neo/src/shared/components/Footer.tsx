@@ -32,13 +32,13 @@ export default function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact" className="hover:text-cyan-400 transition-colors">
-                                    Contact
+                                <Link href="/dashboard/analytics" className="hover:text-cyan-400 transition-colors">
+                                    Analytics Dashboard
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/dashboard" className="hover:text-cyan-400 transition-colors">
-                                    Dashboard
+                                <Link href="/dashboard/operations" className="hover:text-cyan-400 transition-colors">
+                                    Realtime Dashboard
                                 </Link>
                             </li>
                         </ul>
@@ -70,6 +70,11 @@ export default function Footer() {
                     <div className="col-span-1">
                         <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
                         <ul className="space-y-2">
+                            <li>
+                                <Link href="/contact" className="hover:text-cyan-400 transition-colors">
+                                    Contact
+                                </Link>
+                            </li>
                             <li className="flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />

@@ -35,8 +35,8 @@ interface CombinedCuttingDashboardProps {
 }
 
 const CombinedCuttingDashboard: React.FC<CombinedCuttingDashboardProps> = ({
-    batchApiUrl = '/dashboard/cutting-process/api/batch-stats',
-    trendsApiUrl = '/dashboard/cutting-process/api/trends',
+    batchApiUrl = '/dashboard/analytics/cutting-process/api/batch-stats',
+    trendsApiUrl = '/dashboard/analytics/cutting-process/api/trends',
     refreshInterval = 0, // 0 means no auto-refresh
     title = 'Cutting Process Dashboard',
     defaultOpenSection = 'batch'

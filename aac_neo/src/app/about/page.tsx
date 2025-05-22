@@ -26,7 +26,7 @@ export default function AboutPage() {
 
             {/* Problem & Solution */}
             <section className="py-8 px-4 max-w-5xl mx-auto">
-                <h2 className="text-3xl font-bold text-center mb-10">From Overwhelm to Clarity</h2>
+                <h2 className="text-3xl font-bold text-center mb-10">From Confusion to Clarity</h2>
                 <div className="grid md:grid-cols-2 gap-8">
                     <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
                         <h3 className="text-xl font-semibold text-gray-800">The Challenge</h3>

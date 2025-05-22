@@ -1,3 +1,4 @@
+
 /* eslint-disable */
 
 import React, { useState } from 'react';
@@ -46,7 +47,7 @@ interface TopPerformingMouldsProps {
 const TopPerformingMoulds: React.FC<TopPerformingMouldsProps> = ({
     data,
     title = 'Top Performing Mould Boxes',
-    height = 64,
+    height = 400, // Changed default to a pixel value
     showViewDetails = false,
     maxMoulds = 5,
     onViewDetails
@@ -193,42 +194,37 @@ const TopPerformingMoulds: React.FC<TopPerformingMouldsProps> = ({
 
             {/* Chart View */}
             {viewMode === 'chart' && (
-                <div className={`h-${height}`}>
+                <div style={{ height: `${height}px` }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                             data={sortedMoulds}
-                            layout={sortBy === 'defectRate' ? 'vertical' : 'horizontal'}
-                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                            margin={{ top: 20, right: 30, left: 80, bottom: 60 }}
                         >
                             <CartesianGrid strokeDasharray="3 3" />
-                            {sortBy === 'defectRate' ? (
-                                <>
-                                    <YAxis
-                                        dataKey="name"
-                                        type="category"
-                                        width={50}
-                                    />
-                                    <XAxis
-                                        type="number"
-                                        domain={[0, 'auto']}
-                                        label={{ value: 'Defect Rate (%)', position: 'insideBottom', offset: -5 }}
-                                    />
-                                </>
-                            ) : (
-                                <>
-                                    <XAxis dataKey="name" />
-                                    <YAxis
-                                        domain={[0, 100]}
-                                        label={{
-                                            value: sortBy === 'efficiency' ? 'Efficiency (%)' : 'Consistency Score',
-                                            angle: -90,
-                                            position: 'insideLeft'
-                                        }}
-                                    />
-                                </>
-                            )}
-                            <Tooltip />
-                            <Legend />
+                            <XAxis 
+                                dataKey="name" 
+                                angle={-45}
+                                textAnchor="end"
+                                height={80}
+                                interval={0}
+                            />
+                            <YAxis
+                                domain={sortBy === 'defectRate' ? [0, 'dataMax + 1'] : [0, 100]}
+                                label={{
+                                    value: sortBy === 'defectRate' ? 'Defect Rate (%)' : 
+                                           sortBy === 'efficiency' ? 'Efficiency (%)' : 'Consistency Score',
+                                    angle: -90,
+                                    position: 'insideLeft'
+                                }}
+                            />
+                            <Tooltip 
+                                formatter={(value, name) => [
+                                    sortBy === 'defectRate' ? `${value}%` : 
+                                    sortBy === 'efficiency' ? `${value}%` : `${value}/100`,
+                                    name
+                                ]}
+                            />
+                            <Legend verticalAlign='top' height={32} />
                             {sortBy === 'defectRate' && (
                                 <Bar
                                     dataKey="defectRate"

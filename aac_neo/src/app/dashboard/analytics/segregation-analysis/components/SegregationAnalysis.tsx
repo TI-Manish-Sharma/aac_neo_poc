@@ -20,7 +20,7 @@ interface SegregationAnalysisProps {
 }
 
 const SegregationAnalysis: React.FC<SegregationAnalysisProps> = ({
-    apiUrl = '/dashboard/segregation-analysis/api/segregation',
+    apiUrl = '/dashboard/analytics/segregation-analysis/api/segregation',
     refreshInterval = 0, // 0 means no auto-refresh
     title = 'Segregation Analysis Dashboard'
 }) => {

@@ -18,7 +18,7 @@ interface DashboardComponentProps {
     refreshInterval?: number;
 }
 
-const DashboardComponent: React.FC<DashboardComponentProps> = ({
+const AnalyticsMainComponent: React.FC<DashboardComponentProps> = ({
     // baseApiUrl = process.env.NEXT_PUBLIC_ANALYTICS_API_BASE_URL,
     refreshInterval = 0
 }) => {
@@ -47,7 +47,7 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
     };
 
     return (
-        <div className="container mx-auto px-4 py-4 md:py-8 overflow-hidden">
+        <div className="container mx-auto px-4 py-4 md:py-8 overflow-hidden bg-100">
             <div className="mb-4 md:mb-8">
                 <h1 className="text-xl md:text-4xl font-bold text-gray-800 mb-2 break-words">
                     <span className="text-cyan-500">AAC Plant</span> Data-Driven Quality Insights
@@ -187,4 +187,4 @@ const DashboardComponent: React.FC<DashboardComponentProps> = ({
     );
 };
 
-export default DashboardComponent;
+export default AnalyticsMainComponent;

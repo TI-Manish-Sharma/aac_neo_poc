@@ -23,7 +23,7 @@ interface MouldPerformanceProps {
 }
 
 const MouldPerformance: React.FC<MouldPerformanceProps> = ({
-  apiUrl = '/dashboard/mould-performance/api/mould',
+  apiUrl = '/dashboard/analytics/mould-performance/api/mould',
   refreshInterval = 0, // 0 means no auto-refresh
   title = 'Mould Box Performance Analysis'
 }) => {

@@ -261,10 +261,16 @@ export default function FeaturesPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
-                            href="/dashboard"
+                            href="/dashboard/analytics"
                             className="bg-white text-cyan-600 px-6 py-3 rounded-full font-medium hover:bg-gray-100 transition duration-300"
                         >
-                            Explore Dashboard
+                            Explore Analytics Dashboard
+                        </Link>
+                        <Link
+                            href="/dashboard/operations"
+                            className="bg-white text-cyan-600 px-6 py-3 rounded-full font-medium hover:bg-gray-100 transition duration-300"
+                        >
+                            Explore Realtime Dashboard
                         </Link>
                         <Link
                             href="/contact"

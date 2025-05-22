@@ -8,16 +8,23 @@ export default function Navigation() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [resourcesOpen, setResourcesOpen] = useState(false);
+    const [dashboardOpen, setDashboardOpen] = useState(false);
     const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
+    const [mobileDashboardOpen, setMobileDashboardOpen] = useState(false);
     const resourcesRef = useRef<HTMLDivElement>(null);
+    const dashboardRef = useRef<HTMLDivElement>(null);
 
     // Navigation links array for better maintainability
     const navLinks = [
         { href: "/", label: "Home" },
         { href: "/features", label: "Features" },
-        { href: "/dashboard", label: "Dashboard" },
         { href: "/contact", label: "Contact" },
         { href: "/about", label: "About" },
+    ];
+
+    const dashboardLinks = [
+        { href: "/dashboard/analytics", label: "Analytics" },
+        { href: "/dashboard/operations", label: "Realtime" }
     ];
 
     // Resources dropdown items
@@ -43,11 +50,14 @@ export default function Navigation() {
             if (resourcesRef.current && !resourcesRef.current.contains(event.target as Node)) {
                 setResourcesOpen(false);
             }
+            if (dashboardRef.current && !dashboardRef.current.contains(event.target as Node)) {
+                setDashboardOpen(false);
+            }
         };
 
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
-    }, [resourcesRef]);
+    }, [resourcesRef, dashboardRef]);
 
     // Close mobile menu when clicking outside
     useEffect(() => {
@@ -55,6 +65,7 @@ export default function Navigation() {
             if (isMenuOpen && event.target && !(event.target as HTMLElement).closest('nav')) {
                 setIsMenuOpen(false);
                 setMobileResourcesOpen(false);
+                setMobileDashboardOpen(false);
             }
         };
 
@@ -70,6 +81,7 @@ export default function Navigation() {
                     setIsMenuOpen(false);
                 }
                 setMobileResourcesOpen(false);
+                setMobileDashboardOpen(false);
             }
         };
 
@@ -81,6 +93,7 @@ export default function Navigation() {
         setIsMenuOpen(!isMenuOpen);
         if (!isMenuOpen) {
             setMobileResourcesOpen(false);
+            setMobileDashboardOpen(false);
         }
     };
 
@@ -88,10 +101,20 @@ export default function Navigation() {
         setResourcesOpen(!resourcesOpen);
     };
 
+    const toggleDashboard = () => {
+        setDashboardOpen(!dashboardOpen);
+    };
+
     const toggleMobileResources = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         setMobileResourcesOpen(!mobileResourcesOpen);
+    };
+
+    const toggleMobileDashboard = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setMobileDashboardOpen(!mobileDashboardOpen);
     };
 
     return (
@@ -136,6 +159,33 @@ export default function Navigation() {
                                 {link.label}
                             </Link>
                         ))}
+
+                        {/* Dashboard Dropdown */}
+                        <div className="relative" ref={dashboardRef}>
+                            <button
+                                onClick={toggleDashboard}
+                                className="flex items-center text-gray-800 hover:text-cyan-400 font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-cyan-300 after:transition-all hover:after:w-full"
+                                aria-expanded={dashboardOpen}
+                            >
+                                Dashboard
+                                <ChevronDown size={16} className={`ml-1 transition-transform ${dashboardOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {dashboardOpen && (
+                                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                                    {dashboardLinks.map((link) => (
+                                        <Link
+                                            key={link.href}
+                                            href={link.href}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-cyan-500"
+                                            onClick={() => setDashboardOpen(false)}
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
                         {/* Resources Dropdown */}
                         <div className="relative" ref={resourcesRef}>
@@ -182,6 +232,32 @@ export default function Navigation() {
                                 {link.label}
                             </Link>
                         ))}
+
+                        {/* Mobile Dashboard Dropdown */}
+                        <div className="space-y-2">
+                            <button
+                                onClick={toggleMobileDashboard}
+                                className="flex items-center justify-between w-full text-left text-gray-800 hover:text-cyan-400 font-medium pl-1 border-l-4 border-transparent hover:border-cyan-500 transition-colors"
+                                aria-expanded={mobileDashboardOpen}
+                            >
+                                <span>Dashboard</span>
+                                <ChevronDown size={16} className={`transition-transform ${mobileDashboardOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            <div className={`pl-4 space-y-2 overflow-hidden transition-all duration-200 ${mobileDashboardOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+                                }`}>
+                                {dashboardLinks.map((link) => (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className="block text-gray-700 hover:text-cyan-500 pl-2 border-l-2 border-gray-200"
+                                        onClick={() => setIsMenuOpen(false)}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
 
                         {/* Mobile Resources Dropdown */}
                         <div className="space-y-2">
