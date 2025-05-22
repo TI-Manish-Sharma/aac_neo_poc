@@ -251,7 +251,12 @@ const BatchingDashboard: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 py-4 md:py-8 overflow-hidden bg-100">
-            {/* Main content with proper top padding */}
+            {/* Alert Banner */}
+            <AlertBanner
+                alerts={alerts}
+                onDismissAll={dismissAllAlerts}
+            />
+            
             {/* Header */}
             <Header
                 isRealTimeActive={isRealTimeActive}
@@ -266,12 +271,6 @@ const BatchingDashboard: React.FC = () => {
 
             {/* KPI Cards */}
             <KPICards metrics={metrics} />
-
-            {/* Alert Banner */}
-            <AlertBanner
-                alerts={alerts}
-                onDismissAll={dismissAllAlerts}
-            />
 
             {/* Charts Grid */}
             <ChartsGrid
