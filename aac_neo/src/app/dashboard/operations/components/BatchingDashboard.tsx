@@ -258,6 +258,12 @@ const BatchingDashboard: React.FC = () => {
                 onToggleRealTime={toggleRealTime}
             />
 
+            {/* New Components - Raw Material Receipts and Order Dispatch */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+                <RawMaterialReceipts />
+                <OrderDispatch />
+            </div>
+
             {/* KPI Cards */}
             <KPICards metrics={metrics} />
 
@@ -267,11 +273,6 @@ const BatchingDashboard: React.FC = () => {
                 onDismissAll={dismissAllAlerts}
             />
 
-            {/* New Components - Raw Material Receipts and Order Dispatch */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
-                <RawMaterialReceipts />
-                <OrderDispatch />
-            </div>
             {/* Charts Grid */}
             <ChartsGrid
                 chartData={chartData}
