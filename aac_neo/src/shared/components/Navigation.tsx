@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown } from 'lucide-react';
-import PoweredBy from "./PoweredBy";
 
 export default function Navigation() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
