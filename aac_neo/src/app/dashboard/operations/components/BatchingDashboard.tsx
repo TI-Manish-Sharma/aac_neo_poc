@@ -251,16 +251,16 @@ const BatchingDashboard: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 py-4 md:py-8 overflow-hidden bg-100">
-            {/* Alert Banner */}
-            <AlertBanner
-                alerts={alerts}
-                onDismissAll={dismissAllAlerts}
-            />
-            
             {/* Header */}
             <Header
                 isRealTimeActive={isRealTimeActive}
                 onToggleRealTime={toggleRealTime}
+            />
+
+            {/* Alert Banner */}
+            <AlertBanner
+                alerts={alerts}
+                onDismissAll={dismissAllAlerts}
             />
 
             {/* New Components - Raw Material Receipts and Order Dispatch */}
