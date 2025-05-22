@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown } from 'lucide-react';
+import PoweredBy from "./PoweredBy";
 
 export default function Navigation() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -131,6 +132,17 @@ export default function Navigation() {
                             priority
                         />
                     </Link>
+
+                    <div className="hidden md:flex items-center justify-center flex-1">
+                        <Image
+                            src="/aac-institute.png"
+                            alt="AAC Institute Logo"
+                            width={150}
+                            height={60}
+                            className="object-contain transition-transform hover:scale-105"
+                            priority
+                        />
+                    </div>
 
                     {/* Mobile menu button with improved accessibility */}
                     <button
