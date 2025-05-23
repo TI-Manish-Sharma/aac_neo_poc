@@ -34,10 +34,10 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ alerts, onDismissAll }) => {
     return (
         <>
             {/* Alert Text with Exclaimation Icon*/}
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
                 <AlertTriangle className="h-6 w-6" />
                 <span className="font-large font-bold text-lg">Alerts</span>
-            </div>
+            </div> */}
 
             {/* Marquee Banner */}
             <div className="z-50 bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-lg mb-6 rounded-lg">

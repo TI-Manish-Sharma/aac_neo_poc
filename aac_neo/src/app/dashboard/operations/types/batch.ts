@@ -52,6 +52,7 @@ export interface TrendDataPoint {
     dcPowderGm: number;
     soluOilLitre: number;
     sequence: number;
+    dischargeTime: string;
 }
 
 export interface MaterialCompositionData {

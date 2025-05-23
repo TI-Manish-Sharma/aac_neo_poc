@@ -10,34 +10,153 @@ import BatchTable from './BatchTable';
 import ProcessInsights from './ProcessInsights';
 import RawMaterialReceipts from './RawMaterialReceipts';
 import OrderDispatch from './OrderDispatch';
+import TempHardnessChart from './TempHardnessChart';
+import BatchProgressTracker, { BatchProgressData } from './BatchProgressTracker';
+
+// Define the type for our hardness data which doesn't exist in the original BatchData
+interface BatchHardnessData {
+    batchNo: number;
+    mouldNo: number;
+    rising: 'Ok' | 'OVER' | 'UNDER';
+    temp: number;
+    hardness: number;
+    time: string;
+}
 
 const BatchingDashboard: React.FC = () => {
-    // State management
+    // Original state management
     const [batchingData, setBatchingData] = useState<BatchData[]>(INITIAL_BATCH_DATA);
     const [isRealTimeActive, setIsRealTimeActive] = useState(false);
     const [alerts, setAlerts] = useState<Alert[]>([]);
 
-    // Refs for proper cleanup
+    // New state for hardness data
+    const [hardnessData, setHardnessData] = useState<BatchHardnessData[]>([
+        { batchNo: 1520, mouldNo: 12, rising: 'Ok', temp: 70.1, hardness: 140, time: '6:34' },
+        { batchNo: 1521, mouldNo: 15, rising: 'Ok', temp: 70, hardness: 145, time: '6:39' },
+        { batchNo: 1522, mouldNo: 18, rising: 'Ok', temp: 70.2, hardness: 150, time: '6:43' },
+        { batchNo: 1523, mouldNo: 22, rising: 'UNDER', temp: 72, hardness: 125, time: '6:34' },
+        { batchNo: 1524, mouldNo: 21, rising: 'Ok', temp: 70.1, hardness: 135, time: '6:55' },
+        { batchNo: 1525, mouldNo: 27, rising: 'OVER', temp: 67, hardness: 170, time: '7:08' },
+        { batchNo: 1526, mouldNo: 32, rising: 'Ok', temp: 69.1, hardness: 150, time: '7:05' },
+        { batchNo: 1527, mouldNo: 4, rising: 'Ok', temp: 70.2, hardness: 140, time: '7:11' }
+    ]);
+
+    const [batchProgressData] = useState<BatchProgressData[]>([
+        {
+            batchNo: 2001,
+            mouldNo: 1,
+            createdDate: '5/23/2025',
+            stages: {
+                'Batching': 'In Progress',
+                'Ferry Cart': 'Pending',
+                'Tilting': 'Pending',
+                'Cutting': 'Pending',
+                'Autoclave': 'Pending',
+                'Segregation': 'Pending'
+            }
+        },
+        {
+            batchNo: 2002,
+            mouldNo: 2,
+            createdDate: '5/23/2025',
+            stages: {
+                'Batching': 'Completed',
+                'Ferry Cart': 'In Progress',
+                'Tilting': 'Pending',
+                'Cutting': 'Pending',
+                'Autoclave': 'Pending',
+                'Segregation': 'Pending'
+            }
+        },
+        {
+            batchNo: 2003,
+            mouldNo: 3,
+            createdDate: '5/23/2025',
+            stages: {
+                'Batching': 'Completed',
+                'Ferry Cart': 'Completed',
+                'Tilting': 'In Progress',
+                'Cutting': 'Pending',
+                'Autoclave': 'Pending',
+                'Segregation': 'Pending'
+            }
+        }
+    ]);
+
+    // Handler for editing a batch
+    const handleBatchEdit = (batchNo: number) => {
+        console.log(`Editing batch #${batchNo}`);
+        // Your edit logic here
+    };
+
+    // Initialize lastDischargeTimeRef from the last batch in INITIAL_BATCH_DATA
+    const getInitialDischargeTime = (): string | null => {
+        if (INITIAL_BATCH_DATA.length === 0) return null;
+
+        // Get the time from the last batch (assuming INITIAL_BATCH_DATA is already in chronological order)
+        const lastBatch = INITIAL_BATCH_DATA[INITIAL_BATCH_DATA.length - 1];
+        const lastTime = lastBatch.dischargeTime;
+
+        // Add some minutes to ensure the next batch time is ahead
+        const [hours, minutes] = lastTime.split(':').map(Number);
+        let newMinutes = minutes + Math.floor(Math.random() * 16) + 5; // Add 5-20 minutes
+        let newHours = hours;
+
+        // Handle hour rollover
+        if (newMinutes >= 60) {
+            newHours = (newHours + Math.floor(newMinutes / 60)) % 24;
+            newMinutes = newMinutes % 60;
+        }
+
+        return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
+    };
+
+    // Refs for proper cleanup and tracking last discharge time
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const lastDischargeTimeRef = useRef<string | null>(getInitialDischargeTime());
 
-    // Helper function to generate random discharge time
-    const generateRandomTime = useCallback(() => {
-        const hour = Math.floor(Math.random() * 4) + 4; // 4-7 hours
-        const minute = Math.floor(Math.random() * 60); // 0-59 minutes
-        return `${hour}:${minute.toString().padStart(2, '0')}`;
-    }, []);
-
-    // Get next batch number
+    // Get next batch number - simplified
     const getNextBatchNumber = useCallback(() => {
-        return (prevData: BatchData[]) => {
-            const maxBatchNo = Math.max(...prevData.map(batch => batch.batchNo));
-            return maxBatchNo + 1;
+        return (batches: BatchData[]) => {
+            return batches.length > 0
+                ? Math.max(...batches.map(batch => batch.batchNo)) + 1
+                : 1;
         };
     }, []);
 
-    // Alert creation and management
+    // Helper function to generate sequential discharge times - optimized
+    const getNextDischargeTime = useCallback(() => {
+        // If no previous time exists, start with a reasonable time
+        if (!lastDischargeTimeRef.current) {
+            const hours = Math.floor(Math.random() * 8) + 8; // Between 8AM and 4PM
+            const minutes = Math.floor(Math.random() * 60);
+            const time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            lastDischargeTimeRef.current = time;
+            return time;
+        }
+
+        // Parse the last time
+        const [hours, minutes] = lastDischargeTimeRef.current.split(':').map(Number);
+
+        // Add a random interval (5-20 minutes) to the last time
+        let newMinutes = minutes + Math.floor(Math.random() * 16) + 5;
+        let newHours = hours;
+
+        // Handle hour rollover
+        if (newMinutes >= 60) {
+            newHours = (newHours + Math.floor(newMinutes / 60)) % 24;
+            newMinutes = newMinutes % 60;
+        }
+
+        const time = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
+        lastDischargeTimeRef.current = time;
+        return time;
+    }, []);
+
+    // Alert creation and management - optimized with early returns
     const checkAndCreateAlerts = useCallback((batch: BatchData) => {
         const alertMessages = [];
+        const alertId = `batch-${batch.batchNo}`;
 
         // Check discharge temperature
         if (batch.dischargeTemp > PARAMETER_RANGES.dischargeTemp.max) {
@@ -54,46 +173,62 @@ const BatchingDashboard: React.FC = () => {
             alertMessages.push(`Water usage out of range: ${batch.waterKg}kg (range: ${PARAMETER_RANGES.waterKg.min}-${PARAMETER_RANGES.waterKg.max}kg)`);
         }
 
-        // Create a single consolidated alert if any issues found
-        if (alertMessages.length > 0) {
-            const alertType = batch.dischargeTemp > 49 ? 'error' : 'warning';
-            const alertId = `batch-${batch.batchNo}`;
-            const alertMessage = `Batch ${batch.batchNo}: ${alertMessages.join(', ')}`;
+        // Skip if no issues found
+        if (alertMessages.length === 0) return;
 
+        // Create a single consolidated alert
+        const alertType = batch.dischargeTemp > 49 ? 'error' : 'warning';
+        const alertMessage = `Batch ${batch.batchNo}: ${alertMessages.join(', ')}`;
+
+        // Add new alert if it doesn't exist
+        setAlerts(prevAlerts => {
             // Check if this exact alert already exists
-            setAlerts(prevAlerts => {
-                const existingAlert = prevAlerts.find(alert => alert.id === alertId);
-                if (existingAlert) {
-                    // Alert already exists, don't add duplicate
-                    return prevAlerts;
-                }
+            if (prevAlerts.some(alert => alert.id === alertId)) {
+                return prevAlerts;
+            }
 
-                // Add new alert (without automatic timeout removal)
-                const newAlert: Alert = {
-                    id: alertId,
-                    message: alertMessage,
-                    type: alertType,
-                    timestamp: new Date()
-                };
-
-                return [...prevAlerts, newAlert];
-            });
-        }
+            // Add new alert
+            return [...prevAlerts, {
+                id: alertId,
+                message: alertMessage,
+                type: alertType,
+                timestamp: new Date()
+            }];
+        });
     }, []);
 
-    // Manual alert dismissal function
+    // Helper function to generate random hardness data based on temperature
+    const generateHardnessFromTemp = (temp: number): number => {
+        // Strong negative correlation: as temp increases, hardness decreases
+        // Base: 150mm at 70°C
+        const deviation = Math.random() * 5 - 2.5; // Random variation ±2.5
+        return Math.round(220 - temp * 1.5 + deviation);
+    };
 
-    // Mock data generation for real-time simulation
+    // Helper function to determine rising status based on hardness
+    const determineRisingStatus = (hardness: number): 'Ok' | 'OVER' | 'UNDER' => {
+        if (hardness > 165) return 'OVER';
+        if (hardness < 130) return 'UNDER';
+        return 'Ok';
+    };
+
+    // Mock data generation for real-time simulation - optimized
     const addMockBatchData = useCallback((count = 1, overrides = {}) => {
         setBatchingData(prevData => {
             const results = [];
-            let currentData = prevData;
+            const currentData = [...prevData]; // Create a copy to work with
+            const newBatches: BatchData[] = [];
 
             for (let i = 0; i < count; i++) {
                 const getNextBatch = getNextBatchNumber();
                 const nextBatchNo = getNextBatch(currentData);
+                const nextTime = getNextDischargeTime();
 
                 // Generate realistic mock values with controlled variation
+                const mockDischargeTemp = Math.random() > 0.75 ?
+                    Math.floor(Math.random() * 3) + 49 : // Sometimes > 48 to trigger alert
+                    Math.floor(Math.random() * 2) + 46;  // Normal range 46-47
+
                 const mockBatch: BatchData = {
                     batchNo: nextBatchNo,
                     mouldNo: Math.floor(Math.random() * 35) + 1, // 1-35
@@ -112,17 +247,16 @@ const BatchingDashboard: React.FC = () => {
                     mixingTime: Math.random() > 0.85 ?
                         Number((Math.random() * 0.5 + 3.3).toFixed(2)) : // Sometimes > 3.2 to trigger alert
                         Number((Math.random() * 0.6 + 2.5).toFixed(2)),  // Normal range 2.5-3.1
-                    dischargeTime: generateRandomTime(),
-                    dischargeTemp: Math.random() > 0.75 ?
-                        Math.floor(Math.random() * 3) + 49 : // Sometimes > 48 to trigger alert
-                        Math.floor(Math.random() * 2) + 46,  // Normal range 46-47
+                    dischargeTime: nextTime,
+                    dischargeTemp: mockDischargeTemp,
                     ...overrides // Apply any custom overrides
                 };
 
                 // Check for duplicates
                 const existingBatch = currentData.find(batch => batch.batchNo === mockBatch.batchNo);
                 if (!existingBatch) {
-                    currentData = [...currentData, mockBatch];
+                    currentData.push(mockBatch);
+                    newBatches.push(mockBatch);
                     results.push({ success: true, data: mockBatch });
 
                     // Check and create alerts for the new batch
@@ -134,11 +268,36 @@ const BatchingDashboard: React.FC = () => {
                 }
             }
 
+            // Generate hardness data for new batches
+            if (newBatches.length > 0) {
+                setHardnessData(prevHardnessData => {
+                    const newHardnessData = newBatches.map(batch => {
+                        // Generate simulated hardness and temperature values that are correlated
+                        // For this example, we'll use a modified version of discharge temp as the "curing" temp
+                        const curingTemp = batch.dischargeTemp + (Math.random() * 4 - 2); // ±2°C from discharge temp
+                        const hardness = generateHardnessFromTemp(curingTemp);
+                        const rising = determineRisingStatus(hardness);
+
+                        return {
+                            batchNo: batch.batchNo,
+                            mouldNo: batch.mouldNo,
+                            rising,
+                            temp: curingTemp,
+                            hardness,
+                            time: batch.dischargeTime
+                        };
+                    });
+
+                    // Keep only the latest 20 batches for the hardness chart
+                    return [...newHardnessData, ...prevHardnessData].slice(0, 20);
+                });
+            }
+
             return currentData;
         });
-    }, [getNextBatchNumber, generateRandomTime, checkAndCreateAlerts]);
+    }, [getNextBatchNumber, getNextDischargeTime, checkAndCreateAlerts]);
 
-    // Memoized calculations for better performance
+    // Memoized calculations for better performance - optimized with guard clauses
     const metrics = useMemo((): Metrics => {
         if (batchingData.length === 0) return {
             totalBatches: 0,
@@ -149,39 +308,56 @@ const BatchingDashboard: React.FC = () => {
         };
 
         const totalBatches = batchingData.length;
-        const avgMixingTime = batchingData.reduce((sum, batch) => sum + batch.mixingTime, 0) / totalBatches;
-        const avgDischargeTemp = batchingData.reduce((sum, batch) => sum + batch.dischargeTemp, 0) / totalBatches;
-        const avgWaterUsage = batchingData.reduce((sum, batch) => sum + batch.waterKg, 0) / totalBatches;
+
+        // Calculate averages in a single pass through the data
+        const sums = batchingData.reduce((acc, batch) => {
+            const [hours, minutes] = batch.dischargeTime.split(':').map(Number);
+
+            return {
+                mixingTimeSum: acc.mixingTimeSum + batch.mixingTime,
+                dischargeTempSum: acc.dischargeTempSum + batch.dischargeTemp,
+                waterUsageSum: acc.waterUsageSum + batch.waterKg,
+                dischargeTimeMinutesSum: acc.dischargeTimeMinutesSum + (hours * 60 + minutes)
+            };
+        }, {
+            mixingTimeSum: 0,
+            dischargeTempSum: 0,
+            waterUsageSum: 0,
+            dischargeTimeMinutesSum: 0
+        });
 
         // Calculate average discharge time
-        const avgDischargeTime = (() => {
-            const totalMinutes = batchingData.reduce((sum, batch) => {
-                const [hours, minutes] = batch.dischargeTime.split(':').map(Number);
-                return sum + (hours * 60 + minutes);
-            }, 0);
-            const avgMinutes = totalMinutes / totalBatches;
-            const hours = Math.floor(avgMinutes / 60);
-            const mins = Math.round(avgMinutes % 60);
-            return `${hours}:${mins.toString().padStart(2, '0')}`;
-        })();
+        const avgDischargeTimeMinutes = sums.dischargeTimeMinutesSum / totalBatches;
+        const avgDischargeTimeHours = Math.floor(avgDischargeTimeMinutes / 60);
+        const avgDischargeTimeMinutesRemainder = Math.round(avgDischargeTimeMinutes % 60);
 
         return {
             totalBatches,
-            avgMixingTime,
-            avgDischargeTemp,
-            avgWaterUsage,
-            avgDischargeTime
+            avgMixingTime: sums.mixingTimeSum / totalBatches,
+            avgDischargeTemp: sums.dischargeTempSum / totalBatches,
+            avgWaterUsage: sums.waterUsageSum / totalBatches,
+            avgDischargeTime: `${avgDischargeTimeHours}:${avgDischargeTimeMinutesRemainder.toString().padStart(2, '0')}`
         };
     }, [batchingData]);
 
-    // Memoized chart data
+    // Memoized chart data - optimized to reduce complexity
     const chartData = useMemo((): ChartData => {
-        // Trend data for line charts
+        // Early return for empty data
+        if (batchingData.length === 0) {
+            return {
+                trendData: [],
+                materialComposition: [],
+                tempCategories: { optimal: 0, acceptable: 0, high: 0 }
+            };
+        }
+
+        // Trend data for line charts - simplified mapping
         const trendData = batchingData.map((batch, index) => ({
             batch: batch.batchNo,
             mixingTime: batch.mixingTime,
             dischargeTemp: batch.dischargeTemp,
             waterKg: batch.waterKg,
+            dischargeTime: batch.dischargeTime,
             freshSlurryKg: batch.freshSlurryKg,
             wasteSlurryKg: batch.wasteSlurryKg,
             cementKg: batch.cementKg,
@@ -193,58 +369,84 @@ const BatchingDashboard: React.FC = () => {
             sequence: index + 1
         }));
 
+        // Calculate all material sums in a single loop
+        const materialSums = batchingData.reduce((sums, batch) => {
+            sums.freshSlurry += batch.freshSlurryKg;
+            sums.cement += batch.cementKg;
+            sums.wasteSlurry += batch.wasteSlurryKg;
+            sums.lime += batch.limeKg;
+            sums.water += batch.waterKg;
+
+            // Count temperature categories in the same loop
+            if (batch.dischargeTemp <= 47) sums.tempOptimal++;
+            else if (batch.dischargeTemp <= 48) sums.tempAcceptable++;
+            else sums.tempHigh++;
+
+            return sums;
+        }, {
+            freshSlurry: 0,
+            cement: 0,
+            wasteSlurry: 0,
+            lime: 0,
+            water: 0,
+            tempOptimal: 0,
+            tempAcceptable: 0,
+            tempHigh: 0
+        });
+
         // Material composition for pie chart
         const materialComposition = [
-            { name: 'Fresh Slurry', value: batchingData.reduce((sum, batch) => sum + batch.freshSlurryKg, 0), color: '#8884d8' },
-            { name: 'Cement', value: batchingData.reduce((sum, batch) => sum + batch.cementKg, 0), color: '#82ca9d' },
-            { name: 'Waste Slurry', value: batchingData.reduce((sum, batch) => sum + batch.wasteSlurryKg, 0), color: '#ffc658' },
-            { name: 'Lime', value: batchingData.reduce((sum, batch) => sum + batch.limeKg, 0), color: '#ff7c7c' },
-            { name: 'Water', value: batchingData.reduce((sum, batch) => sum + batch.waterKg, 0), color: '#8dd1e1' }
+            { name: 'Fresh Slurry', value: materialSums.freshSlurry, color: '#8884d8' },
+            { name: 'Cement', value: materialSums.cement, color: '#82ca9d' },
+            { name: 'Waste Slurry', value: materialSums.wasteSlurry, color: '#ffc658' },
+            { name: 'Lime', value: materialSums.lime, color: '#ff7c7c' },
+            { name: 'Water', value: materialSums.water, color: '#8dd1e1' }
         ];
-
-        // Temperature categories
-        const tempCategories = batchingData.reduce((acc, batch) => {
-            if (batch.dischargeTemp <= 47) acc.optimal++;
-            else if (batch.dischargeTemp <= 48) acc.acceptable++;
-            else acc.high++;
-            return acc;
-        }, { optimal: 0, acceptable: 0, high: 0 });
 
         return {
             trendData,
             materialComposition,
-            tempCategories
+            tempCategories: {
+                optimal: materialSums.tempOptimal,
+                acceptable: materialSums.tempAcceptable,
+                high: materialSums.tempHigh
+            }
         };
     }, [batchingData]);
 
-    // Alert management - now only manual dismissal
+    // Alert management
     const dismissAllAlerts = useCallback(() => {
         setAlerts([]);
     }, []);
 
-    // Real-time toggle functionality
+    // Real-time toggle functionality - improved with proper cleanup
     const toggleRealTime = useCallback(() => {
-        if (isRealTimeActive) {
-            // Stop real-time mode
-            if (intervalRef.current) {
+        setIsRealTimeActive(prevState => {
+            const newState = !prevState;
+
+            // Stop real-time mode if it was active
+            if (!newState && intervalRef.current) {
                 clearInterval(intervalRef.current);
                 intervalRef.current = null;
             }
-            setIsRealTimeActive(false);
-        } else {
-            // Start real-time mode
-            setIsRealTimeActive(true);
-            intervalRef.current = setInterval(() => {
-                addMockBatchData(1);
-            }, 5000);
-        }
-    }, [isRealTimeActive, addMockBatchData]);
+
+            // Start real-time mode if it wasn't active
+            if (newState && !intervalRef.current) {
+                intervalRef.current = setInterval(() => {
+                    addMockBatchData(1);
+                }, 5000);
+            }
+
+            return newState;
+        });
+    }, [addMockBatchData]);
 
     // Cleanup intervals on unmount
     useEffect(() => {
         return () => {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
+                intervalRef.current = null;
             }
         };
     }, []);
@@ -268,14 +470,22 @@ const BatchingDashboard: React.FC = () => {
 
             {/* Scrollable Content Section */}
             <div className="flex-grow overflow-y-auto scrollbar-hide ">
-                {/* New Components - Raw Material Receipts and Order Dispatch */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
-                    <RawMaterialReceipts />
-                    <OrderDispatch />
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {/* KPI Cards */}
+                    <div>
+                        <KPICards metrics={metrics} />
+                        <BatchProgressTracker
+                            batches={batchProgressData}
+                            onBatchEdit={handleBatchEdit} />
+                        <TempHardnessChart data={hardnessData} />
+                    </div>
 
-                {/* KPI Cards */}
-                <KPICards metrics={metrics} />
+                    {/* Raw Material Receipts and Order Dispatch stacked */}
+                    <div className="flex flex-col space-y-6">
+                        <OrderDispatch />
+                        <RawMaterialReceipts />
+                    </div>
+                </div>
 
                 {/* Charts Grid */}
                 <ChartsGrid

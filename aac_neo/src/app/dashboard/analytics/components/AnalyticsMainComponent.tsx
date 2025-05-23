@@ -24,8 +24,6 @@ const AnalyticsMainComponent: React.FC<DashboardComponentProps> = ({
 }) => {
     // State for active tab
     const [activeTab, setActiveTab] = useState<string>('overview');
-    // State for mobile menu visibility
-    const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
     // Tab configuration with Lucide-react icons
     const tabs = [
@@ -36,15 +34,8 @@ const AnalyticsMainComponent: React.FC<DashboardComponentProps> = ({
     ];
 
     // Toggle mobile menu
-    const toggleMobileMenu = () => {
-        setMobileMenuOpen(!mobileMenuOpen);
-    };
 
     // Handle tab selection and close mobile menu
-    const handleTabSelect = (tabId: string) => {
-        setActiveTab(tabId);
-        setMobileMenuOpen(false);
-    };
 
     return (
         <div className="flex flex-col h-screen overflow-hidden bg-100 px-4 py-4 md:py-4">

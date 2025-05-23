@@ -46,7 +46,7 @@ const HeroSection = () => {
           <div className="relative">
             <div className="bg-white p-2 rounded-xl shadow-md overflow-hidden">
               <Image
-                src="/aac-block.jpg"
+                src="/AAC-Autoclave.png"
                 alt="AAC Plant Dashboard"
                 width={600}
                 height={400}
