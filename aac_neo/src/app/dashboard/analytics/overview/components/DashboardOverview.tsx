@@ -5,10 +5,7 @@ import LoadingIndicator from '../../shared/components/LoadingIndicator';
 
 // Import our new components
 import SummaryCard from './SummaryCard';
-import MouldPerformanceChart from './MouldPerformanceChart';
-import AlertsPanel from './AlertsPanel';
 import ProductionEfficiencyMetrics from './ProductionEfficiencyMetrics';
-import CostImpactAnalysis from './CostImpactAnalysis';
 import PerformanceComparison from './PerformanceComparison';
 import ShiftOperatorAnalysis from './ShiftOperatorAnalysis';
 import MaterialSupplierCorrelation from './MaterialSupplierCorrelation';
@@ -207,34 +204,22 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                         <h3 className="text-base font-medium text-gray-700 mb-3">Select Views to display</h3>
                         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                             <button
-                                onClick={() => toggleComponent('mouldPerformance')}
-                                className={`px-2 py-1 text-xs rounded border ${activeComponents.mouldPerformance ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
+                                onClick={() => toggleComponent('predictiveAlerts')}
+                                className={`px-2 py-1 text-xs rounded border ${activeComponents.predictiveAlerts ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
                             >
-                                Mould Box Performance
-                            </button>
-                            <button
-                                onClick={() => toggleComponent('alerts')}
-                                className={`px-2 py-1 text-xs rounded border ${activeComponents.alerts ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
-                            >
-                                Alerts
+                                Predictive Alerts
                             </button>
                             <button
                                 onClick={() => toggleComponent('topPerformers')}
                                 className={`px-2 py-1 text-xs rounded border ${activeComponents.topPerformers ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
                             >
-                                Top Performers
+                                Top Performing Mould Boxes
                             </button>
                             <button
                                 onClick={() => toggleComponent('efficiency')}
                                 className={`px-2 py-1 text-xs rounded border ${activeComponents.efficiency ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
                             >
                                 Efficiency Metrics
-                            </button>
-                            <button
-                                onClick={() => toggleComponent('costImpact')}
-                                className={`px-2 py-1 text-xs rounded border ${activeComponents.costImpact ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
-                            >
-                                Cost Analysis
                             </button>
                             <button
                                 onClick={() => toggleComponent('comparison')}
@@ -260,12 +245,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                             >
                                 Action Items
                             </button>
-                            <button
-                                onClick={() => toggleComponent('predictiveAlerts')}
-                                className={`px-2 py-1 text-xs rounded border ${activeComponents.predictiveAlerts ? 'bg-blue-100 border-blue-300 text-blue-800' : 'bg-white border-gray-300 text-gray-700'}`}
-                            >
-                                Predictive Alerts
-                            </button>
+
                         </div>
                     </div>
 
@@ -299,35 +279,6 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                         />
                     </div>
 
-                    {/* Grid layout for Mould Performance and Alerts (now conditional) */}
-                    {(activeComponents.mouldPerformance || activeComponents.alerts) && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                            {/* Mould Performance Chart */}
-                            {activeComponents.mouldPerformance && (
-                                <div className={activeComponents.alerts ? '' : 'lg:col-span-2'}>
-                                    <MouldPerformanceChart
-                                        data={data.mouldPerformance}
-                                        title="Top 5 Mould Boxes by Defect Rate"
-                                        height={64}
-                                        showViewAll={false}
-                                    />
-                                </div>
-                            )}
-
-                            {/* Alerts Panel */}
-                            {activeComponents.alerts && (
-                                <div className={activeComponents.mouldPerformance ? '' : 'lg:col-span-2'}>
-                                    <AlertsPanel
-                                        alerts={data.alerts}
-                                        title="Recent Alerts"
-                                        maxHeight={64}
-                                        showViewAll={false}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )}
-
                     {/* Efficiency Metrics Component */}
                     {activeComponents.efficiency && (
                         <div className="mb-6">
@@ -341,38 +292,6 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                                 }}
                                 title="Production Efficiency (Overall Equipment Effectiveness)"
                                 showDetails={false}
-                            />
-                        </div>
-                    )}
-
-                    {/* Cost Impact Analysis Component */}
-                    {activeComponents.costImpact && (
-                        <div className="mb-6">
-                            <CostImpactAnalysis
-                                data={{
-                                    summary: {
-                                        totalCost: 125000,
-                                        previousPeriodCost: 132000,
-                                        percentChange: -5.3,
-                                        currency: '₹',
-                                        costPerRejection: 4800
-                                    },
-                                    breakdown: [
-                                        { category: 'TiltingCrane', cost: 38000, percentage: 30.4 },
-                                        { category: 'Chipping', cost: 32500, percentage: 26.0 },
-                                        { category: 'SideCutter', cost: 29000, percentage: 23.2 },
-                                        { category: 'Joined', cost: 18000, percentage: 14.4 },
-                                        { category: 'Others', cost: 7500, percentage: 6.0 }
-                                    ],
-                                    trend: [
-                                        { period: 'Week 1', cost: 35000, target: 30000 },
-                                        { period: 'Week 2', cost: 32000, target: 30000 },
-                                        { period: 'Week 3', cost: 30500, target: 30000 },
-                                        { period: 'Week 4', cost: 27500, target: 30000 }
-                                    ]
-                                }}
-                                title="Cost Impact Analysis (Weekly)"
-                                height={50}
                             />
                         </div>
                     )}

@@ -250,46 +250,52 @@ const BatchingDashboard: React.FC = () => {
     }, []);
 
     return (
-        <div className="container mx-auto px-4 py-4 md:py-8 overflow-hidden bg-100">
-            {/* Header */}
-            <Header
-                isRealTimeActive={isRealTimeActive}
-                onToggleRealTime={toggleRealTime}
-            />
+        <div className="flex flex-col h-screen overflow-hidden bg-100 px-4 py-4 md:py-4">
+            {/* Fixed Header and Alert Section */}
+            <div className="flex-none">
+                {/* Header */}
+                <Header
+                    isRealTimeActive={isRealTimeActive}
+                    onToggleRealTime={toggleRealTime}
+                />
 
-            {/* Alert Banner */}
-            <AlertBanner
-                alerts={alerts}
-                onDismissAll={dismissAllAlerts}
-            />
-
-            {/* New Components - Raw Material Receipts and Order Dispatch */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
-                <RawMaterialReceipts />
-                <OrderDispatch />
+                {/* Alert Banner */}
+                <AlertBanner
+                    alerts={alerts}
+                    onDismissAll={dismissAllAlerts}
+                />
             </div>
 
-            {/* KPI Cards */}
-            <KPICards metrics={metrics} />
+            {/* Scrollable Content Section */}
+            <div className="flex-grow overflow-y-auto scrollbar-hide ">
+                {/* New Components - Raw Material Receipts and Order Dispatch */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+                    <RawMaterialReceipts />
+                    <OrderDispatch />
+                </div>
 
-            {/* Charts Grid */}
-            <ChartsGrid
-                chartData={chartData}
-                metrics={metrics}
-            />
+                {/* KPI Cards */}
+                <KPICards metrics={metrics} />
 
-            {/* Batch Details Table */}
-            <BatchTable
-                batchData={batchingData}
-                displayCount={8}
-            />
+                {/* Charts Grid */}
+                <ChartsGrid
+                    chartData={chartData}
+                    metrics={metrics}
+                />
 
-            {/* Process Insights */}
-            <ProcessInsights
-                batchData={batchingData}
-                metrics={metrics}
-                tempCategories={chartData.tempCategories}
-            />
+                {/* Batch Details Table */}
+                <BatchTable
+                    batchData={batchingData}
+                    displayCount={8}
+                />
+
+                {/* Process Insights */}
+                <ProcessInsights
+                    batchData={batchingData}
+                    metrics={metrics}
+                    tempCategories={chartData.tempCategories}
+                />
+            </div>
         </div>
     );
 };

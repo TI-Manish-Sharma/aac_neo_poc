@@ -9,7 +9,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ isRealTimeActive, onToggleRealTime }) => {
     return (
-        <div className="mb-4 md:mb-8 flex flex-col sm:flex-row justify-between items-start gap-4">
+        <div className="mb-4 md:mb-4 flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
                 <h1 className="text-xl md:text-4xl font-bold text-gray-800 mb-2 break-words">
                     <span className="text-cyan-500">AAC Plant</span> Real Time Quality Insights
