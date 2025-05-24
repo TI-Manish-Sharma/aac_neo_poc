@@ -1,12 +1,13 @@
 'use client'
 import Link from "next/link";
 import Image from "next/image";
+import { Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-stone-800 text-gray-200">
+        <footer className="bg-gray-100 text-gray-700">
             <div className="container mx-auto px-4 py-8">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     {/* Logo and About */}
@@ -17,27 +18,27 @@ export default function Footer() {
                                 alt="AAC Neo Logo"
                                 width={120}
                                 height={120}
-                                className="brightness-110"
+                                className="drop-shadow-sm"
                             />
                         </Link>
                     </div>
 
                     {/* Quick Links */}
                     <div className="col-span-1">
-                        <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+                        <h3 className="text-lg font-semibold mb-4 text-cyan-700">Quick Links</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/" className="hover:text-cyan-400 transition-colors">
+                                <Link href="/" className="hover:text-cyan-600 transition-colors">
                                     Home
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/dashboard/analytics" className="hover:text-cyan-400 transition-colors">
+                                <Link href="/dashboard/analytics" className="hover:text-cyan-600 transition-colors">
                                     Analytics Dashboard
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/dashboard/operations" className="hover:text-cyan-400 transition-colors">
+                                <Link href="/dashboard/operations" className="hover:text-cyan-600 transition-colors">
                                     Realtime Dashboard
                                 </Link>
                             </li>
@@ -46,20 +47,15 @@ export default function Footer() {
 
                     {/* Resources */}
                     <div className="col-span-1">
-                        <h3 className="text-lg font-semibold mb-4">Resources</h3>
+                        <h3 className="text-lg font-semibold mb-4 text-cyan-700">Resources</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/documentation" className="hover:text-cyan-400 transition-colors">
-                                    Documentation
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/faq" className="hover:text-cyan-400 transition-colors">
+                                <Link href="/faq" className="hover:text-cyan-600 transition-colors">
                                     FAQ
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/support" className="hover:text-cyan-400 transition-colors">
+                                <Link href="/support" className="hover:text-cyan-600 transition-colors">
                                     Support
                                 </Link>
                             </li>
@@ -68,26 +64,21 @@ export default function Footer() {
 
                     {/* Contact Info */}
                     <div className="col-span-1">
-                        <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
+                        <h3 className="text-lg font-semibold mb-4 text-cyan-700">Contact Us</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/contact" className="hover:text-cyan-400 transition-colors">
+                                <Link href="/contact" className="hover:text-cyan-600 transition-colors">
                                     Contact
                                 </Link>
                             </li>
                             <li className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                                </svg>
-                                <a href="mailto:contact@aacneo.com" className="hover:text-cyan-400 transition-colors">
+                                <Mail className="h-5 w-5 mr-2 text-cyan-600" />
+                                <a href="mailto:contact@aacneo.com" className="hover:text-cyan-600 transition-colors">
                                     contact@aacneo.com
                                 </a>
                             </li>
                             <li className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                                </svg>
+                                <MapPin className="h-5 w-5 mr-2 text-cyan-600" />
                                 <span>Pune, Bharat</span>
                             </li>
                         </ul>
@@ -95,13 +86,32 @@ export default function Footer() {
                 </div>
 
                 {/* Divider */}
-                <div className="border-t border-gray-700 my-6"></div>
+                <div className="border-t border-gray-300 my-3"></div>
 
                 {/* Bottom Bar */}
                 <div className="flex flex-col md:flex-row justify-between items-center">
-                    <p className="text-sm">
+                    <p className="text-sm text-gray-600">
                         © {currentYear} AAC Neo. All rights reserved.
                     </p>
+
+                    {/* Developer Credit - ENHANCED */}
+                    <div className="flex items-center py-1.5 px-4 bg-gray-100 rounded-xl shadow-md border border-gray-300">
+                        <span className="text-base text-gray-800 mr-3 font-semibold">Developed by</span>
+                        <a
+                            href="https://technizeredge.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center hover:opacity-80 transition-opacity"
+                        >
+                            <Image
+                                src="/technizer-edge-logo.png"
+                                alt="Technizer Edge Logo"
+                                width={180}
+                                height={54}
+                                className="h-10 w-auto"
+                            />
+                        </a>
+                    </div>
 
                     {/* Social Links */}
                     {/* <div className="flex space-x-4 mt-4 md:mt-0">
@@ -109,7 +119,7 @@ export default function Footer() {
                             href="https://twitter.com"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-cyan-400 transition-colors"
+                            className="text-gray-500 hover:text-cyan-600 transition-colors"
                             aria-label="Twitter"
                         >
                             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -120,7 +130,7 @@ export default function Footer() {
                             href="https://linkedin.com"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-cyan-400 transition-colors"
+                            className="text-gray-500 hover:text-cyan-600 transition-colors"
                             aria-label="LinkedIn"
                         >
                             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -131,7 +141,7 @@ export default function Footer() {
                             href="https://github.com"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-cyan-400 transition-colors"
+                            className="text-gray-500 hover:text-cyan-600 transition-colors"
                             aria-label="GitHub"
                         >
                             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">

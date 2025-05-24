@@ -40,7 +40,7 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ alerts, onDismissAll }) => {
             </div> */}
 
             {/* Marquee Banner */}
-            <div className="z-50 bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-lg mb-6 rounded-lg">
+            <div className="z-50 bg-cyan-500 text-black shadow-lg mb-6 rounded-lg">
                 <div className="relative overflow-hidden h-12">
                     <div
                         ref={marqueeRef}
@@ -51,10 +51,10 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ alerts, onDismissAll }) => {
                     >
                         {/* First set */}
                         {alerts.map(a => (
-                            <div key={a.id} className="flex items-center space-x-2 px-6">
+                            <div key={a.id} className="flex items-center space-x-2 px-6 text-lg">
                                 <AlertTriangle className="h-4 w-4 flex-shrink-0" />
-                                <span className="font-medium text-sm">{a.message}</span>
-                                <span className="text-xs opacity-75">
+                                <span className="font-medium">{a.message}</span>
+                                <span className="opacity-75">
                                     ({a.timestamp.toLocaleTimeString()})
                                 </span>
                             </div>

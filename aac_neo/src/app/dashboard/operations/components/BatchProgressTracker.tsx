@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 // Define the stages a batch can go through
 export const BATCH_STAGES = [
@@ -338,12 +338,68 @@ export default function BatchProgressTracker({
     readOnly?: boolean
 }) {
     const [displayStyle, setDisplayStyle] = useState<'compact' | 'minimal' | 'horizontal' | 'card'>('card');
+    const [autoScroll, setAutoScroll] = useState(true);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const animationRef = useRef<number | null>(null);
+    const scrollSpeed = useRef(0.5); // pixels per frame, can be adjusted
+
+    // Create a larger array with repeated batches for seamless scrolling
+    const repeatedBatches = [...batches, ...batches, ...batches, ...batches].map((batch, index) => ({
+        ...batch,
+        batchNo: batch.batchNo + (index * 10) // Ensure unique keys
+    }));
+
+    // Function to handle auto-scrolling
+    const startAutoScroll = useCallback(() => {
+        if (!scrollContainerRef.current || !autoScroll) return;
+        
+        const container = scrollContainerRef.current;
+        
+        // Check if we need to reset scroll position for looping
+        if (container.scrollTop + container.clientHeight >= container.scrollHeight - 50) {
+            // When close to bottom, reset to top smoothly
+            container.scrollTo({ top: 0, behavior: 'auto' });
+        }
+        
+        // Increment scroll position for smooth scrolling
+        container.scrollBy({ top: scrollSpeed.current, behavior: 'auto' });
+        
+        // Continue animation
+        animationRef.current = requestAnimationFrame(startAutoScroll);
+    }, [autoScroll]);
+
+
+    // Start or stop auto-scrolling based on autoScroll state
+    useEffect(() => {
+        if (autoScroll) {
+            animationRef.current = requestAnimationFrame(startAutoScroll);
+        } else if (animationRef.current) {
+            cancelAnimationFrame(animationRef.current);
+            animationRef.current = null;
+        }
+        
+        return () => {
+            if (animationRef.current) {
+                cancelAnimationFrame(animationRef.current);
+                animationRef.current = null;
+            }
+        };
+    }, [autoScroll, startAutoScroll]);
 
     return (
         <div className={`bg-white rounded-lg shadow-md p-6 ${className} mb-6`}>
             <div className="flex justify-between items-center mb-2">
                 <h2 className="text-xl font-semibold text-gray-800">Live Batch Tracking</h2>
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 items-center">
+                    <label className="flex items-center text-sm">
+                        <input 
+                            type="checkbox" 
+                            checked={autoScroll} 
+                            onChange={() => setAutoScroll(!autoScroll)} 
+                            className="mr-1 h-4 w-4 text-blue-600"
+                        />
+                        Auto-scroll
+                    </label>
                     <select
                         value={displayStyle}
                         onChange={(e) => setDisplayStyle(e.target.value as 'compact' | 'minimal' | 'horizontal' | 'card')}
@@ -375,11 +431,16 @@ export default function BatchProgressTracker({
                 </div>
             </div>
 
-            {/* Batch Grid */}
-            <div className="grid gap-3 grid-cols-1">
-                {batches.map(batch => (
+            {/* Batch Grid with Smooth Scrolling */}
+            <div 
+                ref={scrollContainerRef}
+                className="grid gap-3 grid-cols-1 max-h-[400px] overflow-y-auto pr-1 scrollbar-hide"
+                style={{ scrollBehavior: 'auto' }}
+            >
+                {/* Render multiple copies of batches for continuous scrolling */}
+                {repeatedBatches.map((batch, index) => (
                     <BatchItem
-                        key={batch.batchNo}
+                        key={`batch-${batch.batchNo}-${index}`}
                         batch={batch}
                         style={displayStyle}
                         onBatchEdit={onBatchEdit}

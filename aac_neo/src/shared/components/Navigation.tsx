@@ -29,7 +29,7 @@ export default function Navigation() {
 
     // Resources dropdown items
     const resourceLinks = [
-        { href: "/documentation", label: "Documentation" },
+        // { href: "/documentation", label: "Documentation" },
         { href: "/support", label: "Support" },
         { href: "/faq", label: "FAQ" },
     ];

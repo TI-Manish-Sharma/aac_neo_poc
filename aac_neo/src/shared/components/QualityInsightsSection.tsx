@@ -40,15 +40,15 @@ const QualityInsightsSection = () => {
         },
         {
             icon: "bi-grid-3x3",
-            title: "Mould Performance Tracking",
-            description: "Compare efficiency across different moulds to maximize throughput and quality.",
+            title: "Order Dispatch Monitoring",
+            description: "Monitor real-time dispatch status with comprehensive tracking of AAC blocks.",
             bgColor: "bg-yellow-100",
             textColor: "text-yellow-600"
         },
         {
             icon: "bi-diagram-3",
-            title: "Segregation Analytics",
-            description: "Detailed analysis to ensure consistent product density and compliance with quality standards.",
+            title: "Batch Lifecycle",
+            description: "Track production batches from raw materials to finished product with comprehensive visibility into curing times, quality tests, inventory status, and complete batch history.",
             bgColor: "bg-red-100",
             textColor: "text-red-600"
         }
