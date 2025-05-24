@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BarChart3, PieChart, TrendingUp, Grid3X3, Gauge, AlertTriangle } from 'lucide-react';
+import { BarChart3, TrendingUp, Gauge, AlertTriangle, Truck, LifeBuoy } from 'lucide-react';
 import FeatureCard from './FeatureCard';
 
 export default function FeaturesPage() {
@@ -34,7 +34,7 @@ export default function FeaturesPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                         <FeatureCard
                             icon={<BarChart3 className="text-cyan-700" size={24} />}
-                            title="Cutting Process Monitoring"
+                            title="Production Process Monitoring"
                             description="Track critical cutting process metrics in real-time with comprehensive dashboards displaying rejection rates, types, and quality trends to identify issues before they impact production."
                             bgColor="bg-cyan-100"
                         />
@@ -44,17 +44,19 @@ export default function FeaturesPage() {
                             description="Analyze rejection patterns over time with advanced filtering options by date and type to identify root causes and implement targeted improvements."
                             bgColor="bg-blue-100"
                         />
+
                         <FeatureCard
-                            icon={<Grid3X3 className="text-green-700" size={24} />}
-                            title="Mould Performance Tracking"
-                            description="Monitor individual mould performance with detailed statistics on rejection rates, defect types, and batch counts to optimize maintenance schedules."
-                            bgColor="bg-green-100"
+                            icon={<Truck className="text-blue-700" size={24} />}
+                            title="Order Dispatch Monitoring"
+                            description="Monitor real-time dispatch status with comprehensive tracking of AAC blocks."
+                            bgColor="bg-blue-100"
                         />
+
                         <FeatureCard
-                            icon={<PieChart className="text-amber-700" size={24} />}
-                            title="Segregation Analysis"
-                            description="Deep dive into segregation-related defects with position analysis and radar charts to understand spatial patterns of quality issues."
-                            bgColor="bg-amber-100"
+                            icon={<LifeBuoy className="text-purple-700" size={24} />}
+                            title="Batch Lifecycle"
+                            description="Track production batches from raw materials to finished product with comprehensive visibility into curing times, quality tests, inventory status, and complete batch history."
+                            bgColor="bg-purple-100"
                         />
                         <FeatureCard
                             icon={<Gauge className="text-purple-700" size={24} />}
