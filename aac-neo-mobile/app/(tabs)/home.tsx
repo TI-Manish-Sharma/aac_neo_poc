@@ -1245,7 +1245,7 @@ export default function Home() {
           }}
         >
           <Image
-            source={require('@/assets/images/aac-neo-logo.png')}
+            source={require('@/assets/images/aac-neo-logo2.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -1255,6 +1255,16 @@ export default function Home() {
       {/* Main content */}
       <View style={styles.contentContainer}>
         <View style={styles.menuGrid}>
+          {renderSquareButton(
+            'InventoryScreen',
+            <MaterialIcons
+              name="inventory"
+              size={iconSize}
+              color={pressedButton === 'InventoryScreen' ? '#FFFFFF' : '#00D2E6'}
+            />,
+            'Inventory'
+          )}
+
           {renderSquareButton(
             'BatchScreen',
             <MaterialIcons
@@ -1275,6 +1285,18 @@ export default function Home() {
             'Autoclave'
           )}
 
+
+
+          {renderSquareButton(
+            'DispatchScreen',
+            <MaterialCommunityIcons
+              name="truck-cargo-container"
+              size={iconSize}
+              color={pressedButton === 'InventoryScreen' ? '#FFFFFF' : '#00D2E6'}
+            />,
+            'Dispatch'
+          )}
+
           {/* {renderSquareButton(
             'SegregationScreen',
             <MaterialCommunityIcons
@@ -1285,7 +1307,7 @@ export default function Home() {
             'Segregation'
           )} */}
 
-          {renderSquareButton(
+          {/* {renderSquareButton(
             'MaintenanceScreen',
             <FontAwesome
               name="wrench"
@@ -1293,7 +1315,7 @@ export default function Home() {
               color={pressedButton === 'MaintenanceScreen' ? '#FFFFFF' : '#00D2E6'}
             />,
             'Maintenance'
-          )}
+          )} */}
         </View>
       </View>
 

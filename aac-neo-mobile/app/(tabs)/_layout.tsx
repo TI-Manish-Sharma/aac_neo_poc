@@ -15,7 +15,7 @@ export default function TabLayout() {
 
   // Fake user data (replace with real auth context later)
   const user = {
-    name: "Mukund Joshi",
+    name: "John Doe",
     profileImage: require("@/assets/images/mj.png"),
   };
 

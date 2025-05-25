@@ -104,7 +104,7 @@ export default function RootLayout() {
   }
 
   // Add your app logo/image path here
-  const splashImage = require('../assets/images/aac-neo-icon.png');
+  const splashImage = require('../assets/images/aac-neo-logo2.png');
 
   // If using Lottie animations, add your animation file path here
   // const lottieAnimation = require('../assets/splash-animation.json');
