@@ -98,7 +98,7 @@ export default function AutoclaveFormScreen() {
             }
         });
 
-    const { fadeAnim, scaleAnim, headerAnim, bannerAnim } = useAnimations();
+    const { fadeAnimation: fadeAnim, scaleAnimation: scaleAnim, headerAnimation: headerAnim, bannerAnimation: bannerAnim } = useAnimations();
 
     // watch only shift (banner) and times for duration calc
     const shift = watch('shift');

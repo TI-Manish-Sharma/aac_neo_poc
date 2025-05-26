@@ -32,26 +32,26 @@ export function useAnimations(options: AnimationOptions = {}) {
     } = options;
 
     // Create animation values
-    const fadeAnim = useRef(new Animated.Value(fadeInitial)).current;
-    const scaleAnim = useRef(new Animated.Value(scaleInitial)).current;
-    const headerAnim = useRef(new Animated.Value(headerInitial)).current;
-    const bannerAnim = useRef(new Animated.Value(bannerInitial)).current;
+    const fadeAnimation = useRef(new Animated.Value(fadeInitial)).current;
+    const scaleAnimation = useRef(new Animated.Value(scaleInitial)).current;
+    const headerAnimation = useRef(new Animated.Value(headerInitial)).current;
+    const bannerAnimation = useRef(new Animated.Value(bannerInitial)).current;
 
     // Function to start animations
     const startAnimations = () => {
         // Create animations
         const animations = [
-            Animated.timing(fadeAnim, {
+            Animated.timing(fadeAnimation, {
                 toValue: 1,
                 duration: durations.fade,
                 useNativeDriver: true,
             }),
-            Animated.timing(scaleAnim, {
+            Animated.timing(scaleAnimation, {
                 toValue: 1,
                 duration: durations.scale,
                 useNativeDriver: true,
             }),
-            Animated.timing(headerAnim, {
+            Animated.timing(headerAnimation, {
                 toValue: 1,
                 duration: durations.header,
                 useNativeDriver: true,
@@ -61,7 +61,7 @@ export function useAnimations(options: AnimationOptions = {}) {
         // Only add banner animation if it's being used
         if (durations.banner) {
             animations.push(
-                Animated.timing(bannerAnim, {
+                Animated.timing(bannerAnimation, {
                     toValue: 1,
                     duration: durations.banner,
                     useNativeDriver: true,
@@ -75,10 +75,10 @@ export function useAnimations(options: AnimationOptions = {}) {
 
     // Reset animations to initial values
     const resetAnimations = () => {
-        fadeAnim.setValue(fadeInitial);
-        scaleAnim.setValue(scaleInitial);
-        headerAnim.setValue(headerInitial);
-        bannerAnim.setValue(bannerInitial);
+        fadeAnimation.setValue(fadeInitial);
+        scaleAnimation.setValue(scaleInitial);
+        headerAnimation.setValue(headerInitial);
+        bannerAnimation.setValue(bannerInitial);
     };
 
     // Auto-start animations when component mounts
@@ -93,10 +93,10 @@ export function useAnimations(options: AnimationOptions = {}) {
     }, []);
 
     return {
-        fadeAnim,
-        scaleAnim,
-        headerAnim,
-        bannerAnim,
+        fadeAnimation,
+        scaleAnimation,
+        headerAnimation,
+        bannerAnimation,
         startAnimations,
         resetAnimations
     };

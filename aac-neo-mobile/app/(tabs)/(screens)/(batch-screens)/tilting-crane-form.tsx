@@ -72,7 +72,7 @@ export default function TiltingCraneScreen() {
     const risingQuality = watch('risingQuality');
 
     // Animation values
-    const { fadeAnim, scaleAnim, headerAnim, bannerAnim } = useAnimations();
+    const { fadeAnimation: fadeAnim, scaleAnimation: scaleAnim, headerAnimation: headerAnim, bannerAnimation: bannerAnim } = useAnimations();
 
     // Load batch data if available
     useEffect(() => {

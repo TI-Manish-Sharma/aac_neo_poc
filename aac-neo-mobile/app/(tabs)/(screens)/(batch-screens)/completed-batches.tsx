@@ -187,7 +187,7 @@ export default function CompletedBatchesScreen() {
     const [filterActive, setFilterActive] = useState(false);
     const [sortOption, setSortOption] = useState<'date' | 'quality'>('date');
 
-    const { fadeAnim, scaleAnim, headerAnim } = useAnimations();
+    const { fadeAnimation: fadeAnim, scaleAnimation: scaleAnim, headerAnimation: headerAnim } = useAnimations();
 
     // Mock data - in a real app, this would come from an API or database
     useEffect(() => {

@@ -66,7 +66,7 @@ export default function BatchingForm() {
         }
     });
 
-    const { fadeAnim, scaleAnim, headerAnim, bannerAnim } = useAnimations();
+    const { fadeAnimation, scaleAnimation, headerAnimation, bannerAnimation } = useAnimations();
 
     // Load batch data if available
     useEffect(() => {
@@ -196,7 +196,7 @@ export default function BatchingForm() {
                 <ScreenHeader title="Ingredients Entry"
                     subtitle={`Batch ${batchNumber}`}
                     icon="flask"
-                    headerAnim={headerAnim}
+                    headerAnim={headerAnimation}
                     onBack={() => {
                         // Optional custom back logic here
                         router.back();
@@ -207,13 +207,13 @@ export default function BatchingForm() {
             <BatchInfoBanner
                 batchNumber={batchNumber}
                 mouldNumber={mouldNumber}
-                bannerAnim={bannerAnim}
+                bannerAnim={bannerAnimation}
             />
 
             {/* Main content with KeyboardAvoidingView */}
             <FormContainer
-                fadeAnim={fadeAnim}
-                scaleAnim={scaleAnim}>
+                fadeAnim={fadeAnimation}
+                scaleAnim={scaleAnimation}>
                 <ThemedText type="subtitle" style={styles.formSectionTitle}>
                     Enter Ingredient Details
                 </ThemedText>
@@ -463,7 +463,7 @@ export default function BatchingForm() {
                         // Custom cancel logic if needed
                         router.back();
                     }}
-                    fadeAnim={fadeAnim} />
+                    fadeAnim={fadeAnimation} />
             </FormContainer>
 
             {/* Footer - conditionally rendered based on keyboard visibility */}
@@ -471,7 +471,7 @@ export default function BatchingForm() {
                 !keyboardVisible && (
                     <ScreenFooter
                         text="Record ingredients for precise batch tracking"
-                        fadeAnim={fadeAnim}
+                        fadeAnim={fadeAnimation}
                     />
                 )
             }

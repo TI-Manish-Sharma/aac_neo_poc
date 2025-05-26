@@ -221,7 +221,7 @@ export default function InProgressBatches() {
     const { isLoading, getBatchesByStatus, convertToUiBatch, updateBatchStage } = useBatch();
 
     // Animation values
-    const { headerAnim } = useAnimations();
+    const { headerAnimation: headerAnim } = useAnimations();
 
     // Load data using useMemo
     const uiBatches = useMemo(() => {

@@ -63,7 +63,7 @@ export default function FerryCartScreen() {
     });
 
     // Animation values
-    const { fadeAnim, scaleAnim, headerAnim, bannerAnim } = useAnimations();
+    const { fadeAnimation: fadeAnim, scaleAnimation: scaleAnim, headerAnimation: headerAnim, bannerAnimation: bannerAnim } = useAnimations();
 
     // Load batch data if available
     useEffect(() => {

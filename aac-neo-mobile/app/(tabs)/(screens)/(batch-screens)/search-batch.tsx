@@ -225,7 +225,7 @@ export default function SearchBatchScreen() {
     const [searchResults, setSearchResults] = useState<UiBatch[]>([]);
     const [hasSearched, setHasSearched] = useState(false);
 
-    const { fadeAnim, headerAnim, bannerAnim } = useAnimations();
+    const { fadeAnimation: fadeAnim, headerAnimation: headerAnim, bannerAnimation: bannerAnim } = useAnimations();
 
     // Handle search
     const handleSearch = () => {

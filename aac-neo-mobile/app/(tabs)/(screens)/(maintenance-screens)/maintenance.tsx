@@ -25,7 +25,7 @@ export default function MaintenanceScreen() {
   const [pressedButton, setPressedButton] = useState<string | null>(null);
   const { iconSize, fontSize } = getResponsiveSizes();
 
-  const { fadeAnim, scaleAnim, headerAnim } = useAnimations();
+  const { fadeAnimation: fadeAnim, scaleAnimation: scaleAnim, headerAnimation: headerAnim } = useAnimations();
 
   const handleNavigation = (screen: string) => {
     console.log(`Navigating to ${screen}`);

@@ -35,7 +35,7 @@ interface MaintenanceTask {
 }
 
 export default function DailyChecksScreen() {
-    const { fadeAnim, scaleAnim, headerAnim } = useAnimations();
+    const { fadeAnimation: fadeAnim, scaleAnimation: scaleAnim, headerAnimation: headerAnim } = useAnimations();
 
     // State for the maintenance tasks
     const [tasks, setTasks] = useState<MaintenanceTask[]>([]);

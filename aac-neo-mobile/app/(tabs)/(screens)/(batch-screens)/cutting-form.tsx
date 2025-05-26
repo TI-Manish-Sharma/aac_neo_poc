@@ -72,7 +72,7 @@ export default function CuttingFormScreen() {
     // Watch the blockSize value
     const blockSize = watch('blockSize');
 
-    const { fadeAnim, scaleAnim, headerAnim, bannerAnim } = useAnimations();
+    const { fadeAnimation: fadeAnim, scaleAnimation: scaleAnim, headerAnimation: headerAnim, bannerAnimation: bannerAnim } = useAnimations();
 
     // Handle block size selection
     const selectBlockSizeOption = (option: string) => {
