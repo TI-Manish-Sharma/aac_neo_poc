@@ -471,19 +471,22 @@ const BatchingDashboard: React.FC = () => {
             {/* Scrollable Content Section */}
             <div className="flex-grow overflow-y-auto scrollbar-hide ">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    {/* KPI Cards */}
-                    <div>
+                    {/* KPI Cards Column */}
+                    <div className="flex flex-col h-full">
                         <KPICards metrics={metrics} />
-                        <BatchProgressTracker
-                            batches={batchProgressData}
-                            onBatchEdit={handleBatchEdit} />
-                        <TempHardnessChart data={hardnessData} />
+                        <div className="flex-grow flex flex-col space-y-6">
+                            <BatchProgressTracker
+                                batches={batchProgressData}
+                                onBatchEdit={handleBatchEdit}
+                                className="flex-1" />
+                            <TempHardnessChart data={hardnessData} />
+                        </div>
                     </div>
 
-                    {/* Raw Material Receipts and Order Dispatch stacked */}
-                    <div className="flex flex-col space-y-6">
-                        <OrderDispatch />
-                        <RawMaterialReceipts />
+                    {/* Raw Material Receipts and Order Dispatch column */}
+                    <div className="flex flex-col h-full space-y-6">
+                        <OrderDispatch className="flex-1" />
+                        <RawMaterialReceipts className="flex-1" />
                     </div>
                 </div>
 

@@ -62,7 +62,7 @@ const TempHardnessChart: React.FC<TempHardnessChartProps> = ({ data }) => {
     };
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow">
+        <div className="bg-white p-4 rounded-lg shadow-lg">
             <h2 className="text-lg font-semibold mb-2">Temperature vs Hardness Monitoring</h2>
             <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">

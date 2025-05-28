@@ -136,7 +136,7 @@ const BatchItem = ({
     // Compact style
     if (style === 'compact') {
         return (
-            <div className="bg-white rounded-lg shadow p-3 hover:shadow-md transition-shadow">
+            <div className="bg-white rounded-lg shadow-lg p-3 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-bold">#{batch.batchNo}</h3>
                     {!readOnly && onBatchEdit && (
