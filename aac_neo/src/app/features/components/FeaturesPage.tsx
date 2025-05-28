@@ -88,7 +88,7 @@ export default function FeaturesPage() {
                         <div>
                             <h3 className="text-2xl font-bold text-gray-800 mb-4">Reduce Rejection Rates</h3>
                             <p className="text-gray-600 mb-6">
-                                Our customers have seen substantial reduction in rejection rates through improved monitoring and proactive maintenance. By identifying patterns in defects, you can implement targeted improvements that significantly boost your production yield.
+                                Achieve a substantial reduction in rejection rates with enhanced monitoring and proactive maintenance. By identifying defect patterns early, you can implement targeted improvements that significantly increase your production yield and overall efficiency.
                             </p>
                             <ul className="space-y-3">
                                 {[
